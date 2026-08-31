@@ -1,0 +1,12 @@
+[
+  {"rank":1,"name":"Midtown South / Herald Sq","lat":40.744,"lon":-73.984,"score":72,"dump":12,"noise":30,"permits":3,"rider":"","window":"","status":"DARK"},
+  {"rank":2,"name":"West Village / Union Park","lat":40.736000000000004,"lon":-74.0,"score":70,"dump":16,"noise":8,"permits":7,"rider":"","window":"","status":"DARK"},
+  {"rank":3,"name":"NoMad / Murray Hill","lat":40.744,"lon":-73.992,"score":63,"dump":14,"noise":17,"permits":2,"rider":"","window":"","status":"DARK"},
+  {"rank":4,"name":"Upper East Side","lat":40.792,"lon":-73.944,"score":60,"dump":9,"noise":27,"permits":3,"rider":"","window":"","status":"DARK"},
+  {"rank":5,"name":"Tribeca /FiDi edge","lat":40.712,"lon":-74.008,"score":56,"dump":6,"noise":36,"permits":1,"rider":"","window":"","status":"DARK"},
+  {"rank":6,"name":"Chelsea / Flatiron","lat":40.736000000000004,"lon":-73.992,"score":54,"dump":5,"noise":29,"permits":5,"rider":"","window":"","status":"DARK"},
+  {"rank":7,"name":"East Village / Gramercy","lat":40.72,"lon":-73.984,"score":52,"dump":11,"noise":13,"permits":3,"rider":"","window":"","status":"DARK"},
+  {"rank":8,"name":"West Village / Hudson Sq","lat":40.72,"lon":-74.0,"score":50,"dump":6,"noise":20,"permits":6,"rider":"","window":"","status":"DARK"},
+  {"rank":9,"name":"Union Square East","lat":40.72,"lon":-73.992,"score":48,"dump":12,"noise":6,"permits":3,"rider":"","window":"","status":"DARK"},
+  {"rank":10,"name":"Gramercy / Kips Bay","lat":40.728,"lon":-73.984,"score":47,"dump":13,"noise":2,"permits":3,"rider":"","window":"","status":"DARK"}
+]
