@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "lat": 40.7185,
+    "lon": -73.9242,
+    "date": "2026-10-24 23:42:10",
+    "rider": "Rider-04",
+    "pack_id": "PACK-DSNY-261024-01",
+    "type": "Commercial Dumping (Maspeth Creek)",
+    "vehicle_plate": "NY-88291",
+    "hash": "sha256:7f9a2b89c4d1",
+    "status": "VALIDATED"
+  },
+  {
+    "lat": 40.8122,
+    "lon": -73.8781,
+    "date": "2026-10-25 02:15:33",
+    "rider": "Rider-02",
+    "pack_id": "PACK-DSNY-261025-04",
+    "type": "Commercial Dumping (Hunts Point)",
+    "vehicle_plate": "NJ-38914B",
+    "hash": "sha256:1a84f509c21e",
+    "status": "VALIDATED"
+  },
+  {
+    "lat": 40.7441,
+    "lon": -73.9845,
+    "date": "2026-10-25 11:20:00",
+    "rider": "Rider-01",
+    "pack_id": "PACK-CAC-261025-09",
+    "type": "CAC Idling (Midtown Herald Sq)",
+    "vehicle_plate": "NY-54219P",
+    "hash": "sha256:4b912c88f102",
+    "status": "VALIDATED"
+  },
+  {
+    "lat": 40.7602,
+    "lon": -73.8315,
+    "date": "2026-10-26 14:10:45",
+    "rider": "Field-Investigator-03",
+    "pack_id": "PACK-MED-261026-02",
+    "type": "Medicaid SADC Kickback Envelope Video",
+    "vehicle_plate": "SADC Van T7192",
+    "hash": "sha256:99f41b2c58a1",
+    "status": "VALIDATED"
+  },
+  {
+    "lat": 40.6385,
+    "lon": -73.9742,
+    "date": "2026-10-26 16:45:12",
+    "rider": "Field-Investigator-01",
+    "pack_id": "PACK-MED-261026-07",
+    "type": "Lidocaine 5% Bulk Pallet Unload Dump",
+    "vehicle_plate": "Courier Van NY-44910",
+    "hash": "sha256:3e107da85b92",
+    "status": "VALIDATED"
+  }
+]

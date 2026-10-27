@@ -5,7 +5,7 @@ import DeckGL from "@deck.gl/react";
 import { HexagonLayer } from "@deck.gl/aggregation-layers";
 import { ScatterplotLayer, ColumnLayer } from "@deck.gl/layers";
 import { LightingEffect, AmbientLight, DirectionalLight } from "@deck.gl/core";
-import { DumpingRecord, NoiseRecord, PermitRecord, EvidenceRecord, ZoneRecord } from "@/types";
+import { DumpingRecord, NoiseRecord, PermitRecord, EvidenceRecord, ZoneRecord, MedicaidProviderRecord } from "@/types";
 import { LayerId } from "./KpiStrip";
 
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -16,6 +16,7 @@ interface MapPanelProps {
   permits: PermitRecord[];
   evidence: EvidenceRecord[];
   zones: ZoneRecord[];
+  medicaid?: MedicaidProviderRecord[];
   activeLayers: Set<LayerId>;
   hoveredKpiLayer: LayerId | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,6 +41,7 @@ const COLORS = {
   noise: hexToRgb("#5ea5d8"),
   permits: hexToRgb("#5fbf97"),
   evidence: hexToRgb("#f2c744"),
+  medicaid: hexToRgb("#ef4444"),
   red: hexToRgb("#e06c6c"),
   sage: hexToRgb("#5fbf97"),
   muted: hexToRgb("#7d7f88")
@@ -62,6 +64,7 @@ export default function MapPanel({
   permits,
   evidence,
   zones,
+  medicaid = [],
   activeLayers,
   hoveredKpiLayer,
   viewState,
@@ -158,11 +161,30 @@ export default function MapPanel({
       stroked: true,
       getLineColor: [255, 255, 255],
       lineWidthMinPixels: 2,
-      radiusMinPixels: 5,
-      radiusMaxPixels: 200,
+      radiusMinPixels: 6,
+      radiusMaxPixels: 220,
       getRadius: 200,
       opacity: getOpacity("evidence", 1),
       pickable: true,
+    }),
+
+    activeLayers.has("medicaid") && new ColumnLayer({
+      id: "medicaid-column",
+      data: medicaid,
+      getPosition: (d) => [d.lon, d.lat],
+      radius: 180,
+      extruded: true,
+      elevationScale: 0.05,
+      getElevation: (d) => Math.sqrt(d.exposure_amount) * 3,
+      getFillColor: (d) => [239, 68, 68, Math.min(240, 100 + d.risk_score)],
+      opacity: getOpacity("medicaid", 0.95),
+      pickable: true,
+      material: {
+        ambient: 0.85,
+        diffuse: 0.5,
+        shininess: 40,
+        specularColor: [255, 200, 200]
+      }
     })
   ].filter(Boolean);
 
@@ -173,13 +195,39 @@ export default function MapPanel({
     
     if (layer.id === "evidence-scatter") {
       return {
-        html: `<div class="font-mono text-12.5 tracking-tight">${object.pack_id} · ${object.rider} · ${object.date}</div>`,
+        html: `
+          <div class="font-mono text-12.5 tracking-tight text-gold font-bold">${object.pack_id}</div>
+          <div class="font-mono text-11 text-muted mt-1">Plate: ${object.vehicle_plate || "N/A"} · ${object.date}</div>
+          <div class="font-outfit text-12 text-secondary mt-1">${object.type}</div>
+        `,
         style: {
           backgroundColor: '#17171d',
           color: '#f2f2f0',
           border: '1px solid rgba(255,255,255,0.07)',
           borderRadius: '6px',
-          padding: '8px 12px',
+          padding: '10px 14px',
+        }
+      };
+    }
+
+    if (layer.id === "medicaid-column") {
+      return {
+        html: `
+          <div class="font-jakarta text-14 font-bold text-red mb-1">${object.name}</div>
+          <div class="font-mono text-11 text-muted mb-2">NPI: ${object.npi} · ${object.borough}</div>
+          <div class="font-mono text-12 text-secondary space-y-1">
+            <div>Facility: <span class="text-primary font-semibold">${object.facility_type}</span></div>
+            <div>Risk Score: <span class="text-red font-bold">${object.risk_score}/100</span></div>
+            <div>Identified Exposure: <span class="text-primary font-bold">$${(object.exposure_amount / 1000000).toFixed(2)}M</span></div>
+            <div>Est. Qui Tam Bounty: <span class="text-sage font-bold">$${(object.estimated_bounty / 1000000).toFixed(2)}M</span></div>
+          </div>
+        `,
+        style: {
+          backgroundColor: '#17171d',
+          color: '#f2f2f0',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '6px',
+          padding: '12px 16px',
         }
       };
     }
@@ -223,25 +271,18 @@ export default function MapPanel({
         />
       </DeckGL>
 
-      {/* Empty evidence state in legend area */}
-      {evidence.length === 0 && (
-        <div className="absolute bottom-64 left-24 text-12.5 text-muted font-outfit italic bg-surface/80 p-12 rounded-sm border border-border backdrop-blur-sm">
-          No validated packs yet. Gold dots appear as field evidence validates.
-        </div>
-      )}
-
       {/* Layer Toggles */}
-      <div className="absolute bottom-24 left-24 flex gap-8 z-10">
-        {(["dumping", "noise", "permits", "evidence", "zones"] as LayerId[]).map((layerId, idx) => (
+      <div className="absolute bottom-24 left-24 flex flex-wrap gap-8 z-10 max-w-xl">
+        {(["dumping", "noise", "medicaid", "permits", "evidence", "zones"] as LayerId[]).map((layerId, idx) => (
           <button
             key={layerId}
             onClick={() => onToggleLayer(layerId)}
             className={`
-              px-12 py-6 rounded-full text-12.5 font-outfit uppercase tracking-tight
-              transition-all duration-150 border backdrop-blur-sm
+              px-12 py-6 rounded-full text-12 font-mono uppercase tracking-tight
+              transition-all duration-150 border backdrop-blur-md
               ${activeLayers.has(layerId) 
-                ? 'bg-surface border-border text-primary shadow-panel' 
-                : 'bg-canvas/50 border-transparent text-muted hover:text-secondary'}
+                ? 'bg-surface border-border text-primary shadow-panel font-semibold' 
+                : 'bg-canvas/60 border-transparent text-muted hover:text-secondary'}
             `}
             style={{
               borderBottomColor: activeLayers.has(layerId) ? `rgb(${COLORS[layerId === 'zones' ? 'muted' : layerId].join(',')})` : 'transparent',
@@ -249,7 +290,7 @@ export default function MapPanel({
             }}
           >
             <span className="opacity-50 mr-2">{idx + 1}</span>
-            {layerId}
+            {layerId === "medicaid" ? "Medicaid ($38M)" : layerId}
           </button>
         ))}
       </div>

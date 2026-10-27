@@ -1,23 +1,51 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Header from "@/components/Header";
+import Header, { ConsoleView } from "@/components/Header";
 import Footer from "@/components/Footer";
 import KpiStrip, { LayerId } from "@/components/KpiStrip";
 import MapPanel from "@/components/MapPanel";
 import ZoneTable from "@/components/ZoneTable";
 import CommandPalette from "@/components/CommandPalette";
-import { DumpingRecord, NoiseRecord, PermitRecord, EvidenceRecord, ZoneRecord } from "@/types";
+import PalantirNexusGraph from "@/components/PalantirNexusGraph";
+import MedicaidQuiTamRadar from "@/components/MedicaidQuiTamRadar";
+import ProfitEngineLedger from "@/components/ProfitEngineLedger";
+import LegalWeaponizer from "@/components/LegalWeaponizer";
+import { 
+  DumpingRecord, 
+  NoiseRecord, 
+  PermitRecord, 
+  EvidenceRecord, 
+  ZoneRecord, 
+  MedicaidProviderRecord, 
+  FraudRingRecord, 
+  BountyLedgerItem, 
+  PalantirGraphData 
+} from "@/types";
 import { FlyToInterpolator } from "@deck.gl/core";
 
 export default function Home() {
+  const [currentView, setCurrentView] = useState<ConsoleView>("WAR_ROOM");
+
+  // Core Tactical Data
   const [dumping, setDumping] = useState<DumpingRecord[]>([]);
   const [noise, setNoise] = useState<NoiseRecord[]>([]);
   const [permits, setPermits] = useState<PermitRecord[]>([]);
   const [evidence, setEvidence] = useState<EvidenceRecord[]>([]);
   const [zones, setZones] = useState<ZoneRecord[]>([]);
 
-  const [activeLayers, setActiveLayers] = useState<Set<LayerId>>(new Set<LayerId>(["dumping", "noise", "permits", "evidence", "zones"]));
+  // MediFraudy & Palantir Unified Datasets
+  const [medicaid, setMedicaid] = useState<MedicaidProviderRecord[]>([]);
+  const [fraudRings, setFraudRings] = useState<FraudRingRecord[]>([]);
+  const [bountyLedger, setBountyLedger] = useState<BountyLedgerItem[]>([]);
+  const [palantirGraph, setPalantirGraph] = useState<PalantirGraphData>({ nodes: [], edges: [] });
+
+  // Legal Weaponizer selection bridge
+  const [weaponizerTarget, setWeaponizerTarget] = useState<{ id?: string; track?: string }>({});
+
+  const [activeLayers, setActiveLayers] = useState<Set<LayerId>>(
+    new Set<LayerId>(["dumping", "noise", "medicaid", "permits", "evidence", "zones"])
+  );
   const [hoveredKpiLayer, setHoveredKpiLayer] = useState<LayerId | null>(null);
 
   const [viewState, setViewState] = useState({
@@ -32,15 +60,19 @@ export default function Home() {
   });
 
   useEffect(() => {
-    // Fetch data at runtime
+    // Fetch all unified datasets at runtime
     const loadData = async () => {
       try {
-        const [dRes, nRes, pRes, eRes, zRes] = await Promise.all([
+        const [dRes, nRes, pRes, eRes, zRes, medRes, ringsRes, ledgerRes, graphRes] = await Promise.all([
           fetch("/data/dumping.json").catch(() => null),
           fetch("/data/noise.json").catch(() => null),
           fetch("/data/permits.json").catch(() => null),
           fetch("/data/evidence.json").catch(() => null),
           fetch("/data/zones.json").catch(() => null),
+          fetch("/data/medicaid_providers.json").catch(() => null),
+          fetch("/data/fraud_rings.json").catch(() => null),
+          fetch("/data/bounty_ledger.json").catch(() => null),
+          fetch("/data/palantir_graph.json").catch(() => null),
         ]);
 
         if (dRes?.ok) setDumping(await dRes.json());
@@ -48,8 +80,12 @@ export default function Home() {
         if (pRes?.ok) setPermits(await pRes.json());
         if (eRes?.ok) setEvidence(await eRes.json());
         if (zRes?.ok) setZones(await zRes.json());
+        if (medRes?.ok) setMedicaid(await medRes.json());
+        if (ringsRes?.ok) setFraudRings(await ringsRes.json());
+        if (ledgerRes?.ok) setBountyLedger(await ledgerRes.json());
+        if (graphRes?.ok) setPalantirGraph(await graphRes.json());
       } catch (err) {
-        console.error("Failed to load data:", err);
+        console.error("Failed to load unified intelligence data:", err);
       }
     };
 
@@ -57,7 +93,7 @@ export default function Home() {
   }, []);
 
   const handleToggleLayer = useCallback((layerId: LayerId) => {
-    setActiveLayers(prev => {
+    setActiveLayers((prev) => {
       const next = new Set(prev);
       if (next.has(layerId)) {
         next.delete(layerId);
@@ -68,22 +104,34 @@ export default function Home() {
     });
   }, []);
 
+  // Keyboard navigation & layer toggles
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if inside an input (like command palette)
-      if (document.activeElement?.tagName === "INPUT") return;
+      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "SELECT") {
+        return;
+      }
       
       const layerMap: Record<string, LayerId> = {
         "1": "dumping",
         "2": "noise",
-        "3": "permits",
-        "4": "evidence",
-        "5": "zones"
+        "3": "medicaid",
+        "4": "permits",
+        "5": "evidence",
+        "6": "zones",
       };
 
-      const layerId = layerMap[e.key];
-      if (layerId) {
-        handleToggleLayer(layerId);
+      if (layerMap[e.key]) {
+        handleToggleLayer(layerMap[e.key]);
+      } else if (e.key.toLowerCase() === "g") {
+        setCurrentView("NEXUS_GRAPH");
+      } else if (e.key.toLowerCase() === "m") {
+        setCurrentView("MEDICAID_RADAR");
+      } else if (e.key.toLowerCase() === "l") {
+        setCurrentView("PROFIT_LEDGER");
+      } else if (e.key.toLowerCase() === "w") {
+        setCurrentView("LEGAL_WEAPONIZER");
+      } else if (e.key === "Escape" || e.key === "0") {
+        setCurrentView("WAR_ROOM");
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -102,9 +150,15 @@ export default function Home() {
     });
   };
 
-  const counts = {
+  const handleOpenWeaponizer = (targetId: string, track: string) => {
+    setWeaponizerTarget({ id: targetId, track });
+    setCurrentView("LEGAL_WEAPONIZER");
+  };
+
+  const counts: Record<LayerId, number> = {
     dumping: dumping.length,
     noise: noise.length,
+    medicaid: medicaid.length,
     permits: permits.length,
     evidence: evidence.length,
     zones: zones.length,
@@ -112,34 +166,81 @@ export default function Home() {
 
   return (
     <>
-      <Header />
+      <Header 
+        currentView={currentView}
+        onSelectView={setCurrentView}
+      />
+
       <KpiStrip 
         counts={counts}
         hoveredLayer={hoveredKpiLayer}
         onHoverLayer={setHoveredKpiLayer}
       />
-      <div className="flex-1 flex overflow-hidden lg:flex-row flex-col">
-        <MapPanel 
-          dumping={dumping}
-          noise={noise}
-          permits={permits}
-          evidence={evidence}
-          zones={zones}
-          activeLayers={activeLayers}
-          hoveredKpiLayer={hoveredKpiLayer}
-          viewState={viewState}
-          onViewStateChange={(e) => setViewState(e.viewState)}
-          onToggleLayer={handleToggleLayer}
-        />
-        <ZoneTable 
-          zones={zones}
-          onZoneClick={handleZoneClick}
-        />
-      </div>
+
+      {/* Main View Switcher */}
+      <main className="flex-1 flex overflow-hidden">
+        {currentView === "WAR_ROOM" && (
+          <div className="flex-1 flex overflow-hidden lg:flex-row flex-col">
+            <MapPanel 
+              dumping={dumping}
+              noise={noise}
+              permits={permits}
+              evidence={evidence}
+              zones={zones}
+              medicaid={medicaid}
+              activeLayers={activeLayers}
+              hoveredKpiLayer={hoveredKpiLayer}
+              viewState={viewState}
+              onViewStateChange={(e) => setViewState(e.viewState)}
+              onToggleLayer={handleToggleLayer}
+            />
+            <ZoneTable 
+              zones={zones}
+              onZoneClick={handleZoneClick}
+            />
+          </div>
+        )}
+
+        {currentView === "NEXUS_GRAPH" && (
+          <PalantirNexusGraph 
+            graphData={palantirGraph}
+            onSelectProvider={() => {
+              setCurrentView("MEDICAID_RADAR");
+            }}
+          />
+        )}
+
+        {currentView === "MEDICAID_RADAR" && (
+          <MedicaidQuiTamRadar 
+            providers={medicaid}
+            fraudRings={fraudRings}
+            onOpenWeaponizer={handleOpenWeaponizer}
+          />
+        )}
+
+        {currentView === "PROFIT_LEDGER" && (
+          <ProfitEngineLedger 
+            ledgerItems={bountyLedger}
+            onOpenWeaponizer={handleOpenWeaponizer}
+          />
+        )}
+
+        {currentView === "LEGAL_WEAPONIZER" && (
+          <LegalWeaponizer 
+            initialTargetId={weaponizerTarget.id}
+            initialTrack={weaponizerTarget.track}
+          />
+        )}
+      </main>
+
       <Footer />
+
       <CommandPalette 
         zones={zones}
-        onSelectZone={handleZoneClick}
+        onSelectZone={(lat, lon) => {
+          setCurrentView("WAR_ROOM");
+          handleZoneClick(lat, lon);
+        }}
       />
     </>
   );
