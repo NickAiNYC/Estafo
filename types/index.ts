@@ -54,11 +54,22 @@ export interface MedicaidProviderRecord {
   lon: number;
   risk_score: number;
   exposure_amount: number;
+  monthly_intensity?: number;
+  months_active?: number;
+  z_score?: number;
+  is_nyc_verified?: boolean;
+  verification_source?: string;
   estimated_bounty: number;
   anomaly_types: string[];
   status: "INVESTIGATING" | "EVIDENCE_GATHERED" | "FILED_SEALED" | "DOJ_REVIEW" | "RECOVERY_PENDING" | "PAID";
   ring_id?: string;
   cross_vector_link?: string;
+  lead_utility?: string;
+  document_hashes?: Record<string, string>;
+  decision_signature_hash?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  source_records_hash?: string;
 }
 
 export interface FraudRingRecord {
@@ -119,3 +130,4 @@ export interface PalantirGraphData {
   nodes: PalantirGraphNode[];
   edges: PalantirGraphEdge[];
 }
+

@@ -72,14 +72,14 @@ export default function Home() {
     const loadData = async () => {
       const startTime = performance.now();
       try {
-        // Parallel fetch: Live Socrata Streams + Dynamic Spatial Clusters + Ledger
+        // Parallel fetch: Live Socrata Streams + Dynamic Spatial Clusters + Ledger + Sourced Medicaid Leads
         const [live311Res, liveLedgerRes, liveZonesRes, pRes, eRes, medRes, ringsRes, graphRes] = await Promise.all([
           fetch("/api/sources/311-stream?limit=150").catch(() => null),
           fetch("/api/ledger").catch(() => null),
           fetch("/api/zones").catch(() => null),
           fetch("/data/permits.json").catch(() => null),
           fetch("/data/evidence.json").catch(() => null),
-          fetch("/data/medicaid_providers.json").catch(() => null),
+          fetch("/api/sources/medicaid-leads").catch(() => null),
           fetch("/data/fraud_rings.json").catch(() => null),
           fetch("/data/palantir_graph.json").catch(() => null),
         ]);
@@ -141,7 +141,15 @@ export default function Home() {
         // Process other artifacts
         if (pRes?.ok) setPermits(await pRes.json());
         if (eRes?.ok) setEvidence(await eRes.json());
-        if (medRes?.ok) setMedicaid(await medRes.json());
+        // Process medicaid leads (prefer live sourced API over static JSON)
+        if (medRes?.ok) {
+          const mData = await medRes.json();
+          const items = Array.isArray(mData) ? mData : (mData.data || []);
+          setMedicaid(items);
+        } else {
+          const fallbackMed = await fetch("/data/medicaid_providers.json").catch(() => null);
+          if (fallbackMed?.ok) setMedicaid(await fallbackMed.json());
+        }
         if (ringsRes?.ok) setFraudRings(await ringsRes.json());
         if (graphRes?.ok) setPalantirGraph(await graphRes.json());
 

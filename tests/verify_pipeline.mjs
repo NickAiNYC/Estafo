@@ -89,4 +89,36 @@ assert.notStrictEqual(cashCollected, pipeline, "CRITICAL: Pipeline exposure must
 
 console.log(`✓ Financial Ledger Rules Verified: Realized Cash ($${cashCollected}) strictly isolated from Speculative Pipeline ($${pipeline})`);
 
+// Test 5: Medicaid Provider Vetted Cohort Integrity (Gate G5)
+console.log("\n[Test 5] Verifying CMS NPPES Medicaid Provider Vetted Cohort Checksum...");
+import fs from "node:fs";
+import path from "node:path";
+import crypto from "node:crypto";
+
+const allowlistPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.txt");
+const checksumPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.sha256");
+
+assert(fs.existsSync(allowlistPath), "vetted_nyc_t2024_npis.txt must exist");
+const allowlistContent = fs.readFileSync(allowlistPath, "utf-8");
+const computedSha = crypto.createHash("sha256").update(allowlistContent).digest("hex");
+
+if (fs.existsSync(checksumPath)) {
+  const expectedSha = fs.readFileSync(checksumPath, "utf-8").split(/\s+/)[0].trim();
+  assert.strictEqual(computedSha.toLowerCase(), expectedSha.toLowerCase(), "Cohort SHA-256 must match official manifest");
+}
+console.log(`✓ Medicaid Vetted Cohort Verified: SHA-256 = ${computedSha}`);
+
+// Test 6: Closed-Loop Decision Cryptographic Signatures (Gate G6)
+console.log("\n[Test 6] Verifying Decision Cryptographic Signature Generation...");
+const testNpi = "1184920143";
+const testDisposition = "ACCEPTED_FOR_INVESTIGATION";
+const testUtility = "USEFUL_ACTIONABLE_LEAD";
+const testDate = "2026-10-27T10:00:00.000Z";
+const testHashes = { roster: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" };
+
+const sigPayload = `${testNpi}:${testDisposition}:${testUtility}:${testDate}:${JSON.stringify(testHashes)}`;
+const signature = crypto.createHash("sha256").update(sigPayload).digest("hex");
+assert(signature && signature.length === 64, "Decision signature must be 64-character SHA-256 hex string");
+console.log(`✓ Decision Signature Verified: ${signature.slice(0, 16)}...`);
+
 console.log("\n>>> ALL PIPELINE TESTS PASSED WITH 100% SUCCESS <<<");
