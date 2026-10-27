@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
-import crypto from "node:crypto";
 import { MedicaidProviderRecord } from "@/types";
 
-// Vetted CMS NPPES / HHS Registry Data
-interface VettedRegistryItem {
+// Illustrative Prototype Cohort for Screening Workflow Evaluation
+// NOTE: These are synthetic demonstration rows created for workflow and interface evaluation.
+// They are NOT live HHS claims rows and NOT verified CMS NPPES provider findings.
+interface SyntheticCohortItem {
   id: string;
   npi: string;
   name: string;
@@ -18,145 +19,92 @@ interface VettedRegistryItem {
   months_active: number;
   total_claims: number;
   total_beneficiaries: number;
-  ring_id?: string;
-  cross_vector_link?: string;
   anomaly_types: string[];
 }
 
-const VETTED_NYC_COHORT: VettedRegistryItem[] = [
+const DEMO_SYNTHETIC_COHORT: SyntheticCohortItem[] = [
   {
-    id: "MED-NYC-T2024-001",
-    npi: "1184920143",
-    name: "FLUSHING GOLDEN AGE ADULT DAY CARE CENTER INC",
+    id: "DEMO-SADC-001",
+    npi: "DEMO-NPI-001",
+    name: "Sample Adult Day Care Facility Alpha [Workflow Demo]",
     facility_type: "SADC Adult Day Care",
     borough: "Queens",
-    address: "136-20 38th Ave, Flushing, NY 11354",
+    address: "Flushing Corridor, Queens, NY",
     lat: 40.7602,
     lon: -73.8315,
     total_spend: 12960000,
     months_active: 12,
     total_claims: 86400,
     total_beneficiaries: 1800,
-    ring_id: "RING-01",
-    cross_vector_link: "Cross-referenced transport vans registered to Maspeth logistics shell",
-    anomaly_types: ["Phantom SADC Attendance", "Per-Diem Rate Spike (+3.8σ)", "Kickback Envelopes"]
+    anomaly_types: ["Spending Intensity Outlier (+2.4σ)", "High Volume per Active Month"]
   },
   {
-    id: "MED-NYC-T2024-002",
-    npi: "1295830254",
-    name: "BROOKLYN SENIOR CARE ADULT DAY HEALTH PROGRAM",
+    id: "DEMO-SADC-002",
+    npi: "DEMO-NPI-002",
+    name: "Sample Adult Day Care Facility Beta [Workflow Demo]",
     facility_type: "SADC Adult Day Care",
     borough: "Brooklyn",
-    address: "5412 8th Ave, Brooklyn, NY 11220",
+    address: "Sunset Park Corridor, Brooklyn, NY",
     lat: 40.6391,
     lon: -74.0042,
     total_spend: 8640000,
     months_active: 12,
     total_claims: 57600,
     total_beneficiaries: 1200,
-    ring_id: "RING-02",
-    cross_vector_link: "Shares executive director with Sunset Park CDPAP intermediary",
-    anomaly_types: ["Impossible 100% Attendance Rate", "Overlapping Home Care Shifts"]
+    anomaly_types: ["Spending Rate Outlier (+1.3σ)", "Elevated Claims per Beneficiary"]
   },
   {
-    id: "MED-NYC-T2024-003",
-    npi: "1306941365",
-    name: "QUEENS BOULEVARD COMMUNITY HEALTH & ADULT DAY CARE",
-    facility_type: "SADC Adult Day Care",
-    borough: "Queens",
-    address: "98-15 Queens Blvd, Rego Park, NY 11374",
-    lat: 40.7282,
-    lon: -73.8612,
-    total_spend: 1980000,
-    months_active: 12,
-    total_claims: 19800,
-    total_beneficiaries: 650,
-    anomaly_types: ["Explainable Clinical Expansion"]
-  },
-  {
-    id: "MED-NYC-T2024-004",
-    npi: "1417052476",
-    name: "METROPOLITAN ELDERLY REHABILITATION SERVICES LLC",
-    facility_type: "SADC Adult Day Care",
-    borough: "Queens",
-    address: "41-60 Main St, Flushing, NY 11355",
-    lat: 40.7554,
-    lon: -73.8276,
-    total_spend: 1425000,
-    months_active: 12,
-    total_claims: 14250,
-    total_beneficiaries: 520,
-    anomaly_types: ["Standard Peer Baseline Rate"]
-  },
-  {
-    id: "MED-NYC-T2024-005",
-    npi: "1528163587",
-    name: "CHINATOWN GOLDEN HARBOR SOCIAL DAY CARE CENTER",
-    facility_type: "SADC Adult Day Care",
-    borough: "Manhattan",
-    address: "128 Mott St, New York, NY 10013",
-    lat: 40.7185,
-    lon: -73.9972,
-    total_spend: 1800000,
-    months_active: 12,
-    total_claims: 18000,
-    total_beneficiaries: 600,
-    anomaly_types: ["Expected Community Baseline"]
-  },
-  {
-    id: "MED-NYC-T2024-006",
-    npi: "1639274698",
-    name: "BRIGHTON BEACH ELDERS RECREATION & HEALTH CENTER",
+    id: "DEMO-SADC-003",
+    npi: "DEMO-NPI-003",
+    name: "Sample Adult Day Care Facility Gamma [Workflow Demo]",
     facility_type: "SADC Adult Day Care",
     borough: "Brooklyn",
-    address: "3048 Brighton 1st St, Brooklyn, NY 11235",
+    address: "Brighton Beach Corridor, Brooklyn, NY",
     lat: 40.5772,
     lon: -73.9615,
     total_spend: 4750000,
     months_active: 12,
     total_claims: 31600,
     total_beneficiaries: 950,
-    ring_id: "RING-04",
-    cross_vector_link: "Transportation dispatch yard overlaps with Track 5 dumping citations",
-    anomaly_types: ["Capacity Ceiling Violation", "Ghost Rides Overlap"]
+    anomaly_types: ["Census Capacity Threshold Outlier", "Upper-Quartile Spending"]
   },
   {
-    id: "MED-NYC-T2024-007",
-    npi: "1740385709",
-    name: "SOUTH BRONX COMPREHENSIVE DAY HEALTH SERVICES",
+    id: "DEMO-SADC-004",
+    npi: "DEMO-NPI-004",
+    name: "Sample Adult Day Care Facility Delta [Workflow Demo]",
     facility_type: "SADC Adult Day Care",
-    borough: "Bronx",
-    address: "890 Food Center Dr, Bronx, NY 10474",
-    lat: 40.8115,
-    lon: -73.8765,
-    total_spend: 1560000,
+    borough: "Queens",
+    address: "Rego Park Corridor, Queens, NY",
+    lat: 40.7282,
+    lon: -73.8612,
+    total_spend: 1980000,
     months_active: 12,
-    total_claims: 15600,
-    total_beneficiaries: 480,
-    anomaly_types: ["Standard Peer Baseline Rate"]
+    total_claims: 19800,
+    total_beneficiaries: 650,
+    anomaly_types: ["Moderate Spending Variation", "Expected Regional Cluster"]
   },
   {
-    id: "MED-NYC-T2024-008",
-    npi: "1851496810",
-    name: "STATEN ISLAND HARBOR SOCIAL DAY CARE INC",
-    facility_type: "SADC Adult Day Care",
-    borough: "Staten Island",
-    address: "1200 Castleton Ave, Staten Island, NY 10310",
-    lat: 40.6352,
-    lon: -74.1281,
-    total_spend: 1320000,
-    months_active: 12,
-    total_claims: 13200,
-    total_beneficiaries: 410,
-    anomaly_types: ["Standard Peer Baseline Rate"]
-  },
-  {
-    id: "MED-NYC-T2024-009",
-    npi: "1962507921",
-    name: "HARLEM SENIOR EMPOWERMENT DAY HEALTH PROGRAM",
+    id: "DEMO-SADC-005",
+    npi: "DEMO-NPI-005",
+    name: "Sample Adult Day Care Facility Epsilon [Workflow Demo]",
     facility_type: "SADC Adult Day Care",
     borough: "Manhattan",
-    address: "215 W 125th St, New York, NY 10027",
+    address: "Lower Manhattan Corridor, New York, NY",
+    lat: 40.7185,
+    lon: -73.9972,
+    total_spend: 1800000,
+    months_active: 12,
+    total_claims: 18000,
+    total_beneficiaries: 600,
+    anomaly_types: ["Expected Peer Baseline Rate"]
+  },
+  {
+    id: "DEMO-SADC-006",
+    npi: "DEMO-NPI-006",
+    name: "Sample Adult Day Care Facility Zeta [Workflow Demo]",
+    facility_type: "SADC Adult Day Care",
+    borough: "Manhattan",
+    address: "Harlem Corridor, New York, NY",
     lat: 40.8089,
     lon: -73.9485,
     total_spend: 1680000,
@@ -166,18 +114,63 @@ const VETTED_NYC_COHORT: VettedRegistryItem[] = [
     anomaly_types: ["Standard Peer Baseline Rate"]
   },
   {
-    id: "MED-NYC-T2024-010",
-    npi: "1073418032",
-    name: "BAY RIDGE SENIOR COMMUNITY DAY CENTER",
+    id: "DEMO-SADC-007",
+    npi: "DEMO-NPI-007",
+    name: "Sample Adult Day Care Facility Eta [Workflow Demo]",
+    facility_type: "SADC Adult Day Care",
+    borough: "Bronx",
+    address: "South Bronx Corridor, Bronx, NY",
+    lat: 40.8115,
+    lon: -73.8765,
+    total_spend: 1560000,
+    months_active: 12,
+    total_claims: 15600,
+    total_beneficiaries: 480,
+    anomaly_types: ["Standard Peer Baseline Rate"]
+  },
+  {
+    id: "DEMO-SADC-008",
+    npi: "DEMO-NPI-008",
+    name: "Sample Adult Day Care Facility Theta [Workflow Demo]",
     facility_type: "SADC Adult Day Care",
     borough: "Brooklyn",
-    address: "8515 5th Ave, Brooklyn, NY 11209",
+    address: "Bay Ridge Corridor, Brooklyn, NY",
     lat: 40.6215,
     lon: -74.0261,
     total_spend: 1440000,
     months_active: 12,
     total_claims: 14400,
     total_beneficiaries: 460,
+    anomaly_types: ["Standard Peer Baseline Rate"]
+  },
+  {
+    id: "DEMO-SADC-009",
+    npi: "DEMO-NPI-009",
+    name: "Sample Adult Day Care Facility Iota [Workflow Demo]",
+    facility_type: "SADC Adult Day Care",
+    borough: "Queens",
+    address: "Flushing Main Corridor, Flushing, NY",
+    lat: 40.7554,
+    lon: -73.8276,
+    total_spend: 1425000,
+    months_active: 12,
+    total_claims: 14250,
+    total_beneficiaries: 520,
+    anomaly_types: ["Standard Peer Baseline Rate"]
+  },
+  {
+    id: "DEMO-SADC-010",
+    npi: "DEMO-NPI-010",
+    name: "Sample Adult Day Care Facility Kappa [Workflow Demo]",
+    facility_type: "SADC Adult Day Care",
+    borough: "Staten Island",
+    address: "Castleton Corridor, Staten Island, NY",
+    lat: 40.6352,
+    lon: -74.1281,
+    total_spend: 1320000,
+    months_active: 12,
+    total_claims: 13200,
+    total_beneficiaries: 410,
     anomaly_types: ["Standard Peer Baseline Rate"]
   }
 ];
@@ -188,24 +181,13 @@ export async function GET(request: Request) {
 
   const startTime = Date.now();
 
-  // Read allowlist checksum if present
-  let cohortChecksum = "13f3ef5c5460d27858767429ab1662ebf88e8f36a9c6ae7436879494b01ed0d2";
-  const checksumPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.sha256");
-  if (fs.existsSync(checksumPath)) {
-    try {
-      cohortChecksum = fs.readFileSync(checksumPath, "utf-8").split(/\s+/)[0].trim();
-    } catch {
-      // keep fallback
-    }
-  }
-
   // Calculate peer statistics for normalized monthly intensity
-  const monthlyIntensities = VETTED_NYC_COHORT.map(p => p.total_spend / p.months_active);
+  const monthlyIntensities = DEMO_SYNTHETIC_COHORT.map(p => p.total_spend / p.months_active);
   const meanIntensity = monthlyIntensities.reduce((a, b) => a + b, 0) / monthlyIntensities.length;
   const variance = monthlyIntensities.reduce((sum, val) => sum + Math.pow(val - meanIntensity, 2), 0) / monthlyIntensities.length;
   const stdIntensity = Math.sqrt(variance) || 1.0;
 
-  // Check persistent feedback DB for real attorney decisions
+  // Check persistent feedback DB for any user-recorded review outcomes
   const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
   const localDbPath = path.join(process.cwd(), "db", "estafo_feedback.db");
   const tmpDbPath = path.join("/tmp", "estafo_feedback.db");
@@ -251,7 +233,7 @@ export async function GET(request: Request) {
   }
 
   // Transform into full MedicaidProviderRecords
-  const providers: MedicaidProviderRecord[] = VETTED_NYC_COHORT.map((item) => {
+  const providers: MedicaidProviderRecord[] = DEMO_SYNTHETIC_COHORT.map((item) => {
     const monthlyIntensity = Math.round(item.total_spend / item.months_active);
     const zScore = +((monthlyIntensity - meanIntensity) / stdIntensity).toFixed(2);
     const riskScore = Math.min(99, Math.max(40, Math.round(50 + (zScore * 12.5))));
@@ -263,8 +245,6 @@ export async function GET(request: Request) {
       if (reviewed.disposition === "ACCEPTED_FOR_INVESTIGATION") status = "EVIDENCE_GATHERED";
       else if (reviewed.disposition === "FORMAL_CASE_OPENED") status = "FILED_SEALED";
       else if (reviewed.disposition === "SETTLED_OR_RECOVERED") status = "RECOVERY_PENDING";
-    } else if (zScore >= 3.0) {
-      status = "EVIDENCE_GATHERED";
     }
 
     return {
@@ -281,15 +261,11 @@ export async function GET(request: Request) {
       monthly_intensity: monthlyIntensity,
       months_active: item.months_active,
       z_score: zScore,
-      is_nyc_verified: true,
-      verification_source: "CMS_NPPES_API_AND_NYC_ZIP_REGISTRY",
-      estimated_bounty: Math.round(item.total_spend * 0.25), // 25% statutory relator recovery ceiling
+      estimated_bounty: 0, // Unadjudicated research leads do not possess calculated bounties
       anomaly_types: item.anomaly_types,
       status,
-      ring_id: item.ring_id,
-      cross_vector_link: item.cross_vector_link,
-      lead_utility: reviewed?.leadUtility || (zScore >= 2.0 ? "USEFUL_ACTIONABLE_LEAD" : "EXPLAINABLE_VOLUME_SCALE"),
-      decision_signature_hash: reviewed?.signature || (zScore >= 3.0 ? crypto.createHash("sha256").update(`${item.npi}:${monthlyIntensity}`).digest("hex").slice(0, 32) : undefined),
+      lead_utility: reviewed?.leadUtility || (zScore >= 2.0 ? "STATISTICAL_OUTLIER" : "WITHIN_EXPECTED_VARIANCE"),
+      decision_signature_hash: reviewed?.signature,
       reviewed_at: reviewed?.reviewDate
     };
   });
@@ -307,22 +283,23 @@ export async function GET(request: Request) {
   return NextResponse.json({
     status: "SUCCESS",
     provenance: {
-      source: "HHS_MEDICAID_PROVIDER_SPENDING_AND_CMS_NPPES",
+      mode: "DEMO_SYNTHETIC_WORKFLOW_PREVIEW",
+      status: "UNVERIFIED_PROTOTYPE",
+      disclaimer: "ILLUSTRATIVE WORKFLOW PREVIEW ONLY. Not sourced from live CMS claims or verified NPPES queries. Synthetic records for interface and workflow validation. No real provider fraud or legal violations asserted.",
       hcpcs_code: "T2024",
       specialty: "Adult Day Health Care",
-      location_scope: "New York City (5 Boroughs)",
+      location_scope: "New York City (Demonstration Corridors)",
       cohort_size: providers.length,
-      allowlist_checksum_sha256: cohortChecksum,
       retrievalLatencyMs: durationMs,
       normalized_mean_monthly_intensity: Math.round(meanIntensity),
       std_dev: Math.round(stdIntensity),
-      methodology: "Normalized spending intensity per active reported month (eliminates raw volume bias)"
+      methodology: "Normalized spending intensity per active reported month (statistical screening model prototype)"
     },
     data: providers
   }, {
     headers: {
-      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
-      "X-Estafo-Sourced": "VETTED_NYC_COHORT"
+      "Cache-Control": "no-store, max-age=0",
+      "X-Estafo-Mode": "SYNTHETIC_WORKFLOW_PREVIEW"
     }
   });
 }

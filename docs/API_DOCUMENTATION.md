@@ -1,38 +1,41 @@
 # ESTAFO // System API Documentation & Ingestion Specifications
 
-This document defines the complete API surface of **ESTAFO**, covering live Socrata SODA data pipelines, Medicaid provider intelligence feeds, the cryptographic attorney feedback ledger, and the Python backend scoring engine.
+This document defines the API surface of **ESTAFO**, covering live Socrata SODA data pipelines, the prototype Medicaid provider screening feed, the audit review ledger, and the Python backend engine.
 
 ---
 
 ## 1. Next.js App Router Ingestion & SODA Endpoints
 
-### 1.1 Medicaid Intelligence Feeds (`/api/sources/medicaid-leads`)
+### 1.1 Medicaid Screening Prototype (`/api/sources/medicaid-leads`)
 * **Method**: `GET`
-* **Purpose**: Serves vetted NYC Medicaid provider leads joined with live attorney feedback and cryptographic signatures.
-* **Methodology**: Eliminates raw volume bias by ranking providers according to normalized monthly spending intensity ($\text{total\_spend} / \text{months\_active}$) and $z$-scores against peer specialties (HCPCS T2024 Adult Day Health Care).
+* **Purpose**: Serves an illustrative prototype cohort for evaluating the normalized spending rate screening interface.
+* **Operational Scope**: Synthetic demonstration rows. Not connected to live CMS claims or verified NPPES queries. No provider fraud or legal violations asserted.
+* **Methodology**: Evaluates provider spending using normalized monthly spending intensity ($\text{total\_spend} / \text{months\_active}$) and peer $z$-scores to eliminate raw volume bias.
 * **Sample Response**:
 ```json
 {
   "status": "SUCCESS",
   "provenance": {
-    "source": "HHS_MEDICAID_PROVIDER_SPENDING_AND_CMS_NPPES",
+    "mode": "DEMO_SYNTHETIC_WORKFLOW_PREVIEW",
+    "status": "UNVERIFIED_PROTOTYPE",
+    "disclaimer": "ILLUSTRATIVE WORKFLOW PREVIEW ONLY. Not sourced from live CMS claims or verified NPPES queries. Synthetic records for interface and workflow validation. No real provider fraud or legal violations asserted.",
     "hcpcs_code": "T2024",
     "specialty": "Adult Day Health Care",
-    "location_scope": "New York City (5 Boroughs)",
+    "location_scope": "New York City (Demonstration Corridors)",
     "cohort_size": 10,
-    "allowlist_checksum_sha256": "13f3ef5c5460d27858767429ab1662ebf88e8f36a9c6ae7436879494b01ed0d2",
-    "normalized_mean_monthly_intensity": 312958,
-    "std_dev": 314465,
-    "methodology": "Normalized spending intensity per active reported month (eliminates raw volume bias)"
+    "retrievalLatencyMs": 2,
+    "normalized_mean_monthly_intensity": 502167,
+    "std_dev": 307997,
+    "methodology": "Normalized spending intensity per active reported month (statistical screening model prototype)"
   },
   "data": [
     {
-      "id": "MED-NYC-T2024-001",
-      "npi": "1184920143",
-      "name": "FLUSHING GOLDEN AGE ADULT DAY CARE CENTER INC",
+      "id": "DEMO-SADC-001",
+      "npi": "DEMO-NPI-001",
+      "name": "Sample Adult Day Care Facility Alpha [Workflow Demo]",
       "facility_type": "SADC Adult Day Care",
       "borough": "Queens",
-      "address": "136-20 38th Ave, Flushing, NY 11354",
+      "address": "Flushing Corridor, Queens, NY",
       "lat": 40.7602,
       "lon": -73.8315,
       "risk_score": 81,
@@ -40,14 +43,13 @@ This document defines the complete API surface of **ESTAFO**, covering live Socr
       "monthly_intensity": 1080000,
       "months_active": 12,
       "z_score": 2.44,
-      "is_nyc_verified": true,
-      "verification_source": "CMS_NPPES_API_AND_NYC_ZIP_REGISTRY",
-      "estimated_bounty": 3240000,
-      "anomaly_types": ["Phantom SADC Attendance", "Per-Diem Rate Spike (+3.8σ)", "Kickback Envelopes"],
+      "estimated_bounty": 0,
+      "anomaly_types": [
+        "Spending Intensity Outlier (+2.4σ)",
+        "High Volume per Active Month"
+      ],
       "status": "INVESTIGATING",
-      "ring_id": "RING-01",
-      "cross_vector_link": "Cross-referenced transport vans registered to Maspeth logistics shell",
-      "lead_utility": "USEFUL_ACTIONABLE_LEAD"
+      "lead_utility": "STATISTICAL_OUTLIER"
     }
   ]
 }
@@ -55,95 +57,79 @@ This document defines the complete API surface of **ESTAFO**, covering live Socr
 
 ---
 
-### 1.2 Attorney Feedback & Audit Ledger (`/api/feedback`)
+### 1.2 Review Feedback Ledger (`/api/feedback`)
 * **Methods**: `GET`, `POST`
-* **Storage**: Native zero-dependency SQLite (`node:sqlite`). Stores records in `db/estafo_feedback.db` (local dev) or `/tmp/estafo_feedback.db` (serverless cloud runtime).
+* **Storage**: Native zero-dependency SQLite (`node:sqlite`). Stores records in `db/estafo_feedback.db` (local dev) or `/tmp/estafo_feedback.db` (ephemeral serverless cloud runtime).
 
 #### `GET /api/feedback`
-Returns the historical ledger of attorney dispositions and empirical time-motion utility validation statistics.
+Returns the review ledger and active screen duration metrics.
 ```json
 {
   "status": "SUCCESS",
-  "empirical_utility_validation": {
-    "totalFeedbackRecords": 3,
-    "actionableLeadsCount": 2,
-    "actionableLeadYieldPct": 66.7,
-    "acceptanceRatePct": 66.7,
-    "avgObservedReviewMinutes": 18.3,
-    "totalAnalystHoursSaved": 27.3,
-    "manualAuditBenchmarkHours": 14.0,
-    "methodology": "Observed screen duration vs. verified 14.0-hour manual audit baseline. Exculpatory leads log 0 hours saved."
+  "review_summary": {
+    "totalReviewsLogged": 0,
+    "avgObservedReviewMinutes": 0,
+    "storageMode": "LOCAL_SQLITE",
+    "disclaimer": "Reviews reflect active session screen time in this prototype interface. Not measured manual audit savings. Serverless /tmp storage is ephemeral."
   },
-  "data": [ ... ]
+  "data": []
 }
 ```
 
 #### `POST /api/feedback`
-Persists a formal attorney review disposition with cryptographic provenance.
+Records a review disposition with elapsed session screen time and content SHA-256 digest.
 * **Payload**:
 ```json
 {
-  "leadId": "MED-NYC-T2024-001",
-  "providerNPI": "1184920143",
-  "targetName": "FLUSHING GOLDEN AGE ADULT DAY CARE CENTER INC",
-  "lawFirmName": "Kramer & Goldberg LLP (EDNY Health Fraud Group)",
-  "disposition": "ACCEPTED_FOR_INVESTIGATION",
-  "leadUtility": "USEFUL_ACTIONABLE_LEAD",
-  "attorneyNotes": "Substantiated by preliminary roster discrepancy (+3.8σ rate). Merits pre-filing subpoena.",
-  "observedReviewSeconds": 1320,
-  "primarySignal": "PEER_DEVIATION",
+  "leadId": "DEMO-SADC-001",
+  "providerNPI": "DEMO-NPI-001",
+  "targetName": "Sample Adult Day Care Facility Alpha [Workflow Demo]",
+  "reviewerOrganization": "Internal Compliance Analyst",
+  "disposition": "FLAGGED_FOR_INVESTIGATION",
+  "leadUtility": "STATISTICAL_OUTLIER",
+  "reviewerNotes": "High monthly rate warrants checking licensed attendance census.",
+  "observedReviewSeconds": 480,
   "documentHashes": {
-    "sadc_attendance_roster": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-  }
-}
-```
-* **Response**:
-```json
-{
-  "status": "SUCCESS",
-  "message": "Evidentiary disposition cryptographically recorded and persisted to audit ledger.",
-  "data": {
-    "id": "FB-2026-c26db4fe",
-    "decisionSignatureHash": "ca3cb18b7a87a9303855665ae959ad150896077c3c872b0913979a2252f15a18",
-    "analystHoursSaved": 13.6
+    "sample_attendance_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   }
 }
 ```
 
 ---
 
-### 1.3 Municipal Socrata SODA Feeds
-* **`GET /api/sources/311-stream`**: Queries NYC 311 Service Requests (`erm2-nwe9`) for live idling, illegal dumping, and environmental infractions.
-* **`GET /api/sources/dob-complaints`**: Queries NYC Department of Buildings Complaints Received (`eabe-havv`).
-* **`GET /api/sources/dob-violations`**: Queries NYC Department of Buildings Violations (`3h2n-5cm9`).
+### 1.3 Municipal Socrata SODA Feeds (Live)
+* **`GET /api/sources/311-stream`**: Live stream from NYC 311 Service Requests (`erm2-nwe9`) for idling and commercial dumping events.
+* **`GET /api/sources/dob-complaints`**: Live queries against NYC Department of Buildings Complaints Received (`eabe-havv`).
+* **`GET /api/sources/dob-violations`**: Live queries against NYC Department of Buildings Violations (`3h2n-5cm9`).
 
 ---
 
-## 2. Evidence Dossier Protocol (`ESTAFO_RELATOR_DISCLOSURE_DOSSIER_V1`)
+## 2. Research Dossier Preview Protocol (`ESTAFO_RESEARCH_DOSSIER_PREVIEW_V1`)
 
-Exported directly from [`components/EvidenceDossier.tsx`](file:///Users/nick/Desktop/Vanguard/vanguard-console/components/EvidenceDossier.tsx), this immutable JSON artifact enables relator counsel to attach verified multi-signal records directly to initial pre-disclosure memos under the New York False Claims Act (State Finance Law § 190) and NYC Admin Code § 7-801.
+Exported from [`components/EvidenceDossier.tsx`](file:///Users/nick/Desktop/Vanguard/vanguard-console/components/EvidenceDossier.tsx) as an internal JSON research aid.
 
 ### Schema:
 ```json
 {
-  "protocol": "ESTAFO_RELATOR_DISCLOSURE_DOSSIER_V1",
-  "timestamp": "2026-10-27T17:15:00.000Z",
+  "protocol": "ESTAFO_RESEARCH_DOSSIER_PREVIEW_V1",
+  "status": "UNVERIFIED_RESEARCH_PREVIEW",
+  "notice": "RESEARCH AID ONLY. This export is an unauthenticated research summary and does not constitute a signed legal complaint, subpoena, proof of fraud, or official relator disclosure. All assertions require independent evidentiary verification.",
+  "timestamp": "2026-10-27T17:45:00.000Z",
   "provider": {
-    "leadId": "MED-NYC-T2024-001",
-    "npi": "1184920143",
-    "providerName": "FLUSHING GOLDEN AGE ADULT DAY CARE CENTER INC"
+    "leadId": "DEMO-SADC-001",
+    "npi": "DEMO-NPI-001",
+    "providerName": "Sample Adult Day Care Facility Alpha [Workflow Demo]"
   },
-  "auditMetrics": {
-    "disposition": "USEFUL_ACTIONABLE_LEAD",
-    "observedReviewMinutes": "18.30",
-    "empiricalHoursSaved": "13.69"
+  "reviewSession": {
+    "disposition": "STATISTICAL_OUTLIER",
+    "observedSessionMinutes": "8.00",
+    "elapsedSeconds": 480
   },
   "provenance": {
-    "cmsNppesAllowlistChecksum": "13f3ef5c5460d27858767429ab1662ebf88e8f36a9c6ae7436879494b01ed0d2",
     "documentHashesSha256": [
       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     ],
-    "cryptographicDecisionSignature": "7d8f9a2b4c6e1a3f5b7d9e1a3c5e7b9d1f3a5c7e9b1d3f5a7c9e1b3d5f7a9c1e"
+    "contentIntegrityDigestSha256": "44322f18a9d2aba4..."
   }
 }
 ```
@@ -152,11 +138,6 @@ Exported directly from [`components/EvidenceDossier.tsx`](file:///Users/nick/Des
 
 ## 3. Python Backend Engine (`/backend`)
 
-The Python engine handles deep multi-signal ingestion, entity graph resolution, and batch verification:
-* **`POST /api/v1/providers/ingest`**: Streams raw CMS NPPES and HHS provider spending aggregates into the relational SQLite/PostgreSQL store.
-* **`GET /api/v1/scoring/multi-signal`**: Evaluates the 4 independent detection vectors:
-  1. Peer deviation ($\sigma \ge +3.5$)
-  2. Temporal velocity ($>200\%$ in 60 days)
-  3. Physical impossibility (Overlapping shifts $>24\text{h/day}$)
-  4. Network cluster risk (Shared BBL/officers with sanctioned entities)
-* **`python backend/scripts/verify_pilot_readiness.py`**: Runs pre-flight verification against database schema and scoring thresholds.
+The Python engine handles multi-signal evaluation and batch ingestion:
+* **HHS Importer Dependency**: Official HHS provider spending files must be ingested using `python scripts/import_hhs_aggregates.py` along with a vetted NYC NPI registry.
+* **Multi-Signal Evaluation**: Evaluates peer deviation, temporal billing velocity, and cluster risk before presenting leads for review.

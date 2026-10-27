@@ -105,67 +105,68 @@ assert.notStrictEqual(cashCollected, pipeline, "CRITICAL: Pipeline exposure must
 
 console.log(`✓ Financial Ledger Rules Verified: Realized Cash ($${cashCollected}) strictly isolated from Speculative Pipeline ($${pipeline})`);
 
-// Test 5: Medicaid Provider Vetted Cohort Integrity (Gate G5)
-console.log("\n[Test 5] Verifying CMS NPPES Medicaid Provider Vetted Cohort Checksum...");
+// Test 5: Statistical Spending Intensity Normalization (Gate G5)
+console.log("\n[Test 5] Verifying Normalized Spending Intensity & Z-Score Mathematics...");
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 
-const allowlistPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.txt");
-const checksumPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.sha256");
+const sampleSpends = [12960000, 8640000, 4750000, 1980000, 1800000];
+const sampleMonths = [12, 12, 12, 12, 12];
+const intensities = sampleSpends.map((s, i) => s / sampleMonths[i]);
+const mean = intensities.reduce((a, b) => a + b, 0) / intensities.length;
+const variance = intensities.reduce((s, val) => s + Math.pow(val - mean, 2), 0) / intensities.length;
+const std = Math.sqrt(variance);
 
-assert(fs.existsSync(allowlistPath), "vetted_nyc_t2024_npis.txt must exist");
-const allowlistContent = fs.readFileSync(allowlistPath, "utf-8");
-const computedSha = crypto.createHash("sha256").update(allowlistContent).digest("hex");
+const zScoreTop = +((intensities[0] - mean) / std).toFixed(2);
+assert(zScoreTop > 1.5, "Outlier spending rate must register descriptive z-score above peer mean");
+console.log(`✓ Statistical Normalization Math Verified: Mean=$${Math.round(mean)}/mo, Top Z-Score=+${zScoreTop}σ`);
 
-if (fs.existsSync(checksumPath)) {
-  const expectedSha = fs.readFileSync(checksumPath, "utf-8").split(/\s+/)[0].trim();
-  assert.strictEqual(computedSha.toLowerCase(), expectedSha.toLowerCase(), "Cohort SHA-256 must match official manifest");
-}
-console.log(`✓ Medicaid Vetted Cohort Verified: SHA-256 = ${computedSha}`);
-
-// Test 6: Closed-Loop Decision Cryptographic Signatures (Gate G6)
-console.log("\n[Test 6] Verifying Decision Cryptographic Signature Generation...");
-const testNpi = "1184920143";
-const testDisposition = "ACCEPTED_FOR_INVESTIGATION";
-const testUtility = "USEFUL_ACTIONABLE_LEAD";
+// Test 6: Content Digest SHA-256 Hash Generation (Gate G6)
+console.log("\n[Test 6] Verifying Review Content Digest SHA-256 Hash Generation...");
+const testNpi = "DEMO-NPI-001";
+const testDisposition = "FLAGGED_FOR_INVESTIGATION";
+const testUtility = "STATISTICAL_OUTLIER";
 const testDate = "2026-10-27T10:00:00.000Z";
 const testHashes = { roster: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" };
 
 const sigPayload = `${testNpi}:${testDisposition}:${testUtility}:${testDate}:${JSON.stringify(testHashes)}`;
-const signature = crypto.createHash("sha256").update(sigPayload).digest("hex");
-assert(signature && signature.length === 64, "Decision signature must be 64-character SHA-256 hex string");
-console.log(`✓ Decision Signature Verified: ${signature.slice(0, 16)}...`);
+const contentDigest = crypto.createHash("sha256").update(sigPayload).digest("hex");
+assert(contentDigest && contentDigest.length === 64, "Content digest must be 64-character SHA-256 hex string");
+console.log(`✓ Content Digest Verified: ${contentDigest.slice(0, 16)}...`);
 
-// Test 7: EvidenceDossier JSON Export Protocol Compliance (Gate G7)
-console.log("\n[Test 7] Verifying EvidenceDossier Export JSON Protocol (ESTAFO_RELATOR_DISCLOSURE_DOSSIER_V1)...");
+// Test 7: Research Dossier Preview JSON Structure & Disclaimer Validation (Gate G7)
+console.log("\n[Test 7] Verifying Research Dossier JSON Schema & Disclaimers (ESTAFO_RESEARCH_DOSSIER_PREVIEW_V1)...");
 const mockDossier = {
-  protocol: "ESTAFO_RELATOR_DISCLOSURE_DOSSIER_V1",
+  protocol: "ESTAFO_RESEARCH_DOSSIER_PREVIEW_V1",
+  status: "UNVERIFIED_RESEARCH_PREVIEW",
+  notice: "RESEARCH AID ONLY. This export is an unauthenticated research summary and does not constitute a signed legal complaint, subpoena, proof of fraud, or official relator disclosure.",
   timestamp: new Date().toISOString(),
   provider: {
-    leadId: "MED-NYC-T2024-001",
-    npi: "1184920143",
-    providerName: "FLUSHING GOLDEN AGE ADULT DAY CARE CENTER INC"
+    leadId: "DEMO-SADC-001",
+    npi: "DEMO-NPI-001",
+    providerName: "Sample Adult Day Care Facility Alpha [Workflow Demo]"
   },
-  auditMetrics: {
-    disposition: "USEFUL_ACTIONABLE_LEAD",
-    observedReviewMinutes: (1080 / 60).toFixed(2),
-    empiricalHoursSaved: Math.max(0, 14.0 - 1080 / 3600).toFixed(2)
+  reviewSession: {
+    disposition: "STATISTICAL_OUTLIER",
+    observedSessionMinutes: (1080 / 60).toFixed(2),
+    elapsedSeconds: 1080
   },
   provenance: {
-    cmsNppesAllowlistChecksum: "13f3ef5c5460d27858767429ab1662ebf88e8f36a9c6ae7436879494b01ed0d2",
     documentHashesSha256: ["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"],
-    cryptographicDecisionSignature: signature
+    contentIntegrityDigestSha256: contentDigest
   }
 };
 
-assert.strictEqual(mockDossier.protocol, "ESTAFO_RELATOR_DISCLOSURE_DOSSIER_V1");
-assert.strictEqual(mockDossier.provenance.cryptographicDecisionSignature.length, 64);
-assert.strictEqual(parseFloat(mockDossier.auditMetrics.empiricalHoursSaved), 13.7);
-console.log(`✓ EvidenceDossier Protocol Verified: Validated structure, 64-char signature, and 13.70h empirical delta.`);
+assert.strictEqual(mockDossier.protocol, "ESTAFO_RESEARCH_DOSSIER_PREVIEW_V1");
+assert.strictEqual(mockDossier.status, "UNVERIFIED_RESEARCH_PREVIEW");
+assert(mockDossier.notice.includes("RESEARCH AID ONLY"));
+assert.strictEqual(mockDossier.provenance.contentIntegrityDigestSha256.length, 64);
+assert.strictEqual(mockDossier.reviewSession.observedSessionMinutes, "18.00");
+console.log(`✓ Research Dossier Schema Verified: Conforms to unverified research aid standard with mandatory disclaimers.`);
 
 // Test 8: Serverless SQLite Feedback Storage CRUD (Gate G8)
-console.log("\n[Test 8] Verifying Serverless SQLite Feedback Storage CRUD cycle...");
+console.log("\n[Test 8] Verifying Serverless SQLite Storage CRUD cycle on /tmp...");
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const sqlite = require("node:sqlite");
@@ -177,14 +178,14 @@ testDb.exec(`
     id TEXT PRIMARY KEY,
     npi TEXT NOT NULL,
     disposition TEXT NOT NULL,
-    hours_saved REAL NOT NULL
+    observed_seconds INTEGER NOT NULL
   );
 `);
 
-testDb.prepare("INSERT OR REPLACE INTO test_feedback VALUES (?, ?, ?, ?)").run("FB-TEST-1", "1184920143", "ACCEPTED", 13.7);
-const readRow = testDb.prepare("SELECT * FROM test_feedback WHERE id = ?").get("FB-TEST-1");
-assert.strictEqual(readRow.npi, "1184920143");
-assert.strictEqual(readRow.hours_saved, 13.7);
+testDb.prepare("INSERT OR REPLACE INTO test_feedback VALUES (?, ?, ?, ?)").run("REV-TEST-1", "DEMO-NPI-001", "FLAGGED", 1080);
+const readRow = testDb.prepare("SELECT * FROM test_feedback WHERE id = ?").get("REV-TEST-1");
+assert.strictEqual(readRow.npi, "DEMO-NPI-001");
+assert.strictEqual(readRow.observed_seconds, 1080);
 testDb.close();
 if (fs.existsSync(testDbPath)) fs.unlinkSync(testDbPath);
 console.log(`✓ Serverless SQLite CRUD Verified: Clean write, read, and cleanup on /tmp filesystem.`);
