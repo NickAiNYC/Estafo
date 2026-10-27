@@ -44,11 +44,22 @@ interface DatabaseSyncInstance {
 }
 
 function getDb(): DatabaseSyncInstance {
-  const dbDir = path.join(process.cwd(), "db");
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
+  let dbPath = path.join(process.cwd(), "db", "estafo_feedback.db");
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+  
+  if (isServerless) {
+    dbPath = path.join("/tmp", "estafo_feedback.db");
+  } else {
+    const dbDir = path.join(process.cwd(), "db");
+    try {
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+      }
+    } catch {
+      dbPath = path.join("/tmp", "estafo_feedback.db");
+    }
   }
-  const dbPath = path.join(dbDir, "estafo_feedback.db");
+
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const sqlite = require("node:sqlite");
   const db: DatabaseSyncInstance = new sqlite.DatabaseSync(dbPath);

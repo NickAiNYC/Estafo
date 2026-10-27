@@ -206,7 +206,10 @@ export async function GET(request: Request) {
   const stdIntensity = Math.sqrt(variance) || 1.0;
 
   // Check persistent feedback DB for real attorney decisions
-  const feedbackDbPath = path.join(process.cwd(), "db", "estafo_feedback.db");
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+  const localDbPath = path.join(process.cwd(), "db", "estafo_feedback.db");
+  const tmpDbPath = path.join("/tmp", "estafo_feedback.db");
+  const feedbackDbPath = isServerless ? (fs.existsSync(tmpDbPath) ? tmpDbPath : localDbPath) : (fs.existsSync(localDbPath) ? localDbPath : tmpDbPath);
   const reviewedDispositions = new Map<string, {
     disposition: string;
     leadUtility: string;
