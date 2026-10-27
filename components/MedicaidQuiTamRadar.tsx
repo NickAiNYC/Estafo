@@ -21,16 +21,33 @@ interface MedicaidQuiTamRadarProps {
   providers: MedicaidProviderRecord[];
   fraudRings?: FraudRingRecord[];
   onOpenWeaponizer?: (targetId: string, track: string) => void;
+  initialSelectedNpi?: string;
+  sourceError?: string | null;
 }
 
 export default function MedicaidQuiTamRadar({
   providers,
-  onOpenWeaponizer
+  onOpenWeaponizer,
+  initialSelectedNpi,
+  sourceError
 }: MedicaidQuiTamRadarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBorough, setSelectedBorough] = useState("ALL");
   const [selectedFacilityType, setSelectedFacilityType] = useState("ALL");
-  const [selectedProvider, setSelectedProvider] = useState<MedicaidProviderRecord | null>(providers[0] || null);
+  const [selectedProvider, setSelectedProvider] = useState<MedicaidProviderRecord | null>(() => {
+    if (initialSelectedNpi) {
+      const match = providers.find(p => p.npi === initialSelectedNpi || p.id === initialSelectedNpi);
+      if (match) return match;
+    }
+    return providers[0] || null;
+  });
+
+  useEffect(() => {
+    if (initialSelectedNpi && providers.length > 0) {
+      const match = providers.find(p => p.npi === initialSelectedNpi || p.id === initialSelectedNpi);
+      if (match) setSelectedProvider(match);
+    }
+  }, [initialSelectedNpi, providers]);
 
   // Active Review Timer & Decision State
   const [reviewSeconds, setReviewSeconds] = useState(0);
@@ -165,6 +182,23 @@ export default function MedicaidQuiTamRadar({
           </div>
         </div>
       </div>
+
+      {/* Source Feed Error Banner (if API fails, no silent fallback) */}
+      {sourceError && (
+        <div className="px-16 py-10 bg-red-950/60 border-b border-red-500/80 text-red-200 text-xs font-mono flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-8">
+            <XCircle className="w-4 h-4 shrink-0 text-red-400" />
+            <div>
+              <span className="font-bold text-red-300 mr-8">SOURCE FEED OFFLINE:</span>
+              <span>{sourceError}</span>
+              <span className="text-red-400/80 ml-8">(Silent fixture fallback disabled by data integrity policy)</span>
+            </div>
+          </div>
+          <span className="text-red-400 font-bold px-6 py-1 bg-red-900/40 border border-red-500/40 rounded-sm uppercase text-9">
+            Feed Error
+          </span>
+        </div>
+      )}
 
       {/* Prominent Legal & Data Source Disclaimer */}
       <div className="px-16 py-8 bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-xs font-mono flex items-center justify-between shrink-0">

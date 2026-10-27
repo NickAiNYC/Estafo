@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Header, { ConsoleView } from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer, { FeedTelemetryItem } from "@/components/Footer";
 import KpiStrip, { LayerId } from "@/components/KpiStrip";
 import MapPanel from "@/components/MapPanel";
 import ZoneTable from "@/components/ZoneTable";
@@ -44,8 +44,17 @@ export default function Home() {
   const [bountyLedger, setBountyLedger] = useState<BountyLedgerItem[]>([]);
   const [palantirGraph, setPalantirGraph] = useState<PalantirGraphData>({ nodes: [], edges: [] });
 
-  // Legal Weaponizer selection bridge
+  // Legal Weaponizer selection bridge & Graph deep link target
   const [weaponizerTarget, setWeaponizerTarget] = useState<{ id?: string; track?: string }>({});
+  const [selectedRadarNpi, setSelectedRadarNpi] = useState<string | undefined>(undefined);
+
+  // Truthful Source & Telemetry State
+  const [medicaidError, setMedicaidError] = useState<string | null>(null);
+  const [feedTelemetry, setFeedTelemetry] = useState<FeedTelemetryItem[]>([]);
+  const [feedStatus, setFeedStatus] = useState<"ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING">("ONLINE");
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [liveRecordCount, setLiveRecordCount] = useState<number>(0);
+  const [latencyMs, setLatencyMs] = useState<number>(45);
 
   const [activeLayers, setActiveLayers] = useState<Set<LayerId>>(
     new Set<LayerId>(["dumping", "noise", "medicaid", "permits", "evidence", "zones"])
@@ -63,45 +72,27 @@ export default function Home() {
     transitionInterpolator: undefined as any,
   });
 
-  // Telemetry state
-  const [liveRecordCount, setLiveRecordCount] = useState<number>(0);
-  const [latencyMs, setLatencyMs] = useState<number>(45);
+  // Reusable unified data ingestion & truthful telemetry loader
+  const loadData = useCallback(async () => {
+    setIsRefreshing(true);
+    const overallStartTime = performance.now();
+    const nowIso = new Date().toISOString().slice(11, 19) + " UTC";
+    const telemetryItems: FeedTelemetryItem[] = [];
 
-  useEffect(() => {
-    // Fetch live Socrata feeds and unified datasets at runtime
-    const loadData = async () => {
-      const startTime = performance.now();
+    try {
+      // 1. Socrata 311 Live Stream Feed
+      const t311Start = performance.now();
+      let live311Count = 0;
+      let socrataError: string | null = null;
       try {
-        // Parallel fetch: Live Socrata Streams + Dynamic Spatial Clusters + Ledger + Sourced Medicaid Leads
-        const [live311Res, liveLedgerRes, liveZonesRes, pRes, eRes, medRes, ringsRes, graphRes] = await Promise.all([
-          fetch("/api/sources/311-stream?limit=150").catch(() => null),
-          fetch("/api/ledger").catch(() => null),
-          fetch("/api/zones").catch(() => null),
-          fetch("/data/permits.json").catch(() => null),
-          fetch("/data/evidence.json").catch(() => null),
-          fetch("/api/sources/medicaid-leads").catch(() => null),
-          fetch("/data/fraud_rings.json").catch(() => null),
-          fetch("/data/palantir_graph.json").catch(() => null),
-        ]);
+        const live311Res = await fetch("/api/sources/311-stream?limit=150").catch(() => null);
+        const t311Latency = Math.round(performance.now() - t311Start);
 
-        let totalRecords = 0;
-
-        // Process dynamic spatial clusters
-        if (liveZonesRes?.ok) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const zJson = await liveZonesRes.json() as any;
-          if (zJson.data) setZones(zJson.data);
-        } else {
-          const zRes = await fetch("/data/zones.json").catch(() => null);
-          if (zRes?.ok) setZones(await zRes.json());
-        }
-
-        // Process live 311 stream if available
         if (live311Res?.ok) {
           const streamJson = await live311Res.json();
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const liveRows: any[] = streamJson.data || [];
-          totalRecords += liveRows.length;
+          live311Count = liveRows.length;
 
           // Normalize into dumping and idling tactical layers
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,8 +119,30 @@ export default function Home() {
 
           if (liveDumping.length > 0) setDumping(liveDumping);
           if (liveIdling.length > 0) setNoise(liveIdling);
+
+          telemetryItems.push({
+            id: "socrata_311",
+            name: "NYC SODA 311 Live",
+            source: "erm2-nwe9 (Idling & Dumping)",
+            status: "ONLINE",
+            count: live311Count,
+            latencyMs: t311Latency,
+            lastSync: nowIso,
+            error: null,
+          });
         } else {
-          // Fallback to static fixtures if offline
+          socrataError = `HTTP ${live311Res?.status || "Unavailable"}`;
+          telemetryItems.push({
+            id: "socrata_311",
+            name: "NYC SODA 311 Live",
+            source: "erm2-nwe9 (Idling & Dumping)",
+            status: "OFFLINE",
+            count: 0,
+            latencyMs: t311Latency,
+            lastSync: nowIso,
+            error: socrataError,
+          });
+          // Offline fallback for spatial map visualization
           const [dRes, nRes] = await Promise.all([
             fetch("/data/dumping.json").catch(() => null),
             fetch("/data/noise.json").catch(() => null)
@@ -137,23 +150,82 @@ export default function Home() {
           if (dRes?.ok) setDumping(await dRes.json());
           if (nRes?.ok) setNoise(await nRes.json());
         }
+      } catch (err) {
+        socrataError = String(err);
+        telemetryItems.push({
+          id: "socrata_311",
+          name: "NYC SODA 311 Live",
+          source: "erm2-nwe9 (Idling & Dumping)",
+          status: "OFFLINE",
+          count: 0,
+          latencyMs: Math.round(performance.now() - t311Start),
+          lastSync: nowIso,
+          error: socrataError,
+        });
+      }
 
-        // Process other artifacts
-        if (pRes?.ok) setPermits(await pRes.json());
-        if (eRes?.ok) setEvidence(await eRes.json());
-        // Process medicaid leads (prefer live sourced API over static JSON)
+      // 2. Medicaid Sourced Leads Feed (NO SILENT FALLBACK TO OLD JSON)
+      const tMedStart = performance.now();
+      let medicaidCount = 0;
+      try {
+        const medRes = await fetch("/api/sources/medicaid-leads").catch(() => null);
+        const tMedLatency = Math.round(performance.now() - tMedStart);
+
         if (medRes?.ok) {
           const mData = await medRes.json();
-          const items = Array.isArray(mData) ? mData : (mData.data || []);
+          const items: MedicaidProviderRecord[] = Array.isArray(mData) ? mData : (mData.data || []);
+          medicaidCount = items.length;
           setMedicaid(items);
-        } else {
-          const fallbackMed = await fetch("/data/medicaid_providers.json").catch(() => null);
-          if (fallbackMed?.ok) setMedicaid(await fallbackMed.json());
-        }
-        if (ringsRes?.ok) setFraudRings(await ringsRes.json());
-        if (graphRes?.ok) setPalantirGraph(await graphRes.json());
+          setMedicaidError(null);
 
-        // Process ledger (prefer live ledger API)
+          telemetryItems.push({
+            id: "medicaid_leads",
+            name: "Medicaid Lead Detection",
+            source: "/api/sources/medicaid-leads",
+            status: "ONLINE",
+            count: items.length,
+            latencyMs: tMedLatency,
+            lastSync: nowIso,
+            error: null,
+          });
+        } else {
+          const errDetail = `Medicaid API unreachable (HTTP ${medRes?.status || 500})`;
+          setMedicaid([]);
+          setMedicaidError(errDetail);
+
+          telemetryItems.push({
+            id: "medicaid_leads",
+            name: "Medicaid Lead Detection",
+            source: "/api/sources/medicaid-leads",
+            status: "OFFLINE",
+            count: 0,
+            latencyMs: tMedLatency,
+            lastSync: nowIso,
+            error: errDetail,
+          });
+        }
+      } catch (err) {
+        const errDetail = `Connection error: ${String(err)}`;
+        setMedicaid([]);
+        setMedicaidError(errDetail);
+        telemetryItems.push({
+          id: "medicaid_leads",
+          name: "Medicaid Lead Detection",
+          source: "/api/sources/medicaid-leads",
+          status: "OFFLINE",
+          count: 0,
+          latencyMs: Math.round(performance.now() - tMedStart),
+          lastSync: nowIso,
+          error: errDetail,
+        });
+      }
+
+      // 3. Commercial Financial Ledger Feed
+      const tLedgerStart = performance.now();
+      try {
+        const liveLedgerRes = await fetch("/api/ledger").catch(() => null);
+        const tLedgerLatency = Math.round(performance.now() - tLedgerStart);
+
         if (liveLedgerRes?.ok) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const ledgerJson = await liveLedgerRes.json() as any;
@@ -174,21 +246,132 @@ export default function Home() {
               location: "New York, NY"
             }));
             setBountyLedger(items);
+            telemetryItems.push({
+              id: "commercial_ledger",
+              name: "Commercial Ledger & Disbursals",
+              source: "/api/ledger (GAAP)",
+              status: "ONLINE",
+              count: items.length,
+              latencyMs: tLedgerLatency,
+              lastSync: nowIso,
+              error: null,
+            });
           }
         } else {
+          // Fallback to static verified research pilot ledger
           const lRes = await fetch("/data/bounty_ledger.json").catch(() => null);
-          if (lRes?.ok) setBountyLedger(await lRes.json());
+          if (lRes?.ok) {
+            const staticItems = await lRes.json();
+            setBountyLedger(staticItems);
+            telemetryItems.push({
+              id: "commercial_ledger",
+              name: "Commercial Ledger & Disbursals",
+              source: "/data/bounty_ledger.json (Static)",
+              status: "DEGRADED",
+              count: staticItems.length,
+              latencyMs: tLedgerLatency,
+              lastSync: nowIso,
+              error: "Live ledger API offline; loaded research pilot scope fixture",
+            });
+          }
         }
-
-        setLiveRecordCount(totalRecords || 120);
-        setLatencyMs(Math.round(performance.now() - startTime));
       } catch (err) {
-        console.error("Failed to load unified intelligence data:", err);
+        telemetryItems.push({
+          id: "commercial_ledger",
+          name: "Commercial Ledger & Disbursals",
+          source: "/api/ledger",
+          status: "OFFLINE",
+          count: 0,
+          latencyMs: Math.round(performance.now() - tLedgerStart),
+          lastSync: nowIso,
+          error: String(err),
+        });
       }
-    };
 
-    loadData();
+      // 4. Palantir Nexus Graph Feed
+      const tGraphStart = performance.now();
+      try {
+        const graphRes = await fetch("/data/palantir_graph.json").catch(() => null);
+        const tGraphLatency = Math.round(performance.now() - tGraphStart);
+        if (graphRes?.ok) {
+          const gData = await graphRes.json();
+          setPalantirGraph(gData);
+          telemetryItems.push({
+            id: "palantir_graph",
+            name: "Palantir Shell Knowledge Graph",
+            source: "/data/palantir_graph.json",
+            status: "ONLINE",
+            count: gData.nodes?.length || 0,
+            latencyMs: tGraphLatency,
+            lastSync: nowIso,
+            error: null,
+          });
+        }
+      } catch (err) {
+        telemetryItems.push({
+          id: "palantir_graph",
+          name: "Palantir Shell Knowledge Graph",
+          source: "/data/palantir_graph.json",
+          status: "OFFLINE",
+          count: 0,
+          latencyMs: Math.round(performance.now() - tGraphStart),
+          lastSync: nowIso,
+          error: String(err),
+        });
+      }
+
+      // 5. Ancillary Datasets (Permits, Evidence, Zones, Fraud Rings)
+      const [liveZonesRes, pRes, eRes, ringsRes] = await Promise.all([
+        fetch("/api/zones").catch(() => null),
+        fetch("/data/permits.json").catch(() => null),
+        fetch("/data/evidence.json").catch(() => null),
+        fetch("/data/fraud_rings.json").catch(() => null),
+      ]);
+
+      if (liveZonesRes?.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const zJson = await liveZonesRes.json() as any;
+        if (zJson.data) setZones(zJson.data);
+      } else {
+        const zRes = await fetch("/data/zones.json").catch(() => null);
+        if (zRes?.ok) setZones(await zRes.json());
+      }
+
+      if (pRes?.ok) setPermits(await pRes.json());
+      if (eRes?.ok) setEvidence(await eRes.json());
+      if (ringsRes?.ok) setFraudRings(await ringsRes.json());
+
+      // Telemetry rollup: strictly truthful counts, no fallback substitution
+      const totalLive = live311Count + medicaidCount;
+      setLiveRecordCount(totalLive);
+      setLatencyMs(Math.round(performance.now() - overallStartTime));
+
+      // Calculate overall system ingestion status
+      const hasOffline = telemetryItems.some((t) => t.status === "OFFLINE");
+      const hasDegraded = telemetryItems.some((t) => t.status === "DEGRADED");
+      const allOffline = telemetryItems.every((t) => t.status === "OFFLINE");
+
+      if (allOffline) {
+        setFeedStatus("OFFLINE");
+      } else if (hasOffline || hasDegraded) {
+        setFeedStatus("DEGRADED");
+      } else {
+        setFeedStatus("ONLINE");
+      }
+
+      setFeedTelemetry(telemetryItems);
+    } catch (err) {
+      console.error("Failed to load unified intelligence data:", err);
+      setFeedStatus("OFFLINE");
+    } finally {
+      setIsRefreshing(false);
+    }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleToggleLayer = useCallback((layerId: LayerId) => {
     playClick();
@@ -209,38 +392,42 @@ export default function Home() {
       if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "SELECT") {
         return;
       }
-      
-      const layerMap: Record<string, LayerId> = {
-        "1": "dumping",
-        "2": "noise",
-        "3": "medicaid",
-        "4": "permits",
-        "5": "evidence",
-        "6": "zones",
-      };
 
-      if (layerMap[e.key]) {
-        handleToggleLayer(layerMap[e.key]);
-      } else if (e.key.toLowerCase() === "g") {
-        playClick();
-        setCurrentView("NEXUS_GRAPH");
-      } else if (e.key.toLowerCase() === "m") {
-        playClick();
-        setCurrentView("MEDICAID_RADAR");
-      } else if (e.key.toLowerCase() === "l") {
-        playClick();
-        setCurrentView("PROFIT_LEDGER");
-      } else if (e.key.toLowerCase() === "w") {
-        playClick();
-        setCurrentView("LEGAL_WEAPONIZER");
-      } else if (e.key === "Escape" || e.key === "0") {
-        playClick();
-        setCurrentView("WAR_ROOM");
+      switch (e.key) {
+        case "1":
+          handleToggleLayer("dumping");
+          break;
+        case "2":
+          handleToggleLayer("noise");
+          break;
+        case "3":
+          handleToggleLayer("medicaid");
+          break;
+        case "4":
+          handleToggleLayer("permits");
+          break;
+        case "5":
+          handleToggleLayer("evidence");
+          break;
+        case "6":
+          handleToggleLayer("zones");
+          break;
+        case "k":
+        case "K":
+          if (e.metaKey || e.ctrlKey) {
+            e.preventDefault();
+            setIsCommandPaletteOpen((prev) => !prev);
+          }
+          break;
+        case "Escape":
+          setIsCommandPaletteOpen(false);
+          break;
       }
     };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleToggleLayer, playClick]);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleToggleLayer]);
 
   const handleZoneClick = useCallback((lat: number, lon: number) => {
     playChirp();
@@ -315,8 +502,10 @@ export default function Home() {
         {currentView === "NEXUS_GRAPH" && (
           <PalantirNexusGraph 
             graphData={palantirGraph}
-            onSelectProvider={() => {
+            availableNpis={medicaid.map((m) => m.npi)}
+            onSelectProvider={(npi) => {
               playClick();
+              setSelectedRadarNpi(npi);
               setCurrentView("MEDICAID_RADAR");
             }}
           />
@@ -327,6 +516,8 @@ export default function Home() {
             providers={medicaid}
             fraudRings={fraudRings}
             onOpenWeaponizer={handleOpenWeaponizer}
+            initialSelectedNpi={selectedRadarNpi}
+            sourceError={medicaidError}
           />
         )}
 
@@ -341,6 +532,11 @@ export default function Home() {
           <LegalWeaponizer 
             initialTargetId={weaponizerTarget.id}
             initialTrack={weaponizerTarget.track}
+            providers={medicaid}
+            onBackToRadar={() => {
+              playClick();
+              setCurrentView("MEDICAID_RADAR");
+            }}
           />
         )}
       </main>
@@ -349,6 +545,10 @@ export default function Home() {
         liveCount={liveRecordCount} 
         latencyMs={latencyMs} 
         liveSource="NYC SODA Live (erm2-nwe9, eabe-havv)" 
+        feedStatus={feedStatus}
+        feeds={feedTelemetry}
+        onRefreshFeeds={loadData}
+        isRefreshing={isRefreshing}
       />
 
       <CommandPalette 

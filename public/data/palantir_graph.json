@@ -1,34 +1,20 @@
 {
   "nodes": [
-    {"id": "ApexCare", "name": "Apex Community Care & Day Services", "type": "HEALTHCARE_PROVIDER", "risk": 96, "npi": "1942008812", "val": 35},
-    {"id": "ChinatownHarmony", "name": "Chinatown Harmony Social Day", "type": "HEALTHCARE_PROVIDER", "risk": 81, "npi": "1093318652", "val": 22},
-    {"id": "OceanParkwayRx", "name": "Ocean Parkway Specialty Pharmacy", "type": "HEALTHCARE_PROVIDER", "risk": 94, "npi": "1831197430", "val": 30},
-    {"id": "EmpireHorizonCDPAP", "name": "Empire State Horizon CDPAP", "type": "HEALTHCARE_PROVIDER", "risk": 92, "npi": "1720086541", "val": 32},
-    {"id": "BronxMetroNEMT", "name": "Bronx Metropolitan NEMT & Logistics", "type": "HEALTHCARE_PROVIDER", "risk": 91, "npi": "1659974218", "val": 28},
-    {"id": "MaspethHauler", "name": "Tri-Borough Hauling (Plate NY-88291)", "type": "COMMERCIAL_HAULER", "risk": 95, "fine": "$18,000", "val": 25},
-    {"id": "HeavyHaulTruck", "name": "Heavy Haul Waste Corp (Plate NJ-38914B)", "type": "COMMERCIAL_HAULER", "risk": 92, "fine": "$18,000", "val": 25},
-    {"id": "DelawareShell", "name": "Tri-Borough Transport Holdings LLC", "type": "CORPORATE_SHELL", "risk": 98, "state": "DE", "val": 40},
-    {"id": "HuntsPointDispatch", "name": "Food Center Dr Dispatch Yard", "type": "PHYSICAL_HUB", "risk": 89, "borough": "Bronx", "val": 24},
-    {"id": "SunsetParkIndustrial", "name": "5412 8th Ave Shell Suite", "type": "PHYSICAL_HUB", "risk": 85, "borough": "Brooklyn", "val": 20},
-    {"id": "FlushingBasement", "name": "136-20 38th Ave Sub-Level Hub", "type": "PHYSICAL_HUB", "risk": 94, "borough": "Queens", "val": 24},
-    {"id": "CPT_CDPAP_24H", "name": "T1019 / T1020 (CDPAP Overlapping)", "type": "BILLING_CODE", "risk": 95, "val": 18},
-    {"id": "CPT_LIDOCAINE", "name": "J3490 / OTC Lidocaine 5%", "type": "BILLING_CODE", "risk": 93, "val": 18},
-    {"id": "OATH_DUMPING_HIT", "name": "NYC Admin Code § 16-119 Violations", "type": "ENFORCEMENT_RECORD", "risk": 97, "val": 22}
+    {"id": "DEMO-SADC-001", "name": "Sample Adult Day Care Facility Alpha [Workflow Demo]", "type": "HEALTHCARE_PROVIDER", "risk": 81, "npi": "DEMO-NPI-001", "val": 35},
+    {"id": "DEMO-SADC-002", "name": "Sample Adult Day Care Facility Beta [Workflow Demo]", "type": "HEALTHCARE_PROVIDER", "risk": 66, "npi": "DEMO-NPI-002", "val": 28},
+    {"id": "DEMO-SADC-003", "name": "Sample Adult Day Care Facility Gamma [Workflow Demo]", "type": "HEALTHCARE_PROVIDER", "risk": 53, "npi": "DEMO-NPI-003", "val": 22},
+    {"id": "SampleHauler01", "name": "Sample Commercial Transport (Plate NY-88291)", "type": "COMMERCIAL_HAULER", "risk": 75, "fine": "$18,000", "val": 24},
+    {"id": "SampleIndustrialHub", "name": "Flushing Corridor Industrial Parcel", "type": "PHYSICAL_HUB", "risk": 70, "borough": "Queens", "val": 20},
+    {"id": "SunsetParkIndustrial", "name": "Sunset Park Industrial Corridor Parcel", "type": "PHYSICAL_HUB", "risk": 65, "borough": "Brooklyn", "val": 18},
+    {"id": "HCPCS_T2024", "name": "Procedure Code T2024 (Adult Day Care)", "type": "BILLING_CODE", "risk": 80, "val": 18},
+    {"id": "OATH_DUMPING_HIT", "name": "NYC Admin Code § 16-119 Record", "type": "ENFORCEMENT_RECORD", "risk": 75, "val": 20}
   ],
   "edges": [
-    {"source": "DelawareShell", "target": "ApexCare", "label": "PARENT_HOLDING", "weight": 3},
-    {"source": "DelawareShell", "target": "MaspethHauler", "label": "OWNS_COMMERCIAL_FLEET", "weight": 3},
-    {"source": "DelawareShell", "target": "ChinatownHarmony", "label": "COMMON_DIRECTOR", "weight": 2},
-    {"source": "ApexCare", "target": "FlushingBasement", "label": "PRIMARY_FACILITY", "weight": 4},
-    {"source": "MaspethHauler", "target": "FlushingBasement", "label": "CO_LOCATED_PARKING", "weight": 3},
-    {"source": "MaspethHauler", "target": "OATH_DUMPING_HIT", "label": "TRACK_5_CITATIONS", "weight": 4},
-    {"source": "HuntsPointDispatch", "target": "HeavyHaulTruck", "label": "DISPATCH_YARD", "weight": 4},
-    {"source": "HuntsPointDispatch", "target": "BronxMetroNEMT", "label": "SHARES_VEHICLE_BASE", "weight": 4},
-    {"source": "HeavyHaulTruck", "target": "OATH_DUMPING_HIT", "label": "TRACK_5_CITATIONS", "weight": 4},
-    {"source": "EmpireHorizonCDPAP", "target": "SunsetParkIndustrial", "label": "HEADQUARTERS", "weight": 3},
-    {"source": "EmpireHorizonCDPAP", "target": "CPT_CDPAP_24H", "label": "BILLS_IMPOSSIBLE_HOURS", "weight": 4},
-    {"source": "OceanParkwayRx", "target": "CPT_LIDOCAINE", "label": "MASSIVE_BILLING_SPIKE", "weight": 4},
-    {"source": "OceanParkwayRx", "target": "SunsetParkIndustrial", "label": "SHARED_COURIER_VAN", "weight": 2},
-    {"source": "BronxMetroNEMT", "target": "DelawareShell", "label": "SHELL_LEASING_AGREEMENT", "weight": 3}
+    {"source": "DEMO-SADC-001", "target": "SampleIndustrialHub", "label": "CO_LOCATED_PARCEL", "weight": 3},
+    {"source": "SampleHauler01", "target": "SampleIndustrialHub", "label": "DISPATCH_LOT", "weight": 3},
+    {"source": "DEMO-SADC-001", "target": "HCPCS_T2024", "label": "PRIMARY_BILLED_CODE", "weight": 4},
+    {"source": "DEMO-SADC-002", "target": "SunsetParkIndustrial", "label": "FACILITY_ADDRESS", "weight": 3},
+    {"source": "DEMO-SADC-002", "target": "HCPCS_T2024", "label": "PRIMARY_BILLED_CODE", "weight": 4},
+    {"source": "SampleHauler01", "target": "OATH_DUMPING_HIT", "label": "ENFORCEMENT_CITATION", "weight": 4}
   ]
 }

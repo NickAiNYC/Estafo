@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Copy, 
   Check, 
@@ -8,152 +8,156 @@ import {
   Scale, 
   FileText,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft
 } from "lucide-react";
+import { MedicaidProviderRecord } from "@/types";
 
 interface LegalWeaponizerProps {
   initialTargetId?: string;
   initialTrack?: string;
+  providers?: MedicaidProviderRecord[];
+  onBackToRadar?: () => void;
 }
 
-export default function LegalWeaponizer({ initialTrack }: LegalWeaponizerProps) {
-  const [packType, setPackType] = useState<"ATTORNEY_EVIDENCE_DOSSIER" | "OATH_IDLING" | "OATH_DUMPING">(
-    initialTrack === "TRACK_6_NYFCA_QUI_TAM"
-      ? "ATTORNEY_EVIDENCE_DOSSIER"
-      : initialTrack === "TRACK_1_IDLING"
+export default function LegalWeaponizer({
+  initialTargetId,
+  initialTrack,
+  providers = [],
+  onBackToRadar
+}: LegalWeaponizerProps) {
+  const [packType, setPackType] = useState<"RESEARCH_DOSSIER" | "OATH_IDLING" | "OATH_DUMPING">(
+    initialTrack === "TRACK_1_IDLING"
       ? "OATH_IDLING"
-      : "ATTORNEY_EVIDENCE_DOSSIER"
+      : initialTrack === "TRACK_5_DUMPING"
+      ? "OATH_DUMPING"
+      : "RESEARCH_DOSSIER"
   );
 
   const [copied, setCopied] = useState(false);
-  const [attorneySignedOff, setAttorneySignedOff] = useState(false);
-  const [reviewerName, setReviewerName] = useState("K. Vance, Esq. (Healthcare Compliance)");
+  const [reviewerSignedOff, setReviewerSignedOff] = useState(false);
+  const [reviewerName, setReviewerName] = useState("");
 
-  // Form parameters
-  const [providerName, setProviderName] = useState("Metro Health Mobility LLC");
-  const [providerNPI, setProviderNPI] = useState("1982736410");
-  const [taxonomyCode, setTaxonomyCode] = useState("343900000X (Non-Emergency Medical Transport)");
-  const [peerCohortSize, setPeerCohortSize] = useState("312 Providers (NYC Metro Area)");
-  const [deviationSigma, setDeviationSigma] = useState("+4.8σ Above Peer Mean");
+  // Target provider parameters
+  const [providerName, setProviderName] = useState("");
+  const [providerNPI, setProviderNPI] = useState("");
+  const [borough, setBorough] = useState("");
+  const [address, setAddress] = useState("");
+  const [taxonomyCode, setTaxonomyCode] = useState("HCPCS T2024 (Adult Day Health Care)");
+  const [peerCohortSize] = useState("Prototype Peer Cohort (NYC 5 Boroughs)");
+  const [deviationSigma, setDeviationSigma] = useState("+2.4σ Above Prototype Mean");
   const [exculpatoryHypothesis, setExculpatoryHypothesis] = useState(
-    "Competitor regional carrier ceased operations in Q2 2026; influx of displaced chronic dialysis beneficiaries may account for legitimate volume surge."
+    "Capacity expansion or consolidation of nearby clinics may account for legitimate census growth. Primary attendance rosters must be verified."
   );
 
   // OATH Parameters
-  const [vehiclePlate, setVehiclePlate] = useState("NY-88291");
-  const [targetLocation, setTargetLocation] = useState("Food Center Dr & Halleck St, Bronx (Hunts Point Corridor)");
+  const [vehiclePlate, setVehiclePlate] = useState("");
+  const [targetLocation, setTargetLocation] = useState("");
 
-  const generateAttorneyDossierText = () => {
+  // Hydrate from initialTargetId if provided
+  useEffect(() => {
+    if (initialTargetId && providers.length > 0) {
+      const match = providers.find(p => p.id === initialTargetId || p.npi === initialTargetId);
+      if (match) {
+        setProviderName(match.name);
+        setProviderNPI(match.npi);
+        setBorough(match.borough);
+        setAddress(match.address);
+        setTaxonomyCode(`HCPCS T2024 (${match.facility_type})`);
+        setDeviationSigma(`+${match.z_score?.toFixed(1) || "2.0"}σ vs Peer Distribution`);
+      }
+    }
+  }, [initialTargetId, providers]);
+
+  const generateResearchDossierText = () => {
+    const isSigned = reviewerSignedOff && reviewerName.trim().length > 0;
     return `================================================================================
-ESTAFO LITIGATION INTELLIGENCE // ATTORNEY-READY RESEARCH DOSSIER
-CONFIDENTIAL ATTORNEY WORK PRODUCT // PREPARED FOR COUNSEL EVALUATION
+ESTAFO RESEARCH DOSSIER DRAFT // PRELIMINARY SCREENING SUMMARY
+INTERNAL COMPLIANCE & RESEARCH AID // NOT AN OFFICIAL LEGAL FILING
 ================================================================================
-DISCLAIMER & EVIDENCE CONTRACT:
-This dossier presents unadjudicated statistical peer comparisons, historical
-entity-resolution links, and verified public records. The platform does NOT
-assert fraud, intent, or legal liability. All findings must be independently
-corroborated by qualified legal counsel prior to formal filing or external action.
+NOTICE & LIMITATIONS:
+This document is a preliminary research summary generated for internal evaluation.
+The platform does NOT assert fraud, legal liability, or regulatory non-compliance.
+All data is derived from statistical screening prototypes. This draft does NOT
+constitute a signed complaint, affidavit, or court-ready disclosure.
 ================================================================================
 
-I. TARGET HEALTHCARE ENTITY & HISTORICAL RESOLUTION
+I. TARGET HEALTHCARE ENTITY (IDENTIFIERS)
 --------------------------------------------------------------------------------
-Legal Entity Name:        ${providerName}
-National Provider ID:     ${providerNPI}
-Healthcare Taxonomy:      ${taxonomyCode}
-Registered Office:        5404 4th Avenue, Brooklyn, NY 11220
-NYS DOS Entity ID:        6492019 (Formed: 2021-03-12, Active)
-Historical Prior Names:   None recorded in NYS DOS database
-Co-Located Entities:      2 affiliated corporate shells sharing Suite 2B:
-                          - Metro Logistics Express Corp (NYS DOS #6510291)
-                          - 4th Ave Billing Management LLC (NYS DOS #6520192)
-[NOTE: Shared address is an investigative lead; it does NOT establish common ownership.]
+Entity Name:          ${providerName || "[Not Specified / Pending Input]"}
+Provider Identifier:  ${providerNPI || "[Enter NPI]"}
+Specialty Scope:      ${taxonomyCode}
+Location Corridor:    ${address ? `${address} (${borough})` : "[Enter Corridor / Address]"}
+Data Source State:    Screening Prototype (Requires official HHS/NPPES ingestion)
 
-II. TRIGGERING ANOMALY & MATHEMATICAL PEER COMPARISON
+II. SCREENING ANOMALY & STATISTICAL COMPARISON
 --------------------------------------------------------------------------------
-Primary Trigger:          Aggregated Procedure Code T2003 (Non-Emergency Transport)
-Peer Cohort Definition:   ${peerCohortSize}
-Comparative Metric:       Monthly Billed Units per Active Medicaid Beneficiary
-Peer Group Mean (μ):      14.2 units / beneficiary / month (Std Dev σ = 3.1)
-Target Entity Velocity:   29.1 units / beneficiary / month
-Statistical Deviation:    ${deviationSigma} (Top 0.2% Outlier in NYC Region)
-Temporal Velocity:        +240% surge observed across 90-day window (July - Sept 2026)
+Primary Indicator:    Normalized Monthly Spending Intensity ($/active month)
+Comparison Group:     ${peerCohortSize}
+Descriptive Metric:   Spending Rate vs Specialty Peer Distribution
+Observed Deviation:   ${deviationSigma}
+Operational Note:     Statistical outliers indicate volume disparity, NOT fraud.
 
-III. SOURCE PROVENANCE & RETRIEVAL CITATIONS
+III. CONTRADICTORY & EXCULPATORY HYPOTHESES (INNOCENT EXPLANATIONS)
 --------------------------------------------------------------------------------
-1. CMS National Provider Identifier (NPPES Registry):
-   Source URL: https://npiregistry.cms.hhs.gov/provider-view/${providerNPI}
-   Retrieved:  2026-10-24T18:30:00Z | Status: Active Enumeration
-2. HHS / CMS Open Payments & Procedure Code Aggregates:
-   Source URL: https://data.cms.gov/provider-data/dataset/t2003-ny-2026
-   Retrieved:  2026-10-25T11:15:00Z | Batch: 2026-Q3-V1
-3. NYS OMIG Exclusions & Re-Enrollment Registry:
-   Source URL: https://omig.ny.gov/medicaid-fraud/exclusion-search
-   Retrieved:  2026-10-26T09:00:00Z | Result: Clean (No Active Administrative Sanctions)
+Documented Context:
+${exculpatoryHypothesis || "None entered."}
 
-IV. CONTRADICTORY & EXCULPATORY EVIDENCE (INNOCENT HYPOTHESES)
---------------------------------------------------------------------------------
-Documented Operational Context:
-${exculpatoryHypothesis}
-Additional Factors:
-- Target operates dual-shift wheelchair van fleet with specialized bariatric lift.
-- Provider does not have prior OMIG or OIG-LEIE sanction history.
-
-V. FOUR-TIER EVIDENTIARY CLASSIFICATION (GATE G3)
+IV. FOUR-TIER EVIDENTIARY CLASSIFICATION
 --------------------------------------------------------------------------------
 1. VERIFIED FACTS:
-   - Target is an actively enrolled NYS Medicaid transportation provider.
-   - Corporate registration and address confirmed via official NYS DOS records.
-   - Peer group billing totals represent official public CMS aggregate releases.
+   - Zero verified findings asserted by the platform.
+   - Sourced claims require running the official MediFraudy batch importer.
 2. STATISTICAL INFERENCES:
-   - Procedure code T2003 billing velocity is anomalous relative to regional peers.
-   - Co-location with commercial logistics shell indicates potential shared dispatch.
+   - Monthly billing rate is anomalous relative to the screening cohort.
 3. ALLEGATIONS:
-   - [NONE ASSERTED] — Platform explicitly takes no position on fraud or intent.
+   - [NONE ASSERTED] — Platform takes no position on intent or violation.
 4. UNKNOWNS & DATA GAPS:
-   - Electronic Visit Verification (EVV) driver GPS telematics have not been subpoenaed.
-   - Internal trip manifest driver logs and beneficiary signatures remain uninspected.
+   - Underlying patient medical records and attendance rosters remain uninspected.
+   - EVV driver GPS logs have not been obtained or verified.
 
-VI. RECOMMENDED NEXT INVESTIGATIVE STEPS FOR COUNSEL
+V. RECOMMENDED NEXT INVESTIGATIVE STEPS
 --------------------------------------------------------------------------------
-1. Issue targeted FOIL request to NYC TLC for trip record logs associated with NPI.
-2. Cross-reference dispatch times against hospital inpatient admissions database.
-3. Review driver credentialing records through NYS DMV commercial carrier registry.
+1. Check state regulatory registry for licensed participant census limits.
+2. Perform lawful on-site verification of facility operations.
+3. Cross-reference corporate filings through official NYS Department of State.
 
-VII. QUALIFIED HUMAN COMPLIANCE SIGN-OFF
+VI. HUMAN REVIEWER STATUS
 --------------------------------------------------------------------------------
-Reviewed and Certified By: ${reviewerName}
-Date of Attestation:      ${new Date().toISOString().slice(0, 10)}
-Status:                   RESEARCH DOSSIER COMPLETE // APPROVED FOR COUNSEL REVIEW
+Review Status:        ${isSigned ? "COMPLETED INTERNAL REVIEW" : "DRAFT — PENDING HUMAN REVIEW AND SIGN-OFF"}
+Reviewer Name:        ${reviewerName.trim() || "[Unassigned]"}
+Attestation Date:     ${new Date().toISOString().slice(0, 10)}
+Disclaimer:           Internal research aid only. Not an affidavit or court filing.
 `;
   };
 
   const generateOATHIdlingText = () => {
     return `================================================================================
-NEW YORK CITY DEPARTMENT OF ENVIRONMENTAL PROTECTION (DEP)
-OATH CITIZEN AIR CONSERVATION ENFORCEMENT COMPLAINT
+CITIZEN ENFORCEMENT COMPLAINT DRAFT (NYC ADMIN CODE § 24-163)
+COMMERCIAL ENGINE IDLING COMPLAINT WORKSHEET
 ================================================================================
-PURSUANT TO: NYC Administrative Code § 24-163 (Commercial Engine Idling > 3 Mins)
-STATUTORY PENALTY: $350.00 – $2,000.00
-CITIZEN STATUTORY BOUNTY: 25% of Collected Summons Fines
+NOTICE: This worksheet assists in organizing citizen complaints. Summonses must be
+filed directly through the NYC DEP Citizen Air Conservation portal with valid video proof.
+================================================================================
 
 I. RESPONDENT COMMERCIAL VEHICLE
 --------------------------------------------------------------------------------
-Commercial Vehicle Plate: ${vehiclePlate} (State: NY)
-Location of Violation:    ${targetLocation}
-Time of Observation:      ${new Date().toISOString().slice(0, 10)} 08:34:10 EDT
-Duration Recorded:        3 minutes 42 seconds (Unbroken Video Stream)
+Commercial Vehicle Plate: ${vehiclePlate || "[Enter Plate]"} (State: NY)
+Location Observed:        ${targetLocation || "[Enter Location]"}
+Time of Observation:      ${new Date().toISOString().slice(0, 10)}
+Required Evidence:        3+ minutes of uninterrupted, timestamped video recording.
 
-II. EVIDENTIARY ATTESTATION
+II. CHECKLIST BEFORE CITIZEN FILING
 --------------------------------------------------------------------------------
-1. Continuous 4K optical recording captured without interaction with driver.
-2. Engine audible throughout 180+ second legal threshold; ambient temperature 62°F.
-3. Telephone Standby elected pursuant to 48 RCNY § 6-08.
+[ ] Unbroken video clearly showing engine running / audible exhaust (> 180 seconds)
+[ ] Clear optical capture of commercial vehicle license plate and company lettering
+[ ] Ambient temperature verified if requesting exemption under DEP guidelines
 `;
   };
 
   const getActiveText = () => {
     if (packType === "OATH_IDLING") return generateOATHIdlingText();
-    return generateAttorneyDossierText();
+    return generateResearchDossierText();
   };
 
   const handleCopy = () => {
@@ -163,221 +167,262 @@ II. EVIDENTIARY ATTESTATION
   };
 
   const handleDownload = () => {
-    const text = getActiveText();
-    const element = document.createElement("a");
-    const file = new Blob([text], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = `${packType}_${new Date().toISOString().slice(0, 10)}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    const blob = new Blob([getActiveText()], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Estafo_Research_Dossier_Draft_${providerNPI || "draft"}_${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row h-full bg-canvas text-primary overflow-hidden">
-      {/* Configuration & Input Controls */}
-      <div className="w-full lg:w-[480px] border-r border-border bg-surface flex flex-col h-full overflow-y-auto">
-        <div className="p-16 border-b border-border bg-inset">
-          <div className="flex items-center gap-8 text-emerald mb-4">
-            <Scale className="w-4 h-4" />
-            <h2 className="text-11 font-mono uppercase tracking-wider font-bold">
-              Legal Evidence Studio // Component 3 & 6
-            </h2>
+    <div className="flex-1 flex flex-col h-full bg-canvas text-primary overflow-hidden">
+      {/* Top Header */}
+      <div className="p-16 border-b border-border bg-surface/50 backdrop-blur-md flex flex-wrap items-center justify-between gap-16 shrink-0">
+        <div className="flex items-center gap-12">
+          {onBackToRadar && (
+            <button
+              onClick={onBackToRadar}
+              className="px-10 py-5 bg-inset border border-border rounded-sm text-11 font-mono text-muted hover:text-primary hover:border-border-highlight flex items-center gap-6 transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Radar</span>
+            </button>
+          )}
+          <div className="p-8 bg-steel-blue/10 border border-steel-blue/30 rounded-sm">
+            <Scale className="w-5 h-5 text-steel-blue" />
           </div>
-          <p className="text-12 text-secondary">
-            Generate attorney-grade research dossiers with complete provenance, peer cohort math, and exculpatory analysis.
-          </p>
-        </div>
-
-        {/* Track Selector */}
-        <div className="p-16 border-b border-border space-y-12">
-          <div className="text-10 font-mono text-muted uppercase">Dossier Protocol</div>
-          <div className="grid grid-cols-2 gap-8">
-            <button
-              onClick={() => setPackType("ATTORNEY_EVIDENCE_DOSSIER")}
-              className={`p-10 rounded-sm border text-left transition-colors font-mono text-11 ${
-                packType === "ATTORNEY_EVIDENCE_DOSSIER"
-                  ? "bg-emerald/15 border-emerald text-emerald font-bold"
-                  : "bg-inset border-border text-muted hover:text-primary"
-              }`}
-            >
-              <div className="flex items-center gap-6">
-                <FileText className="w-3.5 h-3.5" />
-                <span>Medicaid Lead Dossier</span>
-              </div>
-              <div className="text-9 opacity-80 mt-2">Law Firm Research Pilot</div>
-            </button>
-
-            <button
-              onClick={() => setPackType("OATH_IDLING")}
-              className={`p-10 rounded-sm border text-left transition-colors font-mono text-11 ${
-                packType === "OATH_IDLING"
-                  ? "bg-emerald/15 border-emerald text-emerald font-bold"
-                  : "bg-inset border-border text-muted hover:text-primary"
-              }`}
-            >
-              <div className="flex items-center gap-6">
-                <Scale className="w-3.5 h-3.5" />
-                <span>OATH DEP Affidavit</span>
-              </div>
-              <div className="text-9 opacity-80 mt-2">Citizen Air Enforcement</div>
-            </button>
+          <div>
+            <div className="text-11 font-mono text-muted uppercase tracking-wider flex items-center gap-8">
+              <span>Investigation Studio // Section 3 Evidence Contract</span>
+              <span className="px-6 py-1 bg-amber-500/15 border border-amber-500/30 text-amber-400 text-9 font-bold rounded-sm">
+                DRAFT RESEARCH AID
+              </span>
+            </div>
+            <h1 className="text-18 font-bold font-jakarta tracking-tight">
+              Investigative Research Dossier Studio
+            </h1>
           </div>
         </div>
 
-        {/* Dynamic Fields */}
-        <div className="p-16 space-y-14 flex-1">
-          {packType === "ATTORNEY_EVIDENCE_DOSSIER" ? (
+        {/* Action Controls */}
+        <div className="flex items-center gap-12 font-mono">
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-6 px-12 py-6 rounded-sm bg-inset border border-border text-muted hover:text-primary text-11 transition-colors"
+          >
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+            <span>{copied ? "COPIED" : "COPY TEXT"}</span>
+          </button>
+
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-6 px-12 py-6 rounded-sm bg-steel-blue/20 border border-steel-blue text-steel-blue hover:bg-steel-blue/30 text-11 font-bold transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>EXPORT TXT</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Prominent Legal Disclaimer Banner */}
+      <div className="px-16 py-8 bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-xs font-mono flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-8">
+          <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+          <span>Notice: DRAFT RESEARCH AID ONLY. This tool formats an unverified research dossier draft for evaluation. It does NOT generate signed court complaints, subpoenas, or official relator disclosures. All factual assertions require independent verification.</span>
+        </div>
+        <span className="text-amber-400 font-bold ml-8 shrink-0 uppercase text-10">Unverified Draft</span>
+      </div>
+
+      {/* Main Dual-Pane Matrix */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        {/* Left Pane: Parameter Configuration */}
+        <div className="w-full lg:w-[440px] border-r border-border bg-surface p-16 overflow-y-auto space-y-16">
+          {/* Dossier Type Selector */}
+          <div>
+            <label className="block text-10 font-mono text-muted uppercase mb-6">Dossier Category</label>
+            <div className="grid grid-cols-2 gap-8 font-mono text-11">
+              <button
+                type="button"
+                onClick={() => setPackType("RESEARCH_DOSSIER")}
+                className={`p-8 rounded-sm border text-left transition-colors ${
+                  packType === "RESEARCH_DOSSIER"
+                    ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
+                    : "bg-inset border-border text-muted hover:text-primary"
+                }`}
+              >
+                Healthcare Research
+              </button>
+              <button
+                type="button"
+                onClick={() => setPackType("OATH_IDLING")}
+                className={`p-8 rounded-sm border text-left transition-colors ${
+                  packType === "OATH_IDLING"
+                    ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
+                    : "bg-inset border-border text-muted hover:text-primary"
+                }`}
+              >
+                NYC DEP Idling
+              </button>
+            </div>
+          </div>
+
+          {packType === "RESEARCH_DOSSIER" ? (
             <>
-              <div>
-                <label className="text-10 font-mono text-muted uppercase block mb-4">Target Provider Legal Name</label>
-                <input 
-                  type="text" 
-                  value={providerName} 
-                  onChange={(e) => setProviderName(e.target.value)} 
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
-                />
-              </div>
+              {/* Target Entity Parameters */}
+              <div className="space-y-10">
+                <div className="text-11 font-mono text-secondary uppercase font-bold flex items-center gap-6">
+                  <FileText className="w-3.5 h-3.5 text-steel-blue" />
+                  <span>Target Healthcare Entity</span>
+                </div>
 
-              <div className="grid grid-cols-2 gap-10">
                 <div>
-                  <label className="text-10 font-mono text-muted uppercase block mb-4">NPI Number</label>
-                  <input 
-                    type="text" 
-                    value={providerNPI} 
-                    onChange={(e) => setProviderNPI(e.target.value)} 
-                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">Entity Legal Name</label>
+                  <input
+                    type="text"
+                    value={providerName}
+                    onChange={(e) => setProviderName(e.target.value)}
+                    placeholder="e.g. Sample Adult Day Care Facility Alpha"
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight"
                   />
                 </div>
+
                 <div>
-                  <label className="text-10 font-mono text-muted uppercase block mb-4">Statistical Outlier (Sigma)</label>
-                  <input 
-                    type="text" 
-                    value={deviationSigma} 
-                    onChange={(e) => setDeviationSigma(e.target.value)} 
-                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">National Provider Identifier (NPI)</label>
+                  <input
+                    type="text"
+                    value={providerNPI}
+                    onChange={(e) => setProviderNPI(e.target.value)}
+                    placeholder="e.g. DEMO-NPI-001"
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">Corridor / Address</label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="e.g. Flushing Corridor, Queens, NY"
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="text-10 font-mono text-muted uppercase block mb-4">Peer Cohort Definition</label>
-                <input 
-                  type="text" 
-                  value={peerCohortSize} 
-                  onChange={(e) => setPeerCohortSize(e.target.value)} 
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
-                />
-              </div>
-
-              <div>
-                <label className="text-10 font-mono text-muted uppercase block mb-4">Taxonomy / Procedure Code</label>
-                <input 
-                  type="text" 
-                  value={taxonomyCode} 
-                  onChange={(e) => setTaxonomyCode(e.target.value)} 
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
-                />
-              </div>
-
-              <div>
-                <label className="text-10 font-mono text-amber uppercase flex items-center gap-4 mb-4">
-                  <AlertCircle className="w-3 h-3" />
-                  <span>Exculpatory / Contradictory Evidence</span>
-                </label>
-                <textarea 
-                  rows={3}
-                  value={exculpatoryHypothesis} 
-                  onChange={(e) => setExculpatoryHypothesis(e.target.value)} 
-                  className="w-full bg-inset border border-border rounded-sm p-8 text-11 font-sans focus:outline-none focus:border-border-highlight"
-                />
-              </div>
-
-              {/* Human Legal Review Attestation Gate (Component 6) */}
-              <div className="p-12 border border-border-highlight/40 bg-surface/80 rounded-sm space-y-8">
-                <div className="flex items-center gap-6 text-gold font-mono text-10 uppercase font-bold">
-                  <ShieldCheck className="w-4 h-4 text-gold" />
-                  <span>Mandatory Human Review Gate (Gate G3/G6)</span>
+              {/* Statistical Anomaly Parameters */}
+              <div className="space-y-10 pt-10 border-t border-border">
+                <div className="text-11 font-mono text-secondary uppercase font-bold flex items-center gap-6">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Statistical Screening Metric</span>
                 </div>
-                <label className="flex items-start gap-8 cursor-pointer select-none">
-                  <input 
-                    type="checkbox" 
-                    checked={attorneySignedOff} 
-                    onChange={(e) => setAttorneySignedOff(e.target.checked)}
-                    className="mt-2 accent-emerald"
-                  />
-                  <span className="text-10 text-secondary leading-relaxed">
-                    I certify that this packet contains factual government citations and statistical comparisons. Zero fraud allegations or legal liability claims are asserted against this entity without independent attorney assessment.
-                  </span>
-                </label>
+
                 <div>
-                  <input 
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">Procedure Code / Specialty</label>
+                  <input
+                    type="text"
+                    value={taxonomyCode}
+                    onChange={(e) => setTaxonomyCode(e.target.value)}
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono placeholder:text-muted focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">Observed Deviation</label>
+                  <input
+                    type="text"
+                    value={deviationSigma}
+                    onChange={(e) => setDeviationSigma(e.target.value)}
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono placeholder:text-muted focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">Exculpatory Operational Hypothesis</label>
+                  <textarea
+                    rows={3}
+                    value={exculpatoryHypothesis}
+                    onChange={(e) => setExculpatoryHypothesis(e.target.value)}
+                    placeholder="Document clinical census, regional consolidation, or alternative explanations..."
+                    className="w-full bg-inset border border-border rounded-sm p-8 text-10 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Human Review Sign-Off */}
+              <div className="space-y-10 pt-10 border-t border-border">
+                <div className="text-11 font-mono text-gold uppercase font-bold flex items-center gap-6">
+                  <ShieldCheck className="w-3.5 h-3.5 text-gold" />
+                  <span>Reviewer Attestation</span>
+                </div>
+
+                <div>
+                  <label className="block text-9 font-mono text-muted uppercase mb-4">Reviewer Name & Title</label>
+                  <input
                     type="text"
                     value={reviewerName}
                     onChange={(e) => setReviewerName(e.target.value)}
-                    placeholder="Reviewer Name & Bar Number / Credential"
-                    className="w-full bg-inset border border-border rounded-sm px-8 py-5 text-10 font-mono"
+                    placeholder="Enter compliance analyst or reviewer name"
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight"
                   />
+                </div>
+
+                <div className="flex items-center gap-8">
+                  <input
+                    type="checkbox"
+                    id="signoffCheck"
+                    checked={reviewerSignedOff}
+                    onChange={(e) => setReviewerSignedOff(e.target.checked)}
+                    className="rounded bg-inset border-border text-steel-blue focus:ring-0"
+                  />
+                  <label htmlFor="signoffCheck" className="text-10 font-mono text-muted select-none">
+                    Confirm review completed against source checklist
+                  </label>
                 </div>
               </div>
             </>
           ) : (
-            <>
+            <div className="space-y-10">
+              <div className="text-11 font-mono text-secondary uppercase font-bold">
+                Respondent Vehicle Information
+              </div>
+
               <div>
-                <label className="text-10 font-mono text-muted uppercase block mb-4">Commercial Vehicle Plate</label>
-                <input 
-                  type="text" 
-                  value={vehiclePlate} 
-                  onChange={(e) => setVehiclePlate(e.target.value)} 
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono"
+                <label className="block text-9 font-mono text-muted uppercase mb-4">Commercial Vehicle Plate</label>
+                <input
+                  type="text"
+                  value={vehiclePlate}
+                  onChange={(e) => setVehiclePlate(e.target.value)}
+                  placeholder="e.g. NY-99214A"
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none"
                 />
               </div>
+
               <div>
-                <label className="text-10 font-mono text-muted uppercase block mb-4">Incident Location</label>
-                <input 
-                  type="text" 
-                  value={targetLocation} 
-                  onChange={(e) => setTargetLocation(e.target.value)} 
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono"
+                <label className="block text-9 font-mono text-muted uppercase mb-4">Observation Location</label>
+                <input
+                  type="text"
+                  value={targetLocation}
+                  onChange={(e) => setTargetLocation(e.target.value)}
+                  placeholder="e.g. Hunts Point Food Center Dr, Bronx"
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none"
                 />
               </div>
-            </>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Generated Dossier Preview */}
-      <div className="flex-1 flex flex-col h-full bg-canvas overflow-hidden">
-        <div className="p-12 border-b border-border bg-inset flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-8 font-mono text-11 text-muted">
-            <FileText className="w-4 h-4 text-emerald" />
-            <span>EXPORT PREVIEW // ATTORNEY PACKET</span>
+        {/* Right Pane: Monospaced Text Preview */}
+        <div className="flex-1 bg-canvas p-16 flex flex-col h-full overflow-hidden">
+          <div className="text-10 font-mono text-muted uppercase mb-8 flex items-center justify-between">
+            <span>Dossier Plaintext Preview</span>
+            <span className="text-9 text-faint">Standard Monospaced Layout</span>
           </div>
-          <div className="flex items-center gap-8">
-            <button
-              onClick={handleCopy}
-              className="flex items-center gap-6 px-12 py-6 rounded-sm bg-surface border border-border text-11 font-mono hover:text-emerald hover:border-emerald transition-colors"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? "COPIED" : "COPY"}</span>
-            </button>
-            <button
-              onClick={handleDownload}
-              disabled={packType === "ATTORNEY_EVIDENCE_DOSSIER" && !attorneySignedOff}
-              className={`flex items-center gap-6 px-12 py-6 rounded-sm font-mono text-11 transition-colors ${
-                packType === "ATTORNEY_EVIDENCE_DOSSIER" && !attorneySignedOff
-                  ? "bg-inset border border-border text-muted cursor-not-allowed opacity-50"
-                  : "bg-emerald/20 border border-emerald text-emerald hover:bg-emerald/30 font-bold"
-              }`}
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>EXPORT DOSSIER</span>
-            </button>
-          </div>
-        </div>
 
-        <div className="flex-1 p-16 overflow-y-auto">
-          <pre className="p-16 bg-surface border border-border rounded-sm text-11 font-mono text-secondary leading-relaxed whitespace-pre-wrap select-text">
+          <pre className="flex-1 bg-inset border border-border rounded-sm p-16 font-mono text-11 text-secondary overflow-y-auto whitespace-pre-wrap select-text leading-relaxed">
             {getActiveText()}
           </pre>
         </div>

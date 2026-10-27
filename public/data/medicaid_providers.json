@@ -13,8 +13,10 @@
     "monthly_intensity": 1080000,
     "months_active": 12,
     "z_score": 2.44,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Spending Intensity Outlier (+2.4σ)", "High Volume per Active Month"],
+    "anomaly_types": [
+      "Spending Intensity Outlier (+2.4σ)",
+      "High Volume per Active Month"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "STATISTICAL_OUTLIER"
   },
@@ -32,8 +34,10 @@
     "monthly_intensity": 720000,
     "months_active": 12,
     "z_score": 1.29,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Spending Rate Outlier (+1.3σ)", "Elevated Claims per Beneficiary"],
+    "anomaly_types": [
+      "Spending Rate Outlier (+1.3σ)",
+      "Elevated Claims per Beneficiary"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "STATISTICAL_OUTLIER"
   },
@@ -51,8 +55,10 @@
     "monthly_intensity": 395833,
     "months_active": 12,
     "z_score": 0.26,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Census Capacity Threshold Outlier", "Upper-Quartile Spending"],
+    "anomaly_types": [
+      "Census Capacity Threshold Outlier",
+      "Upper-Quartile Spending"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -70,8 +76,10 @@
     "monthly_intensity": 165000,
     "months_active": 12,
     "z_score": -0.47,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Moderate Spending Variation", "Expected Regional Cluster"],
+    "anomaly_types": [
+      "Moderate Spending Variation",
+      "Expected Regional Cluster"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -89,8 +97,9 @@
     "monthly_intensity": 150000,
     "months_active": 12,
     "z_score": -0.52,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Expected Peer Baseline Rate"],
+    "anomaly_types": [
+      "Expected Peer Baseline Rate"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -108,8 +117,9 @@
     "monthly_intensity": 140000,
     "months_active": 12,
     "z_score": -0.55,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Standard Peer Baseline Rate"],
+    "anomaly_types": [
+      "Standard Peer Baseline Rate"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -127,8 +137,9 @@
     "monthly_intensity": 130000,
     "months_active": 12,
     "z_score": -0.58,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Standard Peer Baseline Rate"],
+    "anomaly_types": [
+      "Standard Peer Baseline Rate"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -146,8 +157,9 @@
     "monthly_intensity": 120000,
     "months_active": 12,
     "z_score": -0.61,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Standard Peer Baseline Rate"],
+    "anomaly_types": [
+      "Standard Peer Baseline Rate"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -165,8 +177,9 @@
     "monthly_intensity": 118750,
     "months_active": 12,
     "z_score": -0.62,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Standard Peer Baseline Rate"],
+    "anomaly_types": [
+      "Standard Peer Baseline Rate"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   },
@@ -184,8 +197,9 @@
     "monthly_intensity": 110000,
     "months_active": 12,
     "z_score": -0.65,
-    "estimated_bounty": 0,
-    "anomaly_types": ["Standard Peer Baseline Rate"],
+    "anomaly_types": [
+      "Standard Peer Baseline Rate"
+    ],
     "status": "INVESTIGATING",
     "lead_utility": "WITHIN_EXPECTED_VARIANCE"
   }

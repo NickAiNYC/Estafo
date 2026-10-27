@@ -6,31 +6,26 @@ import { Shield, AlertTriangle, Building, Truck, MapPin, Hash, Search, ExternalL
 
 interface PalantirNexusGraphProps {
   graphData: PalantirGraphData;
+  availableNpis?: string[];
   onSelectProvider?: (npi: string) => void;
 }
 
-export default function PalantirNexusGraph({ graphData, onSelectProvider }: PalantirNexusGraphProps) {
+export default function PalantirNexusGraph({ graphData, availableNpis = [], onSelectProvider }: PalantirNexusGraphProps) {
   const [selectedNode, setSelectedNode] = useState<PalantirGraphNode | null>(null);
   const [filterType, setFilterType] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Preset circular / clustered coordinates for visual stability in SVG
+  // Preset coordinates for visual stability in SVG
   const nodePositions = useMemo(() => {
     const positions: Record<string, { x: number; y: number }> = {
-      DelawareShell: { x: 450, y: 150 },
-      ApexCare: { x: 260, y: 280 },
-      MaspethHauler: { x: 450, y: 320 },
-      ChinatownHarmony: { x: 640, y: 260 },
-      FlushingBasement: { x: 180, y: 440 },
-      OATH_DUMPING_HIT: { x: 450, y: 470 },
-      HuntsPointDispatch: { x: 620, y: 440 },
-      HeavyHaulTruck: { x: 740, y: 360 },
-      BronxMetroNEMT: { x: 780, y: 230 },
-      SunsetParkIndustrial: { x: 300, y: 470 },
-      EmpireHorizonCDPAP: { x: 160, y: 180 },
-      CPT_CDPAP_24H: { x: 100, y: 320 },
-      OceanParkwayRx: { x: 330, y: 110 },
-      CPT_LIDOCAINE: { x: 200, y: 60 },
+      "DEMO-SADC-001": { x: 260, y: 260 },
+      "DEMO-SADC-002": { x: 300, y: 450 },
+      "DEMO-SADC-003": { x: 620, y: 260 },
+      SampleHauler01: { x: 450, y: 320 },
+      SampleIndustrialHub: { x: 180, y: 400 },
+      SunsetParkIndustrial: { x: 450, y: 150 },
+      HCPCS_T2024: { x: 200, y: 80 },
+      OATH_DUMPING_HIT: { x: 450, y: 460 },
     };
     return positions;
   }, []);
@@ -369,15 +364,21 @@ export default function PalantirNexusGraph({ graphData, onSelectProvider }: Pala
 
             {/* Actions */}
             <div className="pt-8 space-y-8">
-              {selectedNode.npi && onSelectProvider && (
-                <button
-                  onClick={() => onSelectProvider(selectedNode.npi!)}
-                  className="w-full py-10 px-16 bg-emerald/20 hover:bg-emerald/30 border border-emerald text-emerald font-mono font-bold text-11 rounded-sm flex items-center justify-center gap-8 transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  <span>Inspect Multi-Signal Radar</span>
-                </button>
-              )}
+              {selectedNode.npi ? (
+                availableNpis.includes(selectedNode.npi) && onSelectProvider ? (
+                  <button
+                    onClick={() => onSelectProvider(selectedNode.npi!)}
+                    className="w-full py-10 px-16 bg-emerald/20 hover:bg-emerald/30 border border-emerald text-emerald font-mono font-bold text-11 rounded-sm flex items-center justify-center gap-8 transition-colors cursor-pointer"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Inspect Lead in Screening Radar</span>
+                  </button>
+                ) : (
+                  <div className="p-10 bg-inset rounded-sm border border-border text-10 font-mono text-muted text-center leading-relaxed">
+                    Graph entity ({selectedNode.npi}) has no active screening lead in current cohort
+                  </div>
+                )
+              ) : null}
             </div>
           </div>
         ) : (

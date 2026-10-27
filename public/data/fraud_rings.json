@@ -1,112 +1,43 @@
 [
   {
-    "id": "RING-01",
-    "name": "Apex & Metropolitan Shell Syndicate",
+    "id": "CLUSTER-01",
+    "name": "Sample Spatial & Logistics Co-Location Cluster",
     "type": "CROSS_VECTOR_SHELL",
-    "total_exposure": 16600000,
-    "estimated_whistleblower_bounty": 4150000,
-    "nodes_count": 14,
-    "primary_borough": "Queens / Manhattan",
-    "risk_level": "CRITICAL",
-    "description": "Multi-vector fraud syndicate operating SADC adult day cares, illegal passenger transport vans, and commercial dumping logistics through shared Delaware holding LLC.",
-    "key_entities": [
-      "Apex Community Care & Day Services (NPI: 1942008812)",
-      "Chinatown Harmony Social Day Center (NPI: 1093318652)",
-      "Maspeth Fleet Logistics NY-88291",
-      "Tri-Borough Transport Holdings LLC"
-    ],
-    "patterns": [
-      "Simultaneous Medicaid billing and illegal commercial dumping haulage using same vehicle assets",
-      "Cash kickback distribution on Wednesdays in Flushing basement clinic",
-      "Registered agent overlap with 4 suspended DOB contractor LLCs"
-    ]
-  },
-  {
-    "id": "RING-02",
-    "name": "Sunset Park & Atlantic CDPAP Cartel",
-    "type": "CDPAP_GHOST_NETWORK",
-    "total_exposure": 14150000,
-    "estimated_whistleblower_bounty": 3537500,
-    "nodes_count": 22,
-    "primary_borough": "Brooklyn",
-    "risk_level": "CRITICAL",
-    "description": "Systemic consumer directed personal assistance program (CDPAP) ring operating across 8th Avenue corridor. 48 personal assistants billing 24-hr shifts simultaneously across competing fiscal intermediaries.",
-    "key_entities": [
-      "Empire State Horizon CDPAP Services (NPI: 1720086541)",
-      "Sunset Park Senior Pavilion SADC (NPI: 1326641985)",
-      "East New York Care Management LLC (NPI: 1871625340)",
-      "Harlem River Premier Home Health (NPI: 1104429763)"
-    ],
-    "patterns": [
-      "Impossible hours: 26 to 34 billable hours in single 24-hour calendar days per worker",
-      "Geographic impossibility: Simultaneous clock-ins in Crown Heights and Sunset Park (20 mins apart)",
-      "Recruitment via WeChat and Telegram offering $300/week passive sign-up bonuses"
-    ]
-  },
-  {
-    "id": "RING-03",
-    "name": "Ocean Parkway Pharmacy & OTC Ring",
-    "type": "MEDICAID_KICKBACK",
-    "total_exposure": 11150000,
-    "estimated_whistleblower_bounty": 2787500,
-    "nodes_count": 9,
-    "primary_borough": "Brooklyn",
-    "risk_level": "HIGH",
-    "description": "Lidocaine 5% topical ointment and OTC health card diversion pipeline. Beneficiaries receive $40 grocery gift cards in exchange for Medicaid cards; pharmacy bills $1,420/month per patient.",
-    "key_entities": [
-      "Ocean Parkway Specialty Pharmacy LLC (NPI: 1831197430)",
-      "Brighton Golden Age Wellness Center (NPI: 1548863107)",
-      "Kings Highway Prescriber Group PC",
-      "Seaside Logistics Corp"
-    ],
-    "patterns": [
-      "Lidocaine prescription volume 4,800% higher than statewide specialty pharmacy median",
-      "Prescriptions originating from single non-practicing doctor working remotely",
-      "Medical supplies dumped or resold through unauthorized wholesale channels"
-    ]
-  },
-  {
-    "id": "RING-04",
-    "name": "Hunts Point NEMT & Hauling Syndicate",
-    "type": "COMMERCIAL_DUMPING_SYNDICATE",
-    "total_exposure": 8000000,
-    "estimated_whistleblower_bounty": 2000000,
-    "nodes_count": 11,
-    "primary_borough": "Bronx",
-    "risk_level": "HIGH",
-    "description": "Industrial corridor syndicate using dual-purpose fleet. Transport vans bill Medicaid for non-emergency medical trips while flatbeds commit midnight illegal dumping of demolition debris.",
-    "key_entities": [
-      "Bronx Metropolitan NEMT & Logistics (NPI: 1659974218)",
-      "Mott Haven Medical Supply & DME (NPI: 1215530874)",
-      "Food Center Drive Dispatch Yard LLC",
-      "Heavy Haul Waste Corp"
-    ],
-    "patterns": [
-      "Trip logs show patient drop-offs at clinics that were closed at stated appointment time",
-      "GPS tracking links dispatch yard to repeated DSNY illegal dumping violations at Track 5 hotspot",
-      "Overlapping corporate ownership between NEMT licensee and unpermitted demolition hauler"
-    ]
-  },
-  {
-    "id": "RING-05",
-    "name": "Queens Boulevard Diagnostic Network",
-    "type": "CROSS_VECTOR_SHELL",
-    "total_exposure": 5900000,
-    "estimated_whistleblower_bounty": 1475000,
+    "total_exposure": 12960000,
+    "estimated_whistleblower_bounty": 0,
     "nodes_count": 8,
     "primary_borough": "Queens",
-    "risk_level": "MEDIUM",
-    "description": "Multi-suite clinic front billing high-tech neurological, cardiovascular, and allergy testing packages without licensed MD supervision or medical necessity.",
+    "risk_level": "HIGH",
+    "description": "Multi-signal screening prototype illustrating co-location of adult day health care facility and commercial vehicle base sharing a physical tax lot (BBL).",
     "key_entities": [
-      "Queens Boulevard Multi-Care Diagnostic (NPI: 1437752096)",
-      "Jamaica Avenue Community Rx (NPI: 1982736451)",
-      "Empire Diagnostic Billing Management Inc",
-      "JFK Cargo Transit Group"
+      "Sample Adult Day Care Facility Alpha [Workflow Demo] (DEMO-NPI-001)",
+      "Sample Commercial Fleet Logistics [Plate NY-88291]",
+      "Sample Industrial BBL Lot 4109"
     ],
     "patterns": [
-      "Unbundled CPT codes 95810, 93015, and 95907 billed as uniform mandatory bundle for all walk-ins",
-      "Kickback payments laundered as 'marketing consultation fees'",
-      "Co-mingled corporate filings with unpermitted JFK freight forwarders"
+      "Physical proximity: Healthcare facility parcel adjoins commercial vehicle dispatch lot",
+      "Billing velocity outlier: Upper quartile monthly spending rate relative to specialty peer mean",
+      "Requires independent verification of licensed census before drawing inferences"
+    ]
+  },
+  {
+    "id": "CLUSTER-02",
+    "name": "Sample Temporal Velocity Spike Cluster",
+    "type": "CDPAP_GHOST_NETWORK",
+    "total_exposure": 8640000,
+    "estimated_whistleblower_bounty": 0,
+    "nodes_count": 6,
+    "primary_borough": "Brooklyn",
+    "risk_level": "MEDIUM",
+    "description": "Prototype cluster demonstrating temporal billing acceleration screening. Measures rate of growth over 90-day window against peer expansion baseline.",
+    "key_entities": [
+      "Sample Adult Day Care Facility Beta [Workflow Demo] (DEMO-NPI-002)",
+      "Sunset Park Corridor Healthcare Peer Group"
+    ],
+    "patterns": [
+      "Temporal acceleration: >150% volume growth over trailing 90-day reporting window",
+      "Exculpatory hypothesis: Legitimate absorption of displaced participants from closed clinic",
+      "Requires primary attendance rosters to confirm census validity"
     ]
   }
 ]
