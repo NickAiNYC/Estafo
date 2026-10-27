@@ -2,12 +2,28 @@ import assert from "node:assert";
 
 console.log("=== ESTAFO VERIFICATION SUITE (Gates G1 - G6) ===\n");
 
+async function fetchWithRetry(url, options = {}, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timeoutId);
+      return res;
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+  }
+  throw new Error(`Failed to fetch ${url} after ${retries} attempts`);
+}
+
 // Test 1: SODA 311 Live API connectivity and schema validation
 console.log("[Test 1] Testing live NYC 311 Socrata SODA (erm2-nwe9)...");
 const soqlQuery = "$select=unique_key,created_date,complaint_type,descriptor,incident_address,incident_zip,borough,status,latitude,longitude&$where=complaint_type in ('Idling', 'Illegal Dumping') and latitude is not null&$order=created_date DESC&$limit=5";
 const test311Url = `https://data.cityofnewyork.us/resource/erm2-nwe9.json?${soqlQuery}`;
 
-const res311 = await fetch(test311Url, {
+const res311 = await fetchWithRetry(test311Url, {
   headers: { "Accept": "application/json", "User-Agent": "ESTAFO-Test-Runner/1.0" }
 });
 
@@ -27,7 +43,7 @@ console.log(`✓ 311 Stream Verified: Received ${data311.length} live records. M
 // Test 2: SODA DOB Complaints Live API connectivity
 console.log("\n[Test 2] Testing live NYC DOB Complaints SODA (eabe-havv)...");
 const dobQuery = "$select=complaint_number,status,date_entered,house_number,house_street,zip_code,bin,complaint_category&$order=date_entered DESC&$limit=5";
-const resDOB = await fetch(`https://data.cityofnewyork.us/resource/eabe-havv.json?${dobQuery}`, {
+const resDOB = await fetchWithRetry(`https://data.cityofnewyork.us/resource/eabe-havv.json?${dobQuery}`, {
   headers: { "Accept": "application/json", "User-Agent": "ESTAFO-Test-Runner/1.0" }
 });
 
@@ -40,7 +56,7 @@ console.log(`✓ DOB Complaints Verified: Received ${dataDOB.length} live record
 // Test 2b: SODA DOB Violations Live API connectivity
 console.log("\n[Test 2b] Testing live NYC DOB Violations SODA (3h2n-5cm9)...");
 const violQuery = "$select=isn_dob_bis_viol,boro,block,lot,issue_date,violation_number,house_number,street,violation_category&$order=issue_date DESC&$limit=5";
-const resViol = await fetch(`https://data.cityofnewyork.us/resource/3h2n-5cm9.json?${violQuery}`, {
+const resViol = await fetchWithRetry(`https://data.cityofnewyork.us/resource/3h2n-5cm9.json?${violQuery}`, {
   headers: { "Accept": "application/json", "User-Agent": "ESTAFO-Test-Runner/1.0" }
 });
 assert.strictEqual(resViol.status, 200, "DOB Violations must return HTTP 200");

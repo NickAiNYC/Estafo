@@ -16,6 +16,7 @@ import {
   Timer,
   Hash
 } from "lucide-react";
+import { EvidenceDossier } from "@/components/EvidenceDossier";
 
 interface MedicaidQuiTamRadarProps {
   providers: MedicaidProviderRecord[];
@@ -482,6 +483,17 @@ export default function MedicaidQuiTamRadar({
                       <span>REJECT (EXCULPATORY)</span>
                     </button>
                   </div>
+
+                  {/* Relator Disclosure Evidence Dossier Package */}
+                  <EvidenceDossier
+                    leadId={selectedProvider.id}
+                    npi={selectedProvider.npi}
+                    providerName={selectedProvider.name}
+                    disposition={selectedProvider.lead_utility || leadUtility}
+                    observedSeconds={reviewSeconds}
+                    docHashes={documentHash.trim() ? [documentHash.trim()] : ["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"]}
+                    allowlistChecksum="13f3ef5c5460d27858767429ab1662ebf88e8f36a9c6ae7436879494b01ed0d2"
+                  />
                 </div>
               </div>
             </div>
