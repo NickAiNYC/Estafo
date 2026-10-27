@@ -3,28 +3,60 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-canvas text-primary font-jakarta antialiased h-screen overflow-hidden;
-    line-height: 1.55;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-outfit tracking-tight;
-    line-height: 1.2;
+  :root {
+    --bg-canvas: #090A0F;
+    --bg-surface: #12141C;
+    --border-slate: #1E2230;
   }
 
-  /* Custom scrollbar for operations feel */
+  body {
+    background-color: #090A0F;
+    color: #F8FAFC;
+    font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+  }
+
+  /* Custom tactical scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #090A0F;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-surface-hover rounded-full;
+    background: #1E2230;
+    border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted;
+    background: #2A3044;
+  }
+}
+
+@layer components {
+  /* Tactical Glass Panel */
+  .tactical-panel {
+    background: rgba(18, 20, 28, 0.78);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid #1E2230;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .tactical-border-b {
+    border-bottom: 1px solid #1E2230;
+  }
+
+  .tactical-border-r {
+    border-right: 1px solid #1E2230;
+  }
+
+  /* Monospace Data Cell */
+  .data-cell {
+    font-family: var(--font-mono), monospace;
+    font-feature-settings: "tnum" 1, "zero" 1;
+    letter-spacing: -0.02em;
   }
 }

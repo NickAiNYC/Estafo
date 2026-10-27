@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Header, { ConsoleView } from "@/components/Header";
 import Footer from "@/components/Footer";
 import KpiStrip, { LayerId } from "@/components/KpiStrip";
@@ -11,6 +11,7 @@ import PalantirNexusGraph from "@/components/PalantirNexusGraph";
 import MedicaidQuiTamRadar from "@/components/MedicaidQuiTamRadar";
 import ProfitEngineLedger from "@/components/ProfitEngineLedger";
 import LegalWeaponizer from "@/components/LegalWeaponizer";
+import { useTacticalAudio } from "@/hooks/useTacticalAudio";
 import { 
   DumpingRecord, 
   NoiseRecord, 
@@ -26,6 +27,9 @@ import { FlyToInterpolator } from "@deck.gl/core";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ConsoleView>("WAR_ROOM");
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  const { playClick, playChirp } = useTacticalAudio();
 
   // Core Tactical Data
   const [dumping, setDumping] = useState<DumpingRecord[]>([]);
@@ -93,6 +97,7 @@ export default function Home() {
   }, []);
 
   const handleToggleLayer = useCallback((layerId: LayerId) => {
+    playClick();
     setActiveLayers((prev) => {
       const next = new Set(prev);
       if (next.has(layerId)) {
@@ -102,7 +107,7 @@ export default function Home() {
       }
       return next;
     });
-  }, []);
+  }, [playClick]);
 
   // Keyboard navigation & layer toggles
   useEffect(() => {
@@ -123,58 +128,69 @@ export default function Home() {
       if (layerMap[e.key]) {
         handleToggleLayer(layerMap[e.key]);
       } else if (e.key.toLowerCase() === "g") {
+        playClick();
         setCurrentView("NEXUS_GRAPH");
       } else if (e.key.toLowerCase() === "m") {
+        playClick();
         setCurrentView("MEDICAID_RADAR");
       } else if (e.key.toLowerCase() === "l") {
+        playClick();
         setCurrentView("PROFIT_LEDGER");
       } else if (e.key.toLowerCase() === "w") {
+        playClick();
         setCurrentView("LEGAL_WEAPONIZER");
       } else if (e.key === "Escape" || e.key === "0") {
+        playClick();
         setCurrentView("WAR_ROOM");
       }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleToggleLayer]);
+  }, [handleToggleLayer, playClick]);
 
-  const handleZoneClick = (lat: number, lon: number) => {
-    setViewState({
-      ...viewState,
+  const handleZoneClick = useCallback((lat: number, lon: number) => {
+    playChirp();
+    setViewState((prev) => ({
+      ...prev,
       longitude: lon,
       latitude: lat,
-      zoom: 14,
+      zoom: 14.2,
       pitch: 55,
+      bearing: -15,
       transitionDuration: 1800,
       transitionInterpolator: new FlyToInterpolator(),
-    });
-  };
+    }));
+  }, [playChirp]);
 
-  const handleOpenWeaponizer = (targetId: string, track: string) => {
+  const handleOpenWeaponizer = useCallback((targetId: string, track: string) => {
+    playClick();
     setWeaponizerTarget({ id: targetId, track });
     setCurrentView("LEGAL_WEAPONIZER");
-  };
+  }, [playClick]);
 
-  const counts: Record<LayerId, number> = {
+  const counts: Record<LayerId, number> = useMemo(() => ({
     dumping: dumping.length,
     noise: noise.length,
     medicaid: medicaid.length,
     permits: permits.length,
     evidence: evidence.length,
     zones: zones.length,
-  };
+  }), [dumping.length, noise.length, medicaid.length, permits.length, evidence.length, zones.length]);
 
   return (
     <>
       <Header 
         currentView={currentView}
         onSelectView={setCurrentView}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
       />
 
       <KpiStrip 
         counts={counts}
         hoveredLayer={hoveredKpiLayer}
         onHoverLayer={setHoveredKpiLayer}
+        onSelectLayer={handleToggleLayer}
+        activeLayers={activeLayers}
       />
 
       {/* Main View Switcher */}
@@ -197,6 +213,7 @@ export default function Home() {
             <ZoneTable 
               zones={zones}
               onZoneClick={handleZoneClick}
+              onPlayClick={playClick}
             />
           </div>
         )}
@@ -205,6 +222,7 @@ export default function Home() {
           <PalantirNexusGraph 
             graphData={palantirGraph}
             onSelectProvider={() => {
+              playClick();
               setCurrentView("MEDICAID_RADAR");
             }}
           />
@@ -237,7 +255,11 @@ export default function Home() {
 
       <CommandPalette 
         zones={zones}
+        medicaid={medicaid}
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
         onSelectZone={(lat, lon) => {
+          playChirp();
           setCurrentView("WAR_ROOM");
           handleZoneClick(lat, lon);
         }}
