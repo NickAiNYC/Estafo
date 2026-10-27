@@ -9,7 +9,8 @@ import {
   Download, 
   Search, 
   ArrowUpRight,
-  TrendingUp
+  TrendingUp,
+  AlertTriangle
 } from "lucide-react";
 
 interface ProfitEngineLedgerProps {
@@ -127,44 +128,53 @@ export default function ProfitEngineLedger({ ledgerItems, onOpenWeaponizer }: Pr
         </button>
       </div>
 
+      {/* Prominent Demonstration Model Disclaimer */}
+      <div className="px-16 py-8 bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-xs font-mono flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-8">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+          <span>Notice: Synthetic commercial financial model. Figures reflect illustrative prototype projections ($16,350 collected, $9.6M statutory pipeline) demonstrating accounting cash-segregation architecture, NOT verified bank receipts or real legal retainers.</span>
+        </div>
+        <span className="text-amber-400 font-bold ml-8 shrink-0 uppercase text-10">Synthetic Financial Model</span>
+      </div>
+
       {/* Aggregate Metric Cards (Gate G4 & Component 4/5) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 p-16 bg-inset shrink-0 border-b border-border font-mono">
         <div className="bg-surface border border-emerald/40 p-14 rounded-sm shadow-panel">
           <div className="flex items-center justify-between text-muted text-10">
-            <span className="text-emerald font-bold">REALIZED CASH REVENUE</span>
+            <span className="text-emerald font-bold">ILLUSTRATIVE CASH (DEMO)</span>
             <CheckCircle2 className="w-4 h-4 text-emerald" />
           </div>
           <div className="text-22 font-bold text-emerald mt-6">
             ${totalCollectedAndPaid.toLocaleString()}
           </div>
-          <div className="text-10 text-muted mt-2">Paid Pilots ($12.5k) + OATH ($3.8k)</div>
+          <div className="text-10 text-muted mt-2">Simulated Pilots ($12.5k) + OATH ($3.8k)</div>
         </div>
 
         <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
           <div className="flex items-center justify-between text-muted text-10">
-            <span>INVOICED ACCOUNTS RECEIVABLE</span>
+            <span>INVOICED AR (DEMO MODEL)</span>
             <Clock className="w-4 h-4 text-steel-blue" />
           </div>
           <div className="text-22 font-bold text-steel-blue mt-6">
             $7,500
           </div>
-          <div className="text-10 text-muted mt-2">Dossier Delivered (Net 30)</div>
+          <div className="text-10 text-muted mt-2">Dossier Delivered (Net 30 Sample)</div>
         </div>
 
         <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
           <div className="flex items-center justify-between text-muted text-10">
-            <span>COMMITTED PILOT CONTRACTS</span>
+            <span>COMMITTED CONTRACTS (DEMO)</span>
             <DollarSign className="w-4 h-4 text-gold" />
           </div>
           <div className="text-22 font-bold text-gold mt-6">
             $25,000
           </div>
-          <div className="text-10 text-muted mt-2">Signed Retainers (Q4 Deliverable)</div>
+          <div className="text-10 text-muted mt-2">Signed Retainers (Q4 Deliverable Sample)</div>
         </div>
 
         <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
           <div className="flex items-center justify-between text-muted text-10">
-            <span>STATUTORY EXPOSURE CEILING</span>
+            <span>STATUTORY CEILING (THEORETICAL)</span>
             <TrendingUp className="w-4 h-4 text-secondary" />
           </div>
           <div className="text-22 font-bold text-secondary mt-6">

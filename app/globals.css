@@ -60,3 +60,15 @@
     letter-spacing: -0.02em;
   }
 }
+
+@media print {
+  body {
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, footer, nav {
+    display: none !important;
+  }
+}
+

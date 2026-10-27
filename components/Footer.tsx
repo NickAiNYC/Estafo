@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { Activity, ShieldCheck, Database, RefreshCw, AlertTriangle, XCircle, CheckCircle2, ChevronUp, ChevronDown } from "lucide-react";
 
+export type FeedTier = "LIVE_SOURCED" | "SYNTHETIC_DEMO";
+
 export interface FeedTelemetryItem {
   id: string;
   name: string;
   source: string;
+  tier: FeedTier;
   status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING";
   count: number;
   latencyMs: number;
@@ -25,8 +28,6 @@ interface FooterProps {
 }
 
 export default function Footer({
-  liveCount = 0,
-  liveSource = "NYC SODA (erm2-nwe9, eabe-havv)",
   latencyMs = 42,
   feedStatus = "ONLINE",
   feeds = [],
@@ -52,6 +53,11 @@ export default function Footer({
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const liveSourcedFeeds = feeds.filter(f => f.tier === "LIVE_SOURCED");
+  const demoFeeds = feeds.filter(f => f.tier === "SYNTHETIC_DEMO");
+  const liveSourcedCount = liveSourcedFeeds.reduce((acc, f) => acc + (f.count || 0), 0);
+  const demoCount = demoFeeds.reduce((acc, f) => acc + (f.count || 0), 0);
 
   const getStatusBadge = (status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING") => {
     switch (status) {
@@ -82,20 +88,38 @@ export default function Footer({
     }
   };
 
+  const getTierBadge = (tier: FeedTier) => {
+    if (tier === "LIVE_SOURCED") {
+      return (
+        <span className="px-6 py-1 rounded bg-emerald/15 text-emerald border border-emerald/40 text-9 font-bold tracking-wider uppercase">
+          LIVE SOURCED
+        </span>
+      );
+    }
+    return (
+      <span className="px-6 py-1 rounded bg-amber-500/15 text-amber-300 border border-amber-500/40 text-9 font-bold tracking-wider uppercase">
+        SYNTHETIC DEMO
+      </span>
+    );
+  };
+
   return (
     <div className="relative shrink-0 z-30 select-none font-mono">
       {/* Expandable Feed Telemetry Drawer */}
       {showTelemetryDrawer && (
-        <div className="bg-canvas/95 backdrop-blur-md border-t border-border-highlight p-16 shadow-tactical max-h-[320px] overflow-y-auto">
+        <div className="bg-canvas/95 backdrop-blur-md border-t border-border-highlight p-16 shadow-tactical max-h-[340px] overflow-y-auto">
           <div className="max-w-7xl mx-auto space-y-12">
             <div className="flex items-center justify-between pb-8 border-b border-border">
               <div className="flex items-center gap-8">
                 <Activity className="w-4 h-4 text-emerald" />
                 <span className="text-12 font-bold uppercase tracking-wider text-primary">
-                  Live Feed Telemetry & Source Diagnostics
+                  Data Feed Telemetry & Source Verification
                 </span>
-                <span className="text-10 text-muted px-6 py-1 bg-inset rounded-sm border border-border">
-                  {feeds.length} Active Feeds Monitored
+                <span className="text-10 text-emerald px-6 py-1 bg-emerald/10 rounded-sm border border-emerald/30 font-bold">
+                  {liveSourcedFeeds.length} LIVE SOURCED
+                </span>
+                <span className="text-10 text-amber-300 px-6 py-1 bg-amber-500/10 rounded-sm border border-amber-500/30 font-bold">
+                  {demoFeeds.length} SYNTHETIC DEMO
                 </span>
               </div>
               <div className="flex items-center gap-8">
@@ -124,18 +148,20 @@ export default function Footer({
                 <thead>
                   <tr className="text-muted border-b border-border/60 text-9 uppercase tracking-wider">
                     <th className="py-6 px-8">Feed Name</th>
+                    <th className="py-6 px-8">Data Tier</th>
                     <th className="py-6 px-8">Source Endpoint</th>
-                    <th className="py-6 px-8">Status</th>
+                    <th className="py-6 px-8">Endpoint Status</th>
                     <th className="py-6 px-8 text-right">Records</th>
                     <th className="py-6 px-8 text-right">Latency</th>
                     <th className="py-6 px-8">Last Sync (UTC)</th>
-                    <th className="py-6 px-8">Diagnostic Error</th>
+                    <th className="py-6 px-8">Diagnostic Note</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
                   {feeds.map((feed) => (
                     <tr key={feed.id} className="hover:bg-surface/40 transition-colors">
                       <td className="py-6 px-8 font-bold text-primary">{feed.name}</td>
+                      <td className="py-6 px-8">{getTierBadge(feed.tier)}</td>
                       <td className="py-6 px-8 text-muted text-10">{feed.source}</td>
                       <td className="py-6 px-8">{getStatusBadge(feed.status)}</td>
                       <td className="py-6 px-8 text-right font-bold text-secondary">
@@ -148,15 +174,17 @@ export default function Footer({
                           <span className="text-red-400 font-bold bg-red-950/40 px-6 py-1 rounded-sm border border-red-500/30">
                             {feed.error}
                           </span>
+                        ) : feed.tier === "SYNTHETIC_DEMO" ? (
+                          <span className="text-amber-400/80 text-10">Unverified workflow demo</span>
                         ) : (
-                          <span className="text-faint">None</span>
+                          <span className="text-emerald/80 text-10">Verified live API</span>
                         )}
                       </td>
                     </tr>
                   ))}
                   {feeds.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="py-16 text-center text-muted">
+                      <td colSpan={8} className="py-16 text-center text-muted">
                         No feeds configured or telemetry initializing...
                       </td>
                     </tr>
@@ -181,7 +209,7 @@ export default function Footer({
             ) : feedStatus === "ONLINE" ? (
               <span className="flex items-center gap-4 text-emerald">
                 <Activity className="w-3 h-3 animate-pulse" />
-                <span>INGESTION: LIVE ({latencyMs}ms)</span>
+                <span>INGESTION: {liveSourcedFeeds.length} LIVE / {demoFeeds.length} DEMO ({latencyMs}ms)</span>
               </span>
             ) : feedStatus === "DEGRADED" ? (
               <span className="flex items-center gap-4 text-gold">
@@ -202,7 +230,7 @@ export default function Footer({
           <button
             onClick={() => setShowTelemetryDrawer((prev) => !prev)}
             className="flex items-center gap-4 text-secondary hover:text-primary transition-colors cursor-pointer bg-surface/60 hover:bg-surface border border-border px-6 py-2 rounded-sm"
-            title="Inspect feed-level diagnostics, latencies, and error logs"
+            title="Inspect feed-level diagnostics, tiers, and latencies"
           >
             <span>TELEMETRY ({feeds.length} FEEDS)</span>
             {showTelemetryDrawer ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
@@ -225,20 +253,20 @@ export default function Footer({
 
           <span className="flex items-center gap-4 text-secondary hidden md:inline-flex">
             <Database className="w-3 h-3 text-steel-blue" />
-            <span>TRUTH SOURCE: {liveSource}</span>
+            <span>LIVE SOURCE: NYC SODA (erm2-nwe9)</span>
           </span>
 
           <span className="text-border hidden md:inline">|</span>
 
-          <span className="text-primary/80 hidden lg:inline">
-            RECORDS ACTIVE: <span className="text-emerald font-bold">{liveCount}</span>
+          <span className="hidden lg:inline">
+            RECORDS: <span className="text-emerald font-bold">{liveSourcedCount} LIVE</span> <span className="text-muted">/</span> <span className="text-amber-400 font-bold">{demoCount} DEMO</span>
           </span>
         </div>
 
         <div className="flex items-center gap-12">
           <span className="flex items-center gap-4 text-gold hidden sm:inline-flex">
             <ShieldCheck className="w-3 h-3 text-gold" />
-            <span>AUDIT: GAAP-ALIGNED LEDGER (GATE G4)</span>
+            <span>AUDIT: CASH-SEGREGATION PROTOTYPE (GATE G4)</span>
           </span>
           <span className="text-border">|</span>
           <span className="text-primary font-bold">

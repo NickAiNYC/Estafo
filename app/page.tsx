@@ -124,6 +124,7 @@ export default function Home() {
             id: "socrata_311",
             name: "NYC SODA 311 Live",
             source: "erm2-nwe9 (Idling & Dumping)",
+            tier: "LIVE_SOURCED",
             status: "ONLINE",
             count: live311Count,
             latencyMs: t311Latency,
@@ -136,6 +137,7 @@ export default function Home() {
             id: "socrata_311",
             name: "NYC SODA 311 Live",
             source: "erm2-nwe9 (Idling & Dumping)",
+            tier: "LIVE_SOURCED",
             status: "OFFLINE",
             count: 0,
             latencyMs: t311Latency,
@@ -156,6 +158,7 @@ export default function Home() {
           id: "socrata_311",
           name: "NYC SODA 311 Live",
           source: "erm2-nwe9 (Idling & Dumping)",
+          tier: "LIVE_SOURCED",
           status: "OFFLINE",
           count: 0,
           latencyMs: Math.round(performance.now() - t311Start),
@@ -166,7 +169,6 @@ export default function Home() {
 
       // 2. Medicaid Sourced Leads Feed (NO SILENT FALLBACK TO OLD JSON)
       const tMedStart = performance.now();
-      let medicaidCount = 0;
       try {
         const medRes = await fetch("/api/sources/medicaid-leads").catch(() => null);
         const tMedLatency = Math.round(performance.now() - tMedStart);
@@ -174,7 +176,6 @@ export default function Home() {
         if (medRes?.ok) {
           const mData = await medRes.json();
           const items: MedicaidProviderRecord[] = Array.isArray(mData) ? mData : (mData.data || []);
-          medicaidCount = items.length;
           setMedicaid(items);
           setMedicaidError(null);
 
@@ -182,6 +183,7 @@ export default function Home() {
             id: "medicaid_leads",
             name: "Medicaid Lead Detection",
             source: "/api/sources/medicaid-leads",
+            tier: "SYNTHETIC_DEMO",
             status: "ONLINE",
             count: items.length,
             latencyMs: tMedLatency,
@@ -197,6 +199,7 @@ export default function Home() {
             id: "medicaid_leads",
             name: "Medicaid Lead Detection",
             source: "/api/sources/medicaid-leads",
+            tier: "SYNTHETIC_DEMO",
             status: "OFFLINE",
             count: 0,
             latencyMs: tMedLatency,
@@ -212,6 +215,7 @@ export default function Home() {
           id: "medicaid_leads",
           name: "Medicaid Lead Detection",
           source: "/api/sources/medicaid-leads",
+          tier: "SYNTHETIC_DEMO",
           status: "OFFLINE",
           count: 0,
           latencyMs: Math.round(performance.now() - tMedStart),
@@ -249,7 +253,8 @@ export default function Home() {
             telemetryItems.push({
               id: "commercial_ledger",
               name: "Commercial Ledger & Disbursals",
-              source: "/api/ledger (GAAP)",
+              source: "/api/ledger (Demo Model)",
+              tier: "SYNTHETIC_DEMO",
               status: "ONLINE",
               count: items.length,
               latencyMs: tLedgerLatency,
@@ -267,6 +272,7 @@ export default function Home() {
               id: "commercial_ledger",
               name: "Commercial Ledger & Disbursals",
               source: "/data/bounty_ledger.json (Static)",
+              tier: "SYNTHETIC_DEMO",
               status: "DEGRADED",
               count: staticItems.length,
               latencyMs: tLedgerLatency,
@@ -280,6 +286,7 @@ export default function Home() {
           id: "commercial_ledger",
           name: "Commercial Ledger & Disbursals",
           source: "/api/ledger",
+          tier: "SYNTHETIC_DEMO",
           status: "OFFLINE",
           count: 0,
           latencyMs: Math.round(performance.now() - tLedgerStart),
@@ -300,6 +307,7 @@ export default function Home() {
             id: "palantir_graph",
             name: "Palantir Shell Knowledge Graph",
             source: "/data/palantir_graph.json",
+            tier: "SYNTHETIC_DEMO",
             status: "ONLINE",
             count: gData.nodes?.length || 0,
             latencyMs: tGraphLatency,
@@ -312,6 +320,7 @@ export default function Home() {
           id: "palantir_graph",
           name: "Palantir Shell Knowledge Graph",
           source: "/data/palantir_graph.json",
+          tier: "SYNTHETIC_DEMO",
           status: "OFFLINE",
           count: 0,
           latencyMs: Math.round(performance.now() - tGraphStart),
@@ -341,9 +350,8 @@ export default function Home() {
       if (eRes?.ok) setEvidence(await eRes.json());
       if (ringsRes?.ok) setFraudRings(await ringsRes.json());
 
-      // Telemetry rollup: strictly truthful counts, no fallback substitution
-      const totalLive = live311Count + medicaidCount;
-      setLiveRecordCount(totalLive);
+      // Telemetry rollup: live count strictly reflects live sourced feeds (no demo conflation)
+      setLiveRecordCount(live311Count);
       setLatencyMs(Math.round(performance.now() - overallStartTime));
 
       // Calculate overall system ingestion status
