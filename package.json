@@ -1,6 +1,6 @@
 {
-  "name": "vanguard-console",
-  "version": "0.1.0",
+  "name": "estafo",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

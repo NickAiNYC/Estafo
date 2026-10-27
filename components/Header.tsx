@@ -71,7 +71,7 @@ export default function Header({ currentView, onSelectView }: HeaderProps) {
           <div>
             <div className="flex items-center gap-8">
               <span className="text-16 font-extrabold text-primary tracking-tight font-jakarta">
-                VANGUARD
+                ESTAFO
               </span>
               <span className="text-11 font-mono px-6 py-1 rounded bg-amber/10 border border-amber/30 text-amber font-bold">
                 PALANTIR FOR NYC

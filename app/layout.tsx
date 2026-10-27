@@ -18,8 +18,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VANGUARD",
-  description: "NYC Private Enforcement Engine",
+  title: "ESTAFO — Palantir for NYC",
+  description: "Metropolitan Intelligence & Profit Engine (Vanguard x MediFraudy)",
 };
 
 export default function RootLayout({
