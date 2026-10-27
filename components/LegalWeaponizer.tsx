@@ -6,7 +6,9 @@ import {
   Check, 
   Download, 
   Scale, 
-  FileText
+  FileText,
+  ShieldCheck,
+  AlertCircle
 } from "lucide-react";
 
 interface LegalWeaponizerProps {
@@ -15,69 +17,113 @@ interface LegalWeaponizerProps {
 }
 
 export default function LegalWeaponizer({ initialTrack }: LegalWeaponizerProps) {
-  const [packType, setPackType] = useState<"OATH_DUMPING" | "OATH_IDLING" | "NYFCA_QUI_TAM">(
+  const [packType, setPackType] = useState<"ATTORNEY_EVIDENCE_DOSSIER" | "OATH_IDLING" | "OATH_DUMPING">(
     initialTrack === "TRACK_6_NYFCA_QUI_TAM"
-      ? "NYFCA_QUI_TAM"
+      ? "ATTORNEY_EVIDENCE_DOSSIER"
       : initialTrack === "TRACK_1_IDLING"
       ? "OATH_IDLING"
-      : "OATH_DUMPING"
+      : "ATTORNEY_EVIDENCE_DOSSIER"
   );
 
   const [copied, setCopied] = useState(false);
+  const [attorneySignedOff, setAttorneySignedOff] = useState(false);
+  const [reviewerName, setReviewerName] = useState("K. Vance, Esq. (Healthcare Compliance)");
 
   // Form parameters
+  const [providerName, setProviderName] = useState("Metro Health Mobility LLC");
+  const [providerNPI, setProviderNPI] = useState("1982736410");
+  const [taxonomyCode, setTaxonomyCode] = useState("343900000X (Non-Emergency Medical Transport)");
+  const [peerCohortSize, setPeerCohortSize] = useState("312 Providers (NYC Metro Area)");
+  const [deviationSigma, setDeviationSigma] = useState("+4.8σ Above Peer Mean");
+  const [exculpatoryHypothesis, setExculpatoryHypothesis] = useState(
+    "Competitor regional carrier ceased operations in Q2 2026; influx of displaced chronic dialysis beneficiaries may account for legitimate volume surge."
+  );
+
+  // OATH Parameters
   const [vehiclePlate, setVehiclePlate] = useState("NY-88291");
-  const [vehicleState, setVehicleState] = useState("NY");
-  const [targetLocation, setTargetLocation] = useState("Maspeth Creek Industrial Choke (40.7185, -73.9242)");
-  const [targetDate, setTargetDate] = useState("2026-10-24 23:42:10");
-  const [videoHash, setVideoHash] = useState("sha256:7f9a2b89c4d1e028b17409f9821a");
-  const [providerName, setProviderName] = useState("Apex Community Care & Day Services");
-  const [providerNPI, setProviderNPI] = useState("1942008812");
-  const [relatorSharePct] = useState("25%");
-  const [exposureEstimate, setExposureEstimate] = useState("$14,200,000");
+  const [targetLocation, setTargetLocation] = useState("Food Center Dr & Halleck St, Bronx (Hunts Point Corridor)");
 
-  const generateOATHDumpingText = () => {
+  const generateAttorneyDossierText = () => {
     return `================================================================================
-NEW YORK CITY OFFICE OF ADMINISTRATIVE TRIALS AND HEARINGS (OATH)
-ENVIRONMENTAL CONTROL BOARD / DSNY CITIZEN ENFORCEMENT AFFIDAVIT
+ESTAFO LITIGATION INTELLIGENCE // ATTORNEY-READY RESEARCH DOSSIER
+CONFIDENTIAL ATTORNEY WORK PRODUCT // PREPARED FOR COUNSEL EVALUATION
 ================================================================================
-PURSUANT TO: NYC Administrative Code § 16-119 (Unlawful Commercial Dumping)
-STATUTORY PENALTY: Up to $18,000.00
-STATUTORY BOUNTY CLAIM: 50% of Collected Fines (§ 16-119(e))
+DISCLAIMER & EVIDENCE CONTRACT:
+This dossier presents unadjudicated statistical peer comparisons, historical
+entity-resolution links, and verified public records. The platform does NOT
+assert fraud, intent, or legal liability. All findings must be independently
+corroborated by qualified legal counsel prior to formal filing or external action.
+================================================================================
 
-I. RESPONDENT & VEHICLE IDENTIFICATION
+I. TARGET HEALTHCARE ENTITY & HISTORICAL RESOLUTION
 --------------------------------------------------------------------------------
-Commercial Vehicle Plate: ${vehiclePlate} (State: ${vehicleState})
-Vehicle Classification: Commercial Heavy Dump Body / Hauler
-Corporate Shell / Registered Owner: Tri-Borough Transport Holdings LLC
-Observed Incident Location: ${targetLocation}
-Date & Time of Observation: ${targetDate} EDT
+Legal Entity Name:        ${providerName}
+National Provider ID:     ${providerNPI}
+Healthcare Taxonomy:      ${taxonomyCode}
+Registered Office:        5404 4th Avenue, Brooklyn, NY 11220
+NYS DOS Entity ID:        6492019 (Formed: 2021-03-12, Active)
+Historical Prior Names:   None recorded in NYS DOS database
+Co-Located Entities:      2 affiliated corporate shells sharing Suite 2B:
+                          - Metro Logistics Express Corp (NYS DOS #6510291)
+                          - 4th Ave Billing Management LLC (NYS DOS #6520192)
+[NOTE: Shared address is an investigative lead; it does NOT establish common ownership.]
 
-II. EVIDENTIARY SUBMISSION & INTEGRITY ATTESTATION
+II. TRIGGERING ANOMALY & MATHEMATICAL PEER COMPARISON
 --------------------------------------------------------------------------------
-1. Photographic and continuous video evidence was captured in real-time by a
-   certified citizen observer without physical interaction or contact with the
-   operator of the vehicle.
-2. The continuous video record depicts the unauthorized unloading and dumping
-   of commercial demolition debris onto NYC municipal property / vacant industrial zone.
-3. DIGITAL FORENSIC HASH:
-   ${videoHash}
-   (Integrity validated; metadata headers intact; unaltered timestamp stream).
+Primary Trigger:          Aggregated Procedure Code T2003 (Non-Emergency Transport)
+Peer Cohort Definition:   ${peerCohortSize}
+Comparative Metric:       Monthly Billed Units per Active Medicaid Beneficiary
+Peer Group Mean (μ):      14.2 units / beneficiary / month (Std Dev σ = 3.1)
+Target Entity Velocity:   29.1 units / beneficiary / month
+Statistical Deviation:    ${deviationSigma} (Top 0.2% Outlier in NYC Region)
+Temporal Velocity:        +240% surge observed across 90-day window (July - Sept 2026)
 
-III. MANDATORY TELEPHONE STANDBY DECLARATION (48 RCNY § 6-08)
+III. SOURCE PROVENANCE & RETRIEVAL CITATIONS
 --------------------------------------------------------------------------------
-Pursuant to OATH evidentiary guidelines, the citizen complainant hereby exercises
-the right to APPEAR VIA TELEPHONE STANDBY on the scheduled hearing date.
-Direct contact information has been verified with DSNY Enforcement Unit.
+1. CMS National Provider Identifier (NPPES Registry):
+   Source URL: https://npiregistry.cms.hhs.gov/provider-view/${providerNPI}
+   Retrieved:  2026-10-24T18:30:00Z | Status: Active Enumeration
+2. HHS / CMS Open Payments & Procedure Code Aggregates:
+   Source URL: https://data.cms.gov/provider-data/dataset/t2003-ny-2026
+   Retrieved:  2026-10-25T11:15:00Z | Batch: 2026-Q3-V1
+3. NYS OMIG Exclusions & Re-Enrollment Registry:
+   Source URL: https://omig.ny.gov/medicaid-fraud/exclusion-search
+   Retrieved:  2026-10-26T09:00:00Z | Result: Clean (No Active Administrative Sanctions)
 
-IV. AFFIRMATION UNDER PENALTY OF PERJURY
+IV. CONTRADICTORY & EXCULPATORY EVIDENCE (INNOCENT HYPOTHESES)
 --------------------------------------------------------------------------------
-I affirm under penalty of perjury under the laws of the State of New York that
-the foregoing statements are true and accurate based upon firsthand observation
-and authenticated recording.
+Documented Operational Context:
+${exculpatoryHypothesis}
+Additional Factors:
+- Target operates dual-shift wheelchair van fleet with specialized bariatric lift.
+- Provider does not have prior OMIG or OIG-LEIE sanction history.
 
-Date of Filing: ${new Date().toISOString().slice(0, 10)}
-Vanguard Automated Evidence Packager // OMNI-NYC Operations
+V. FOUR-TIER EVIDENTIARY CLASSIFICATION (GATE G3)
+--------------------------------------------------------------------------------
+1. VERIFIED FACTS:
+   - Target is an actively enrolled NYS Medicaid transportation provider.
+   - Corporate registration and address confirmed via official NYS DOS records.
+   - Peer group billing totals represent official public CMS aggregate releases.
+2. STATISTICAL INFERENCES:
+   - Procedure code T2003 billing velocity is anomalous relative to regional peers.
+   - Co-location with commercial logistics shell indicates potential shared dispatch.
+3. ALLEGATIONS:
+   - [NONE ASSERTED] — Platform explicitly takes no position on fraud or intent.
+4. UNKNOWNS & DATA GAPS:
+   - Electronic Visit Verification (EVV) driver GPS telematics have not been subpoenaed.
+   - Internal trip manifest driver logs and beneficiary signatures remain uninspected.
+
+VI. RECOMMENDED NEXT INVESTIGATIVE STEPS FOR COUNSEL
+--------------------------------------------------------------------------------
+1. Issue targeted FOIL request to NYC TLC for trip record logs associated with NPI.
+2. Cross-reference dispatch times against hospital inpatient admissions database.
+3. Review driver credentialing records through NYS DMV commercial carrier registry.
+
+VII. QUALIFIED HUMAN COMPLIANCE SIGN-OFF
+--------------------------------------------------------------------------------
+Reviewed and Certified By: ${reviewerName}
+Date of Attestation:      ${new Date().toISOString().slice(0, 10)}
+Status:                   RESEARCH DOSSIER COMPLETE // APPROVED FOR COUNSEL REVIEW
 `;
   };
 
@@ -87,84 +133,27 @@ NEW YORK CITY DEPARTMENT OF ENVIRONMENTAL PROTECTION (DEP)
 OATH CITIZEN AIR CONSERVATION ENFORCEMENT COMPLAINT
 ================================================================================
 PURSUANT TO: NYC Administrative Code § 24-163 (Commercial Engine Idling > 3 Mins)
-STATUTORY PENALTY: $350.00 – $2,000.00 (Escalating for Repeat Fleets)
-STATUTORY BOUNTY CLAIM: 50% Citizen Reward (OATH Citizen Filing)
+STATUTORY PENALTY: $350.00 – $2,000.00
+CITIZEN STATUTORY BOUNTY: 25% of Collected Summons Fines
 
 I. RESPONDENT COMMERCIAL VEHICLE
 --------------------------------------------------------------------------------
-Commercial Vehicle Plate: ${vehiclePlate} (State: ${vehicleState})
-Fleet / Markings: Commercial Transport Hauler
-Location: ${targetLocation}
-Time of Continuous Idling: ${targetDate} EDT
-Duration Recorded: 3 minutes 42 seconds (Unbroken Video Record)
+Commercial Vehicle Plate: ${vehiclePlate} (State: NY)
+Location of Violation:    ${targetLocation}
+Time of Observation:      ${new Date().toISOString().slice(0, 10)} 08:34:10 EDT
+Duration Recorded:        3 minutes 42 seconds (Unbroken Video Stream)
 
-II. CERTIFICATION OF ENGINE NOISE & EXHAUST
+II. EVIDENTIARY ATTESTATION
 --------------------------------------------------------------------------------
-1. Video file clearly captures continuous audible engine sound and visible exhaust.
-2. No active loading or unloading was occurring during the observation period.
-3. Forensically Authenticated SHA-256 Hash:
-   ${videoHash}
-
-III. TELEPHONE STANDBY ELECTION
---------------------------------------------------------------------------------
-Complainant certifies telephone standby availability pursuant to 48 RCNY § 6-08.
-Direct testimony will be provided by phone if respondent contests violation.
-
-Filing Source: Vanguard Tactical Enforcement Unit
-`;
-  };
-
-  const generateNYFCAQuiTamText = () => {
-    return `================================================================================
-CONFIDENTIAL RELATOR DISCLOSURE MEMORANDUM
-SUBMITTED PURSUANT TO:
-  - New York State False Claims Act (NYS State Finance Law § 189 et seq.)
-  - Federal False Claims Act (31 U.S.C. § 3729 et seq.)
-================================================================================
-NOTICE: FILED UNDER SEAL // FOR EVALUATION BY NY ATTORNEY GENERAL & US DOJ ONLY
-STATUTORY RELATOR RECOVERY: 15% to 30% of Total Recovery (§ 190(6))
-
-I. TARGET HEALTHCARE ENTITY
---------------------------------------------------------------------------------
-Entity Name: ${providerName}
-National Provider Identifier (NPI): ${providerNPI}
-Primary Address: 136-20 38th Ave, Flushing, NY 11354
-Medicaid / Managed Care Network: New York State Medicaid & MLTC Networks
-
-II. STATEMENT OF SYSTEMIC FRAUDULENT CLAIMS
---------------------------------------------------------------------------------
-1. PHANTOM ATTENDANCE & KICKBACK SCHEMES:
-   Target entity bills New York Medicaid for comprehensive adult day health care
-   and CDPAP home care services while beneficiaries are either not present,
-   hospitalized, or receiving cash rebates ($40-$60/day) in exchange for card swipes.
-   
-2. IMPOSSIBLE SHIFT PATTERNS (24-HR OVERLAP):
-   Automated claim analysis identifies 48 individual personal assistants billing
-   simultaneous 24-hour shifts across multiple fiscal intermediaries, generating
-   over 30 billable hours in single 24-hour calendar days.
-
-3. CORRELATION WITH COMMERCIAL FLEET & CORPORATE SHELL:
-   Corporate registration records reveal common beneficial ownership between
-   target healthcare entity and unlicensed freight logistics haulers cited for
-   municipal code violations in industrial transit corridors.
-
-III. STATUTORY DAMAGES & CIVIL PENALTIES ESTIMATE
---------------------------------------------------------------------------------
-Total Identified False Claims Exposure: ${exposureEstimate}
-Treble Damages (3x under NYFCA § 189(1)): $42,600,000.00
-Civil Penalties ($13,508 – $27,018 per false claim): Est. $8,400,000.00
-TOTAL STATUTORY DEMAND: $51,000,000.00
-ESTIMATED RELATOR BOUNTY (${relatorSharePct}): ~$12,750,000.00
-
-Submitted by: Confidential Whistleblower Relator Team
-Under Counsel Representation (NYFCA § 190 Protocol)
+1. Continuous 4K optical recording captured without interaction with driver.
+2. Engine audible throughout 180+ second legal threshold; ambient temperature 62°F.
+3. Telephone Standby elected pursuant to 48 RCNY § 6-08.
 `;
   };
 
   const getActiveText = () => {
-    if (packType === "OATH_DUMPING") return generateOATHDumpingText();
     if (packType === "OATH_IDLING") return generateOATHIdlingText();
-    return generateNYFCAQuiTamText();
+    return generateAttorneyDossierText();
   };
 
   const handleCopy = () => {
@@ -178,7 +167,7 @@ Under Counsel Representation (NYFCA § 190 Protocol)
     const element = document.createElement("a");
     const file = new Blob([text], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    element.download = `${packType.toLowerCase()}_filing_pack.txt`;
+    element.download = `${packType}_${new Date().toISOString().slice(0, 10)}.txt`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -186,195 +175,211 @@ Under Counsel Representation (NYFCA § 190 Protocol)
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row h-full bg-canvas text-primary overflow-hidden">
-      {/* Left Form Editor */}
-      <div className="w-full lg:w-[420px] border-b lg:border-b-0 lg:border-r border-border bg-surface p-20 flex flex-col overflow-y-auto shrink-0 space-y-16">
-        <div>
-          <div className="flex items-center gap-8 mb-4">
-            <Scale className="w-4 h-4 text-amber" />
-            <span className="text-11 font-mono text-muted uppercase tracking-wider">
-              Automated Legal Weaponizer
-            </span>
+      {/* Configuration & Input Controls */}
+      <div className="w-full lg:w-[480px] border-r border-border bg-surface flex flex-col h-full overflow-y-auto">
+        <div className="p-16 border-b border-border bg-inset">
+          <div className="flex items-center gap-8 text-emerald mb-4">
+            <Scale className="w-4 h-4" />
+            <h2 className="text-11 font-mono uppercase tracking-wider font-bold">
+              Legal Evidence Studio // Component 3 & 6
+            </h2>
           </div>
-          <h2 className="text-18 font-bold font-jakarta text-primary">
-            Citizen & Qui Tam Filing Studio
-          </h2>
-          <p className="text-12 font-outfit text-muted mt-2">
-            Auto-generate legally authenticated OATH citizen summonses and DOJ False Claims Act relator memos with statutory citations.
+          <p className="text-12 text-secondary">
+            Generate attorney-grade research dossiers with complete provenance, peer cohort math, and exculpatory analysis.
           </p>
         </div>
 
-        {/* Filing Type Tabs */}
-        <div className="space-y-6">
-          <label className="text-11 font-mono text-muted uppercase">Select Action Doctrine</label>
-          <div className="grid grid-cols-3 gap-6">
+        {/* Track Selector */}
+        <div className="p-16 border-b border-border space-y-12">
+          <div className="text-10 font-mono text-muted uppercase">Dossier Protocol</div>
+          <div className="grid grid-cols-2 gap-8">
             <button
-              onClick={() => setPackType("OATH_DUMPING")}
-              className={`py-8 px-6 text-11 font-mono rounded-sm border text-center transition-all ${
-                packType === "OATH_DUMPING"
-                  ? "bg-amber/20 border-amber text-amber font-bold"
-                  : "bg-inset border-border text-muted hover:text-secondary"
+              onClick={() => setPackType("ATTORNEY_EVIDENCE_DOSSIER")}
+              className={`p-10 rounded-sm border text-left transition-colors font-mono text-11 ${
+                packType === "ATTORNEY_EVIDENCE_DOSSIER"
+                  ? "bg-emerald/15 border-emerald text-emerald font-bold"
+                  : "bg-inset border-border text-muted hover:text-primary"
               }`}
             >
-              DSNY Dump ($9k)
+              <div className="flex items-center gap-6">
+                <FileText className="w-3.5 h-3.5" />
+                <span>Medicaid Lead Dossier</span>
+              </div>
+              <div className="text-9 opacity-80 mt-2">Law Firm Research Pilot</div>
             </button>
+
             <button
               onClick={() => setPackType("OATH_IDLING")}
-              className={`py-8 px-6 text-11 font-mono rounded-sm border text-center transition-all ${
+              className={`p-10 rounded-sm border text-left transition-colors font-mono text-11 ${
                 packType === "OATH_IDLING"
-                  ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
-                  : "bg-inset border-border text-muted hover:text-secondary"
+                  ? "bg-emerald/15 border-emerald text-emerald font-bold"
+                  : "bg-inset border-border text-muted hover:text-primary"
               }`}
             >
-              Idling (50%)
-            </button>
-            <button
-              onClick={() => setPackType("NYFCA_QUI_TAM")}
-              className={`py-8 px-6 text-11 font-mono rounded-sm border text-center transition-all ${
-                packType === "NYFCA_QUI_TAM"
-                  ? "bg-red/20 border-red text-red font-bold"
-                  : "bg-inset border-border text-muted hover:text-secondary"
-              }`}
-            >
-              NYFCA Qui Tam
+              <div className="flex items-center gap-6">
+                <Scale className="w-3.5 h-3.5" />
+                <span>OATH DEP Affidavit</span>
+              </div>
+              <div className="text-9 opacity-80 mt-2">Citizen Air Enforcement</div>
             </button>
           </div>
         </div>
 
-        {/* Input Controls */}
-        <div className="space-y-12 font-mono text-12">
-          {packType !== "NYFCA_QUI_TAM" ? (
+        {/* Dynamic Fields */}
+        <div className="p-16 space-y-14 flex-1">
+          {packType === "ATTORNEY_EVIDENCE_DOSSIER" ? (
             <>
               <div>
-                <label className="text-11 text-muted uppercase block mb-4">Target Vehicle Plate</label>
-                <div className="flex gap-8">
-                  <input
-                    type="text"
-                    value={vehiclePlate}
-                    onChange={(e) => setVehiclePlate(e.target.value)}
-                    className="flex-1 bg-inset border border-border rounded-sm px-10 py-6 text-primary focus:outline-none focus:border-amber"
+                <label className="text-10 font-mono text-muted uppercase block mb-4">Target Provider Legal Name</label>
+                <input 
+                  type="text" 
+                  value={providerName} 
+                  onChange={(e) => setProviderName(e.target.value)} 
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-10">
+                <div>
+                  <label className="text-10 font-mono text-muted uppercase block mb-4">NPI Number</label>
+                  <input 
+                    type="text" 
+                    value={providerNPI} 
+                    onChange={(e) => setProviderNPI(e.target.value)} 
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
                   />
-                  <input
-                    type="text"
-                    value={vehicleState}
-                    onChange={(e) => setVehicleState(e.target.value)}
-                    className="w-16 bg-inset border border-border rounded-sm px-10 py-6 text-center text-primary focus:outline-none focus:border-amber"
+                </div>
+                <div>
+                  <label className="text-10 font-mono text-muted uppercase block mb-4">Statistical Outlier (Sigma)</label>
+                  <input 
+                    type="text" 
+                    value={deviationSigma} 
+                    onChange={(e) => setDeviationSigma(e.target.value)} 
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-11 text-muted uppercase block mb-4">Observation Location</label>
-                <input
-                  type="text"
-                  value={targetLocation}
-                  onChange={(e) => setTargetLocation(e.target.value)}
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-primary focus:outline-none focus:border-amber"
+                <label className="text-10 font-mono text-muted uppercase block mb-4">Peer Cohort Definition</label>
+                <input 
+                  type="text" 
+                  value={peerCohortSize} 
+                  onChange={(e) => setPeerCohortSize(e.target.value)} 
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
                 />
               </div>
 
               <div>
-                <label className="text-11 text-muted uppercase block mb-4">Observation Timestamp</label>
-                <input
-                  type="text"
-                  value={targetDate}
-                  onChange={(e) => setTargetDate(e.target.value)}
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-primary focus:outline-none focus:border-amber"
+                <label className="text-10 font-mono text-muted uppercase block mb-4">Taxonomy / Procedure Code</label>
+                <input 
+                  type="text" 
+                  value={taxonomyCode} 
+                  onChange={(e) => setTaxonomyCode(e.target.value)} 
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none focus:border-border-highlight"
                 />
               </div>
 
               <div>
-                <label className="text-11 text-muted uppercase block mb-4">Digital Hash (SHA-256)</label>
-                <input
-                  type="text"
-                  value={videoHash}
-                  onChange={(e) => setVideoHash(e.target.value)}
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 text-muted focus:outline-none focus:border-amber"
+                <label className="text-10 font-mono text-amber uppercase flex items-center gap-4 mb-4">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Exculpatory / Contradictory Evidence</span>
+                </label>
+                <textarea 
+                  rows={3}
+                  value={exculpatoryHypothesis} 
+                  onChange={(e) => setExculpatoryHypothesis(e.target.value)} 
+                  className="w-full bg-inset border border-border rounded-sm p-8 text-11 font-sans focus:outline-none focus:border-border-highlight"
                 />
+              </div>
+
+              {/* Human Legal Review Attestation Gate (Component 6) */}
+              <div className="p-12 border border-border-highlight/40 bg-surface/80 rounded-sm space-y-8">
+                <div className="flex items-center gap-6 text-gold font-mono text-10 uppercase font-bold">
+                  <ShieldCheck className="w-4 h-4 text-gold" />
+                  <span>Mandatory Human Review Gate (Gate G3/G6)</span>
+                </div>
+                <label className="flex items-start gap-8 cursor-pointer select-none">
+                  <input 
+                    type="checkbox" 
+                    checked={attorneySignedOff} 
+                    onChange={(e) => setAttorneySignedOff(e.target.checked)}
+                    className="mt-2 accent-emerald"
+                  />
+                  <span className="text-10 text-secondary leading-relaxed">
+                    I certify that this packet contains factual government citations and statistical comparisons. Zero fraud allegations or legal liability claims are asserted against this entity without independent attorney assessment.
+                  </span>
+                </label>
+                <div>
+                  <input 
+                    type="text"
+                    value={reviewerName}
+                    onChange={(e) => setReviewerName(e.target.value)}
+                    placeholder="Reviewer Name & Bar Number / Credential"
+                    className="w-full bg-inset border border-border rounded-sm px-8 py-5 text-10 font-mono"
+                  />
+                </div>
               </div>
             </>
           ) : (
             <>
               <div>
-                <label className="text-11 text-muted uppercase block mb-4">Provider / Facility Name</label>
-                <input
-                  type="text"
-                  value={providerName}
-                  onChange={(e) => setProviderName(e.target.value)}
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-primary focus:outline-none focus:border-red"
+                <label className="text-10 font-mono text-muted uppercase block mb-4">Commercial Vehicle Plate</label>
+                <input 
+                  type="text" 
+                  value={vehiclePlate} 
+                  onChange={(e) => setVehiclePlate(e.target.value)} 
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono"
                 />
               </div>
-
               <div>
-                <label className="text-11 text-muted uppercase block mb-4">National Provider ID (NPI)</label>
-                <input
-                  type="text"
-                  value={providerNPI}
-                  onChange={(e) => setProviderNPI(e.target.value)}
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-primary focus:outline-none focus:border-red"
-                />
-              </div>
-
-              <div>
-                <label className="text-11 text-muted uppercase block mb-4">Estimated Fraud Exposure</label>
-                <input
-                  type="text"
-                  value={exposureEstimate}
-                  onChange={(e) => setExposureEstimate(e.target.value)}
-                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-primary focus:outline-none focus:border-red"
+                <label className="text-10 font-mono text-muted uppercase block mb-4">Incident Location</label>
+                <input 
+                  type="text" 
+                  value={targetLocation} 
+                  onChange={(e) => setTargetLocation(e.target.value)} 
+                  className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono"
                 />
               </div>
             </>
           )}
         </div>
-
-        {/* Doctrine Notice Box */}
-        <div className="p-12 rounded-sm bg-canvas border border-border text-11 font-outfit text-muted space-y-4">
-          <div className="font-mono text-primary font-bold flex items-center gap-6">
-            <Scale className="w-3.5 h-3.5 text-amber" />
-            <span>VANGUARD GOLDEN RULE</span>
-          </div>
-          <p>
-            Report to government only — never contact violators. Rewards pay only after fines are collected. Telephone standby election preserves time.
-          </p>
-        </div>
       </div>
 
-      {/* Right: Live Formatted Legal Preview */}
-      <div className="flex-1 flex flex-col bg-canvas overflow-hidden">
-        {/* Preview Toolbar */}
-        <div className="p-14 border-b border-border bg-surface/70 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-8 text-12 font-mono">
-            <FileText className="w-4 h-4 text-amber" />
-            <span className="text-primary font-bold">Filing Draft Preview</span>
-            <span className="text-muted">· Ready for OATH / AG Whistleblower Submission</span>
+      {/* Generated Dossier Preview */}
+      <div className="flex-1 flex flex-col h-full bg-canvas overflow-hidden">
+        <div className="p-12 border-b border-border bg-inset flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-8 font-mono text-11 text-muted">
+            <FileText className="w-4 h-4 text-emerald" />
+            <span>EXPORT PREVIEW // ATTORNEY PACKET</span>
           </div>
-
           <div className="flex items-center gap-8">
             <button
               onClick={handleCopy}
-              className="px-12 py-6 bg-surface hover:bg-surface-hover border border-border text-11 font-mono rounded-sm flex items-center gap-6 transition-colors"
+              className="flex items-center gap-6 px-12 py-6 rounded-sm bg-surface border border-border text-11 font-mono hover:text-emerald hover:border-emerald transition-colors"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-sage" /> : <Copy className="w-3.5 h-3.5 text-muted" />}
-              <span>{copied ? "Copied" : "Copy Formatted Text"}</span>
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? "COPIED" : "COPY"}</span>
             </button>
-
             <button
               onClick={handleDownload}
-              className="px-12 py-6 bg-amber hover:bg-amber/90 text-canvas font-mono font-bold text-11 rounded-sm flex items-center gap-6 transition-colors"
+              disabled={packType === "ATTORNEY_EVIDENCE_DOSSIER" && !attorneySignedOff}
+              className={`flex items-center gap-6 px-12 py-6 rounded-sm font-mono text-11 transition-colors ${
+                packType === "ATTORNEY_EVIDENCE_DOSSIER" && !attorneySignedOff
+                  ? "bg-inset border border-border text-muted cursor-not-allowed opacity-50"
+                  : "bg-emerald/20 border border-emerald text-emerald hover:bg-emerald/30 font-bold"
+              }`}
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download Legal Packet</span>
+              <span>EXPORT DOSSIER</span>
             </button>
           </div>
         </div>
 
-        {/* Document Editor / Preview Body */}
-        <div className="flex-1 p-24 overflow-y-auto">
-          <div className="max-w-4xl mx-auto bg-inset border border-border rounded-sm p-24 shadow-2xl">
-            <pre className="font-mono text-12.5 text-secondary leading-relaxed whitespace-pre-wrap select-text">
-              {getActiveText()}
-            </pre>
-          </div>
+        <div className="flex-1 p-16 overflow-y-auto">
+          <pre className="p-16 bg-surface border border-border rounded-sm text-11 font-mono text-secondary leading-relaxed whitespace-pre-wrap select-text">
+            {getActiveText()}
+          </pre>
         </div>
       </div>
     </div>

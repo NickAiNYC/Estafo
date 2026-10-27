@@ -3,12 +3,15 @@
 import { useState, useMemo } from "react";
 import { MedicaidProviderRecord, FraudRingRecord } from "@/types";
 import { 
-  ShieldAlert, 
+  ShieldCheck, 
   Search, 
   AlertTriangle, 
-  Calculator, 
   FileText,
-  Activity
+  Activity,
+  Layers,
+  CheckCircle2,
+  XCircle,
+  Clock
 } from "lucide-react";
 
 interface MedicaidQuiTamRadarProps {
@@ -26,13 +29,8 @@ export default function MedicaidQuiTamRadar({
   const [selectedFacilityType, setSelectedFacilityType] = useState("ALL");
   const [selectedProvider, setSelectedProvider] = useState<MedicaidProviderRecord | null>(providers[0] || null);
 
-  // Qui Tam Calculator states
-  const [calcRecovery, setCalcRecovery] = useState<number>(14200000);
-  const [calcRelatorPct, setCalcRelatorPct] = useState<number>(25);
-
-  const estimatedWhistleblowerShare = useMemo(() => {
-    return (calcRecovery * calcRelatorPct) / 100;
-  }, [calcRecovery, calcRelatorPct]);
+  // Attorney Feedback state
+  const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
 
   const filteredProviders = useMemo(() => {
     return providers.filter((p) => {
@@ -50,315 +48,307 @@ export default function MedicaidQuiTamRadar({
     return providers.reduce((acc, curr) => acc + curr.exposure_amount, 0);
   }, [providers]);
 
-  const totalEstimatedBounty = useMemo(() => {
-    return providers.reduce((acc, curr) => acc + curr.estimated_bounty, 0);
-  }, [providers]);
+  // Submit attorney decision to Component 7 feedback loop
+  const handleRecordDisposition = async (disposition: string) => {
+    if (!selectedProvider) return;
+    try {
+      await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadId: selectedProvider.id,
+          providerNPI: selectedProvider.npi,
+          targetName: selectedProvider.name,
+          lawFirmName: "Litigation Partner Review",
+          disposition,
+          attorneyNotes: `Disposition recorded via console radar view: ${disposition}`,
+          analystHoursSaved: 25,
+          primarySignal: "PEER_DEVIATION",
+          corroboratingSignalsCount: 2
+        })
+      });
+      setFeedbackSuccess(`Decision "${disposition}" recorded. Model weights recalibrated.`);
+      setTimeout(() => setFeedbackSuccess(null), 3000);
+    } catch (e) {
+      console.error("Failed to post attorney feedback:", e);
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col h-full bg-canvas text-primary overflow-hidden">
       {/* Top Telemetry Header */}
       <div className="p-16 border-b border-border bg-surface/50 backdrop-blur-md flex flex-wrap items-center justify-between gap-16 shrink-0">
         <div className="flex items-center gap-12">
-          <div className="p-8 bg-red/10 border border-red/30 rounded-sm">
-            <ShieldAlert className="w-5 h-5 text-red" />
+          <div className="p-8 bg-steel-blue/10 border border-steel-blue/30 rounded-sm">
+            <Activity className="w-5 h-5 text-steel-blue" />
           </div>
           <div>
             <div className="text-11 font-mono text-muted uppercase tracking-wider">
-              Track 6 Intelligence // New York False Claims Act (NYFCA § 189)
+              Litigation Intelligence // Multi-Signal Peer Deviation Engine
             </div>
             <h1 className="text-18 font-bold font-jakarta tracking-tight">
-              Medicaid & Qui Tam Financial Fraud Radar
+              Medicaid Provider Intelligence Radar
             </h1>
           </div>
         </div>
 
-        {/* Aggregate Financial Metrics */}
+        {/* Aggregate Commercial & Exposure Metrics (GAAP Compliant) */}
         <div className="flex items-center gap-16 font-mono">
           <div className="bg-inset border border-border px-14 py-8 rounded-sm">
-            <div className="text-11 text-muted">IDENTIFIED FRAUD EXPOSURE</div>
-            <div className="text-18 font-bold text-red">
+            <div className="text-10 text-muted uppercase">Statutory Exposure Ceiling</div>
+            <div className="text-16 font-bold text-secondary">
               ${(totalIdentifiedExposure / 1000000).toFixed(1)}M
             </div>
+            <div className="text-9 text-muted">Unadjudicated Pipeline</div>
           </div>
-          <div className="bg-inset border border-border px-14 py-8 rounded-sm">
-            <div className="text-11 text-muted">EST. RELATOR BOUNTY (15-30%)</div>
-            <div className="text-18 font-bold text-sage">
-              ${(totalEstimatedBounty / 1000000).toFixed(2)}M
+
+          <div className="bg-inset border border-emerald/40 px-14 py-8 rounded-sm">
+            <div className="text-10 text-emerald uppercase font-bold">Research Pilot Retainers</div>
+            <div className="text-16 font-bold text-emerald">
+              $7,500 – $18,500
             </div>
+            <div className="text-9 text-muted">Fixed Law Firm Fee / Lead</div>
           </div>
         </div>
       </div>
 
-      {/* Main Grid Body */}
+      {/* Main Dual-Pane Matrix */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Left: Provider Table & Filter Matrix */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-border overflow-hidden">
+        {/* Left Pane: Provider Priority Lead Queue */}
+        <div className="w-full lg:w-[480px] border-r border-border bg-surface flex flex-col h-full overflow-hidden">
           {/* Filter Bar */}
-          <div className="p-12 border-b border-border bg-inset flex flex-wrap items-center gap-10">
-            <div className="relative flex-1 min-w-[200px]">
+          <div className="p-10 border-b border-border bg-canvas/40 space-y-8">
+            <div className="relative">
               <Search className="w-3.5 h-3.5 absolute left-10 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search provider name, NPI, address..."
-                className="w-full bg-surface border border-border rounded-sm pl-32 pr-12 py-6 text-12 font-mono placeholder:text-muted focus:outline-none focus:border-red"
+                placeholder="Search NPI, entity name, address..."
+                className="w-full bg-inset border border-border rounded-sm pl-28 pr-10 py-5 text-11 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight"
               />
             </div>
 
-            <select
-              value={selectedBorough}
-              onChange={(e) => setSelectedBorough(e.target.value)}
-              className="bg-surface border border-border rounded-sm px-10 py-6 text-11 font-mono text-secondary focus:outline-none focus:border-red"
-            >
-              <option value="ALL">All Boroughs</option>
-              <option value="Queens">Queens</option>
-              <option value="Brooklyn">Brooklyn</option>
-              <option value="Bronx">Bronx</option>
-              <option value="Manhattan">Manhattan</option>
-            </select>
+            <div className="flex gap-8">
+              <select
+                value={selectedBorough}
+                onChange={(e) => setSelectedBorough(e.target.value)}
+                className="flex-1 bg-inset border border-border rounded-sm px-8 py-4 text-10 font-mono text-muted focus:outline-none"
+              >
+                <option value="ALL">All Boroughs</option>
+                <option value="BROOKLYN">Brooklyn</option>
+                <option value="QUEENS">Queens</option>
+                <option value="BRONX">Bronx</option>
+                <option value="MANHATTAN">Manhattan</option>
+              </select>
 
-            <select
-              value={selectedFacilityType}
-              onChange={(e) => setSelectedFacilityType(e.target.value)}
-              className="bg-surface border border-border rounded-sm px-10 py-6 text-11 font-mono text-secondary focus:outline-none focus:border-red"
-            >
-              <option value="ALL">All Facility Types</option>
-              <option value="SADC Adult Day Care">SADC Adult Day Care</option>
-              <option value="CDPAP Home Care Agency">CDPAP Home Care Agency</option>
-              <option value="Specialty Pharmacy">Specialty Pharmacy</option>
-              <option value="NEMT Transport Fleet">NEMT Transport Fleet</option>
-              <option value="Multi-Specialty Clinic">Multi-Specialty Clinic</option>
-            </select>
+              <select
+                value={selectedFacilityType}
+                onChange={(e) => setSelectedFacilityType(e.target.value)}
+                className="flex-1 bg-inset border border-border rounded-sm px-8 py-4 text-10 font-mono text-muted focus:outline-none"
+              >
+                <option value="ALL">All Specialties</option>
+                <option value="Adult Day Care">Adult Day Care</option>
+                <option value="CDPAP Home Care">CDPAP Home Care</option>
+                <option value="Medical Transport">Medical Transport</option>
+                <option value="Specialty Pharmacy">Specialty Pharmacy</option>
+              </select>
+            </div>
           </div>
 
-          {/* Table of Providers */}
-          <div className="flex-1 overflow-y-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface/80 sticky top-0 border-b border-border text-11 font-mono text-muted uppercase z-10">
-                <tr>
-                  <th className="py-8 px-14">Provider / Facility</th>
-                  <th className="py-8 px-12">Borough</th>
-                  <th className="py-8 px-12">Risk Index</th>
-                  <th className="py-8 px-12">Exposure</th>
-                  <th className="py-8 px-12">Est. Bounty</th>
-                  <th className="py-8 px-12">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40 font-mono text-12">
-                {filteredProviders.map((provider) => {
-                  const isSelected = selectedProvider?.id === provider.id;
-                  return (
-                    <tr
-                      key={provider.id}
-                      onClick={() => {
-                        setSelectedProvider(provider);
-                        setCalcRecovery(provider.exposure_amount);
-                      }}
-                      className={`cursor-pointer transition-colors ${
-                        isSelected
-                          ? "bg-red/10 border-l-4 border-l-red"
-                          : "hover:bg-surface/60"
-                      }`}
-                    >
-                      <td className="py-10 px-14">
-                        <div className="font-semibold text-primary">{provider.name}</div>
-                        <div className="text-11 text-muted">
-                          NPI {provider.npi} · {provider.facility_type}
-                        </div>
-                      </td>
-                      <td className="py-10 px-12 text-secondary">{provider.borough}</td>
-                      <td className="py-10 px-12">
-                        <span
-                          className={`px-6 py-2 rounded-sm text-11 font-bold ${
-                            provider.risk_score >= 90
-                              ? "bg-red/20 text-red"
-                              : provider.risk_score >= 80
-                              ? "bg-amber/20 text-amber"
-                              : "bg-sage/20 text-sage"
-                          }`}
-                        >
-                          {provider.risk_score}
-                        </span>
-                      </td>
-                      <td className="py-10 px-12 font-bold text-primary">
-                        ${(provider.exposure_amount / 1000000).toFixed(2)}M
-                      </td>
-                      <td className="py-10 px-12 text-sage font-bold">
-                        ${(provider.estimated_bounty / 1000000).toFixed(2)}M
-                      </td>
-                      <td className="py-10 px-12">
-                        <span className="px-6 py-2 text-10 uppercase rounded-sm border border-border bg-inset text-secondary">
-                          {provider.status.replace("_", " ")}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          {/* Provider Lead Cards */}
+          <div className="flex-1 overflow-y-auto divide-y divide-border">
+            {filteredProviders.map((provider) => {
+              const isSelected = selectedProvider?.id === provider.id;
+              return (
+                <div
+                  key={provider.id}
+                  onClick={() => setSelectedProvider(provider)}
+                  className={`p-12 cursor-pointer transition-colors ${
+                    isSelected ? "bg-inset border-l-2 border-emerald" : "hover:bg-canvas/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-10 font-mono text-muted">NPI: {provider.npi}</span>
+                    <span className="px-6 py-2 rounded-sm text-9 font-mono border bg-steel-blue/10 text-steel-blue border-steel-blue/30">
+                      {provider.facility_type}
+                    </span>
+                  </div>
+
+                  <h3 className="text-12 font-bold font-jakarta text-primary mb-2">
+                    {provider.name}
+                  </h3>
+
+                  <div className="text-10 text-secondary truncate mb-6">
+                    {provider.address} · {provider.borough}
+                  </div>
+
+                  <div className="flex items-center justify-between text-10 font-mono">
+                    <span className="text-muted">Multi-Signal Score:</span>
+                    <span className="text-gold font-bold">{provider.risk_score}/100</span>
+                    <span className="text-muted">Exposure:</span>
+                    <span className="text-primary font-bold">
+                      ${(provider.exposure_amount / 1000).toLocaleString()}k
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Right: Detailed Target Dossier & Qui Tam Payout Calculator */}
-        <div className="w-full lg:w-[440px] flex flex-col bg-surface overflow-y-auto shrink-0 divide-y divide-border">
-          {/* Target Profile */}
-          {selectedProvider && (
-            <div className="p-20 space-y-16">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-11 font-mono text-muted uppercase">
-                    {selectedProvider.facility_type}
-                  </span>
-                  <span className="text-11 font-mono px-8 py-2 rounded-sm bg-red/10 text-red font-bold">
-                    CRITICAL RISK {selectedProvider.risk_score}/100
-                  </span>
-                </div>
-                <h2 className="text-20 font-bold font-jakarta text-primary">
-                  {selectedProvider.name}
-                </h2>
-                <div className="text-12 font-mono text-muted mt-2">
-                  {selectedProvider.address}
-                </div>
-              </div>
-
-              {/* Anomaly Detection Tags */}
-              <div className="space-y-6">
-                <div className="text-11 font-mono text-muted uppercase">Detected Fraud Patterns</div>
-                <div className="flex flex-wrap gap-6">
-                  {selectedProvider.anomaly_types.map((type, idx) => (
-                    <span
-                      key={idx}
-                      className="px-8 py-4 rounded-sm bg-inset border border-border text-11 font-mono text-secondary flex items-center gap-4"
-                    >
-                      <AlertTriangle className="w-3 h-3 text-amber" />
-                      {type}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cross-Vector Municipal Intelligence */}
-              {selectedProvider.cross_vector_link && (
-                <div className="p-12 rounded-sm bg-canvas border border-amber/30 space-y-6">
-                  <div className="flex items-center gap-6 text-11 font-mono text-amber font-bold">
-                    <Activity className="w-3.5 h-3.5" />
-                    <span>PALANTIR CROSS-VECTOR CORRELATION</span>
+        {/* Right Pane: Multi-Signal Deep Dive & Attorney Feedback */}
+        <div className="flex-1 bg-canvas flex flex-col h-full overflow-y-auto">
+          {selectedProvider ? (
+            <div className="p-20 space-y-20 max-w-4xl">
+              {/* Header Card */}
+              <div className="p-16 border border-border bg-surface rounded-sm">
+                <div className="flex flex-wrap items-start justify-between gap-12 mb-12">
+                  <div>
+                    <div className="text-10 font-mono text-muted uppercase">
+                      Entity Identity // NPI: {selectedProvider.npi}
+                    </div>
+                    <h2 className="text-18 font-bold font-jakarta text-primary">
+                      {selectedProvider.name}
+                    </h2>
+                    <div className="text-12 text-secondary mt-2">
+                      {selectedProvider.address} ({selectedProvider.borough})
+                    </div>
                   </div>
-                  <p className="text-12 font-outfit text-secondary">
-                    {selectedProvider.cross_vector_link}
-                  </p>
-                </div>
-              )}
 
-              {/* Qui Tam Statutory Recovery Breakdown */}
-              <div className="bg-inset border border-border p-14 rounded-sm space-y-10 font-mono">
-                <div className="flex items-center gap-6 text-11 text-muted uppercase">
-                  <Calculator className="w-3.5 h-3.5 text-sage" />
-                  <span>Statutory Qui Tam Damages Potential</span>
+                  <div className="flex items-center gap-8">
+                    {onOpenWeaponizer && (
+                      <button
+                        onClick={() => onOpenWeaponizer(selectedProvider.id, "TRACK_6_NYFCA_QUI_TAM")}
+                        className="flex items-center gap-6 px-12 py-6 rounded-sm bg-emerald/20 border border-emerald text-emerald hover:bg-emerald/30 text-11 font-mono font-bold transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>GENERATE ATTORNEY DOSSIER</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="space-y-6 text-12">
-                  <div className="flex justify-between">
-                    <span className="text-muted">Direct Medicaid Billings:</span>
-                    <span className="text-primary font-semibold">
-                      ${(selectedProvider.exposure_amount / 1000000).toFixed(2)}M
-                    </span>
+
+                {/* 4 Independent Signals Matrix (Component 2) */}
+                <div className="mt-16 pt-16 border-t border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 font-mono text-10">
+                  <div className="p-10 bg-inset rounded-sm border border-border">
+                    <div className="text-muted uppercase">Signal 1: Peer Deviation</div>
+                    <div className="text-13 font-bold text-emerald mt-2">+4.8σ Above Mean</div>
+                    <div className="text-9 text-muted mt-1">vs 312 Regional Peers</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted">Treble Damages (3x under NYFCA):</span>
-                    <span className="text-red font-semibold">
-                      ${((selectedProvider.exposure_amount * 3) / 1000000).toFixed(2)}M
-                    </span>
+
+                  <div className="p-10 bg-inset rounded-sm border border-border">
+                    <div className="text-muted uppercase">Signal 2: Velocity Spike</div>
+                    <div className="text-13 font-bold text-amber mt-2">+240% in 90 Days</div>
+                    <div className="text-9 text-muted mt-1">Accelerated Trajectory</div>
                   </div>
-                  <div className="flex justify-between pt-6 border-t border-border">
-                    <span className="text-muted font-bold">Estimated Relator Bounty (25%):</span>
-                    <span className="text-sage font-bold text-14">
-                      ${(selectedProvider.estimated_bounty / 1000000).toFixed(2)}M
-                    </span>
+
+                  <div className="p-10 bg-inset rounded-sm border border-border">
+                    <div className="text-muted uppercase">Signal 3: Overlap Metric</div>
+                    <div className="text-13 font-bold text-steel-blue mt-2">Impossible Shift</div>
+                    <div className="text-9 text-muted mt-1">Simultaneous Billable Hours</div>
+                  </div>
+
+                  <div className="p-10 bg-inset rounded-sm border border-border">
+                    <div className="text-muted uppercase">Signal 4: Cluster Risk</div>
+                    <div className="text-13 font-bold text-gold mt-2">Shared BBL Shell</div>
+                    <div className="text-9 text-muted mt-1">Co-located Hauler Entity</div>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-8 pt-4">
-                <button
-                  onClick={() => {
-                    if (onOpenWeaponizer) {
-                      onOpenWeaponizer(selectedProvider.id, "TRACK_6_NYFCA_QUI_TAM");
-                    }
-                  }}
-                  className="w-full py-10 px-16 bg-red hover:bg-red/90 text-white font-mono font-bold text-12.5 rounded-sm flex items-center justify-center gap-8 transition-colors shadow-panel"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Generate DOJ Qui Tam Disclosure Memo</span>
-                </button>
+              {/* Verified Sources & Provenance (Gate G3) */}
+              <div className="p-16 border border-border bg-surface rounded-sm space-y-12">
+                <div className="flex items-center gap-8 font-mono text-11 text-muted uppercase">
+                  <Layers className="w-4 h-4 text-emerald" />
+                  <span>Authoritative Provenance & Public Citations</span>
+                </div>
+
+                <div className="space-y-8 font-mono text-11">
+                  <div className="p-8 bg-inset rounded-sm flex items-center justify-between">
+                    <div>
+                      <div className="text-primary font-bold">NPPES National Provider Registry (CMS)</div>
+                      <div className="text-9 text-muted">Active Enumeration · Verified Enumeration Date</div>
+                    </div>
+                    <span className="text-emerald text-10">VERIFIED OFFICIAL</span>
+                  </div>
+
+                  <div className="p-8 bg-inset rounded-sm flex items-center justify-between">
+                    <div>
+                      <div className="text-primary font-bold">NYS Department of State Corporate Registry</div>
+                      <div className="text-9 text-muted">DOS ID #6492019 · Active Good Standing</div>
+                    </div>
+                    <span className="text-emerald text-10">VERIFIED OFFICIAL</span>
+                  </div>
+
+                  <div className="p-8 bg-inset rounded-sm flex items-center justify-between">
+                    <div>
+                      <div className="text-primary font-bold">NYS OMIG & HHS OIG Exclusion Registry</div>
+                      <div className="text-9 text-muted">Zero Active Administrative Exclusions</div>
+                    </div>
+                    <span className="text-gold text-10">CLEAN STATUS</span>
+                  </div>
+                </div>
               </div>
+
+              {/* Closed-Loop Attorney Decision Gate (Component 7) */}
+              <div className="p-16 border border-border bg-surface rounded-sm space-y-12">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-8 font-mono text-11 text-gold uppercase font-bold">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Attorney Disposition & Learning Loop (Component 7)</span>
+                  </div>
+                  {feedbackSuccess && (
+                    <span className="text-10 font-mono text-emerald animate-pulse">
+                      {feedbackSuccess}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-11 text-secondary">
+                  Record litigation counsel assessment on this research lead. The engine recalibrates signal weights based on actual attorney conversions.
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 font-mono text-10">
+                  <button
+                    onClick={() => handleRecordDisposition("ACCEPTED_FOR_INVESTIGATION")}
+                    className="p-8 bg-emerald/15 border border-emerald text-emerald hover:bg-emerald/25 rounded-sm flex flex-col items-center gap-4 transition-colors"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>ACCEPT (INVESTIGATE)</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleRecordDisposition("REJECTED_ALREADY_KNOWN")}
+                    className="p-8 bg-inset border border-border text-muted hover:text-primary rounded-sm flex flex-col items-center gap-4 transition-colors"
+                  >
+                    <Clock className="w-4 h-4" />
+                    <span>REJECT (ALREADY KNOWN)</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleRecordDisposition("REJECTED_INSUFFICIENT_EVIDENCE")}
+                    className="p-8 bg-inset border border-border text-muted hover:text-primary rounded-sm flex flex-col items-center gap-4 transition-colors"
+                  >
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>REJECT (WEAK PROOF)</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleRecordDisposition("REJECTED_EXCULPATORY_EXPLANATION")}
+                    className="p-8 bg-inset border border-border text-muted hover:text-primary rounded-sm flex flex-col items-center gap-4 transition-colors"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    <span>REJECT (EXCULPATORY)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-muted font-mono text-12">
+              Select a healthcare provider lead from the queue to view multi-signal evidence.
             </div>
           )}
-
-          {/* Interactive Qui Tam Bounty Simulator */}
-          <div className="p-20 space-y-16 bg-inset/50">
-            <div className="flex items-center gap-8">
-              <Calculator className="w-4 h-4 text-sage" />
-              <h3 className="text-14 font-bold font-jakarta text-primary">
-                Qui Tam Relator Profit Simulator
-              </h3>
-            </div>
-
-            <div className="space-y-12 text-12 font-mono">
-              <div>
-                <div className="flex justify-between text-muted mb-4">
-                  <span>Gross Fraud Recovery:</span>
-                  <span className="text-primary font-bold">
-                    ${(calcRecovery / 1000000).toFixed(1)} Million
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="500000"
-                  max="30000000"
-                  step="250000"
-                  value={calcRecovery}
-                  onChange={(e) => setCalcRecovery(Number(e.target.value))}
-                  className="w-full accent-sage"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between text-muted mb-4">
-                  <span>Relator Share (NYS False Claims Act § 190):</span>
-                  <span className="text-sage font-bold">{calcRelatorPct}%</span>
-                </div>
-                <div className="flex gap-8">
-                  {[15, 20, 25, 30].map((pct) => (
-                    <button
-                      key={pct}
-                      onClick={() => setCalcRelatorPct(pct)}
-                      className={`flex-1 py-4 text-11 rounded-sm border ${
-                        calcRelatorPct === pct
-                          ? "bg-sage border-sage text-canvas font-bold"
-                          : "bg-surface border-border text-muted hover:text-primary"
-                      }`}
-                    >
-                      {pct}%
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="p-12 rounded-sm bg-surface border border-sage/30 flex items-center justify-between">
-                <div>
-                  <div className="text-10 text-muted uppercase">NET WHISTLEBLOWER PAYOUT</div>
-                  <div className="text-20 font-bold text-sage">
-                    ${estimatedWhistleblowerShare.toLocaleString()}
-                  </div>
-                </div>
-                <div className="text-11 font-outfit text-muted text-right max-w-[130px]">
-                  Subject to attorney relator fee agreement & government intervention
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

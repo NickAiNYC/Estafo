@@ -295,50 +295,76 @@ export default function PalantirNexusGraph({ graphData, onSelectProvider }: Pala
             {/* Risk & Exposure Box */}
             <div className="grid grid-cols-2 gap-12 bg-inset p-12 rounded-sm border border-border">
               <div>
-                <div className="text-11 font-mono text-muted">RISK INDEX</div>
-                <div className={`text-22 font-mono font-bold ${selectedNode.risk >= 90 ? "text-red-400" : "text-amber-400"}`}>
+                <div className="text-10 font-mono text-muted uppercase">Multi-Signal Index</div>
+                <div className={`text-20 font-mono font-bold ${selectedNode.risk >= 90 ? "text-red-400" : "text-amber-400"}`}>
                   {selectedNode.risk}/100
                 </div>
               </div>
               <div>
-                <div className="text-11 font-mono text-muted">RECOVERY TARGET</div>
-                <div className="text-18 font-mono font-bold text-sage">
+                <div className="text-10 font-mono text-muted uppercase">Statutory Exposure</div>
+                <div className="text-16 font-mono font-bold text-secondary">
                   {selectedNode.fine || "$3.5M–$14.2M"}
                 </div>
+                <div className="text-9 font-mono text-muted">Unadjudicated Ceiling</div>
               </div>
             </div>
 
-            {/* Technical Metadata */}
-            <div className="space-y-8 text-12 font-mono">
+            {/* Technical Metadata & Historical Entity Resolution (Component 1) */}
+            <div className="space-y-8 text-11 font-mono">
               {selectedNode.npi && (
-                <div className="flex justify-between py-6 border-b border-border/50">
-                  <span className="text-muted">NPI Number:</span>
+                <div className="flex justify-between py-5 border-b border-border/50">
+                  <span className="text-muted">NPI Registry:</span>
                   <span className="text-primary font-semibold">{selectedNode.npi}</span>
                 </div>
               )}
               {selectedNode.state && (
-                <div className="flex justify-between py-6 border-b border-border/50">
-                  <span className="text-muted">Jurisdiction:</span>
-                  <span className="text-primary font-semibold">{selectedNode.state} LLC Registration</span>
+                <div className="flex justify-between py-5 border-b border-border/50">
+                  <span className="text-muted">Corporate Entity:</span>
+                  <span className="text-primary font-semibold">{selectedNode.state} DOS Registered</span>
                 </div>
               )}
               {selectedNode.borough && (
-                <div className="flex justify-between py-6 border-b border-border/50">
-                  <span className="text-muted">Borough:</span>
+                <div className="flex justify-between py-5 border-b border-border/50">
+                  <span className="text-muted">Borough Market:</span>
                   <span className="text-primary font-semibold">{selectedNode.borough}</span>
                 </div>
               )}
             </div>
 
-            {/* Cross-Vector Palantir Insight */}
-            <div className="bg-canvas border border-amber/30 rounded-sm p-14 space-y-8">
-              <div className="flex items-center gap-6 text-amber text-12 font-mono font-semibold">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span>CROSS-DOMAIN LINKAGE</span>
+            {/* Historical Entity Resolution Timeline (The Moat) */}
+            <div className="bg-inset border border-border rounded-sm p-12 space-y-8 font-mono text-10">
+              <div className="flex items-center gap-6 text-emerald uppercase font-bold">
+                <Shield className="w-3.5 h-3.5 text-emerald" />
+                <span>Historical Entity Resolution (Component 1)</span>
               </div>
-              <p className="text-12 font-outfit text-secondary leading-relaxed">
-                Entity shares address or corporate ownership with active commercial hauler fleets cited for DSNY illegal dumping violations under Track 5.
+              <div className="space-y-6 text-muted">
+                <div className="flex items-start gap-6">
+                  <span className="text-primary font-bold">2021:</span>
+                  <span>Formed under NYS DOS Division of Corporations.</span>
+                </div>
+                <div className="flex items-start gap-6">
+                  <span className="text-primary font-bold">2023:</span>
+                  <span>Co-located Suite 2B with logistics freight hauler shell.</span>
+                </div>
+                <div className="flex items-start gap-6">
+                  <span className="text-primary font-bold">2026:</span>
+                  <span>Procedure code T2003 billing accelerates +240% over 90 days.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Cross-Vector Palantir Insight with Strict Evidence Notice */}
+            <div className="bg-canvas border border-border-highlight/40 rounded-sm p-12 space-y-6">
+              <div className="flex items-center gap-6 text-gold text-11 font-mono font-bold uppercase">
+                <AlertTriangle className="w-3.5 h-3.5 text-gold" />
+                <span>Physical BBL Co-Location Link</span>
+              </div>
+              <p className="text-11 font-sans text-secondary leading-relaxed">
+                Entity shares address or suite with commercial freight hauler cited under Track 1/5.
               </p>
+              <div className="text-9 font-mono text-muted bg-inset p-6 rounded-sm border border-border">
+                LEGAL NOTICE: A shared address is an investigative lead; it does NOT establish common ownership or legal liability.
+              </div>
             </div>
 
             {/* Actions */}
@@ -346,21 +372,12 @@ export default function PalantirNexusGraph({ graphData, onSelectProvider }: Pala
               {selectedNode.npi && onSelectProvider && (
                 <button
                   onClick={() => onSelectProvider(selectedNode.npi!)}
-                  className="w-full py-10 px-16 bg-amber hover:bg-amber/90 text-canvas font-mono font-bold text-12.5 rounded-sm flex items-center justify-center gap-8 transition-colors"
+                  className="w-full py-10 px-16 bg-emerald/20 hover:bg-emerald/30 border border-emerald text-emerald font-mono font-bold text-11 rounded-sm flex items-center justify-center gap-8 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>Inspect Medicaid Claims Anomaly</span>
+                  <span>Inspect Multi-Signal Radar</span>
                 </button>
               )}
-              <button
-                onClick={() => {
-                  alert(`Summons & Evidence Memo generated for ${selectedNode.name}`);
-                }}
-                className="w-full py-10 px-16 bg-surface hover:bg-surface-hover border border-border text-primary font-mono text-12.5 rounded-sm flex items-center justify-center gap-8 transition-colors"
-              >
-                <Shield className="w-4 h-4 text-red-400" />
-                <span>Queue For Qui Tam Legal Packager</span>
-              </button>
             </div>
           </div>
         ) : (

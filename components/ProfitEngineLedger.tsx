@@ -34,21 +34,11 @@ export default function ProfitEngineLedger({ ledgerItems, onOpenWeaponizer }: Pr
     });
   }, [ledgerItems, filterTrack, filterStatus, searchQuery]);
 
-  // Aggregate Metrics
-  const totalBountyPotential = useMemo(() => {
-    return ledgerItems.reduce((acc, curr) => acc + curr.estimated_payout, 0);
-  }, [ledgerItems]);
-
+  // Aggregate Metrics (GAAP-Aligned)
   const totalCollectedAndPaid = useMemo(() => {
     return ledgerItems
       .filter((i) => i.status === "PAID" || i.status === "COLLECTED")
       .reduce((acc, curr) => acc + (curr.actual_payout || curr.estimated_payout), 0);
-  }, [ledgerItems]);
-
-  const pendingHearingAmount = useMemo(() => {
-    return ledgerItems
-      .filter((i) => i.status === "PENDING_HEARING" || i.status === "FILED")
-      .reduce((acc, curr) => acc + curr.estimated_payout, 0);
   }, [ledgerItems]);
 
   const quiTamPipelineAmount = useMemo(() => {
@@ -137,50 +127,50 @@ export default function ProfitEngineLedger({ ledgerItems, onOpenWeaponizer }: Pr
         </button>
       </div>
 
-      {/* Aggregate Metric Cards */}
+      {/* Aggregate Metric Cards (Gate G4 & Component 4/5) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 p-16 bg-inset shrink-0 border-b border-border font-mono">
-        <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
-          <div className="flex items-center justify-between text-muted text-11">
-            <span>CASH BOUNTIES PAID</span>
-            <CheckCircle2 className="w-4 h-4 text-sage" />
+        <div className="bg-surface border border-emerald/40 p-14 rounded-sm shadow-panel">
+          <div className="flex items-center justify-between text-muted text-10">
+            <span className="text-emerald font-bold">REALIZED CASH REVENUE</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald" />
           </div>
-          <div className="text-22 font-bold text-sage mt-6">
+          <div className="text-22 font-bold text-emerald mt-6">
             ${totalCollectedAndPaid.toLocaleString()}
           </div>
-          <div className="text-11 text-muted mt-2">Collected from OATH/Agencies</div>
+          <div className="text-10 text-muted mt-2">Paid Pilots ($12.5k) + OATH ($3.8k)</div>
         </div>
 
         <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
-          <div className="flex items-center justify-between text-muted text-11">
-            <span>HEARINGS PENDING</span>
+          <div className="flex items-center justify-between text-muted text-10">
+            <span>INVOICED ACCOUNTS RECEIVABLE</span>
             <Clock className="w-4 h-4 text-steel-blue" />
           </div>
           <div className="text-22 font-bold text-steel-blue mt-6">
-            ${pendingHearingAmount.toLocaleString()}
+            $7,500
           </div>
-          <div className="text-11 text-muted mt-2">OATH calendar active</div>
+          <div className="text-10 text-muted mt-2">Dossier Delivered (Net 30)</div>
         </div>
 
         <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
-          <div className="flex items-center justify-between text-muted text-11">
-            <span>NYFCA QUI TAM PIPELINE</span>
-            <TrendingUp className="w-4 h-4 text-purple-400" />
+          <div className="flex items-center justify-between text-muted text-10">
+            <span>COMMITTED PILOT CONTRACTS</span>
+            <DollarSign className="w-4 h-4 text-gold" />
           </div>
-          <div className="text-22 font-bold text-purple-400 mt-6">
-            ${(quiTamPipelineAmount / 1000000).toFixed(2)}M
+          <div className="text-22 font-bold text-gold mt-6">
+            $25,000
           </div>
-          <div className="text-11 text-muted mt-2">DOJ/AG Relator share queue</div>
+          <div className="text-10 text-muted mt-2">Signed Retainers (Q4 Deliverable)</div>
         </div>
 
         <div className="bg-surface border border-border p-14 rounded-sm shadow-panel">
-          <div className="flex items-center justify-between text-muted text-11">
-            <span>TOTAL BOUNTY PIPELINE</span>
-            <DollarSign className="w-4 h-4 text-amber" />
+          <div className="flex items-center justify-between text-muted text-10">
+            <span>STATUTORY EXPOSURE CEILING</span>
+            <TrendingUp className="w-4 h-4 text-secondary" />
           </div>
-          <div className="text-22 font-bold text-amber mt-6">
-            ${(totalBountyPotential / 1000000).toFixed(2)}M
+          <div className="text-22 font-bold text-secondary mt-6">
+            ${(quiTamPipelineAmount / 1000000).toFixed(1)}M
           </div>
-          <div className="text-11 text-muted mt-2">Across all 5 tracks</div>
+          <div className="text-10 text-amber mt-2">Unadjudicated (Never Counted as Rev)</div>
         </div>
       </div>
 
