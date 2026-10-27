@@ -72,19 +72,29 @@ export default function Home() {
     const loadData = async () => {
       const startTime = performance.now();
       try {
-        // Parallel fetch: Live Socrata Streams + Static Knowledge Artifacts
-        const [live311Res, liveLedgerRes, pRes, eRes, zRes, medRes, ringsRes, graphRes] = await Promise.all([
+        // Parallel fetch: Live Socrata Streams + Dynamic Spatial Clusters + Ledger
+        const [live311Res, liveLedgerRes, liveZonesRes, pRes, eRes, medRes, ringsRes, graphRes] = await Promise.all([
           fetch("/api/sources/311-stream?limit=150").catch(() => null),
           fetch("/api/ledger").catch(() => null),
+          fetch("/api/zones").catch(() => null),
           fetch("/data/permits.json").catch(() => null),
           fetch("/data/evidence.json").catch(() => null),
-          fetch("/data/zones.json").catch(() => null),
           fetch("/data/medicaid_providers.json").catch(() => null),
           fetch("/data/fraud_rings.json").catch(() => null),
           fetch("/data/palantir_graph.json").catch(() => null),
         ]);
 
         let totalRecords = 0;
+
+        // Process dynamic spatial clusters
+        if (liveZonesRes?.ok) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const zJson = await liveZonesRes.json() as any;
+          if (zJson.data) setZones(zJson.data);
+        } else {
+          const zRes = await fetch("/data/zones.json").catch(() => null);
+          if (zRes?.ok) setZones(await zRes.json());
+        }
 
         // Process live 311 stream if available
         if (live311Res?.ok) {
@@ -131,7 +141,6 @@ export default function Home() {
         // Process other artifacts
         if (pRes?.ok) setPermits(await pRes.json());
         if (eRes?.ok) setEvidence(await eRes.json());
-        if (zRes?.ok) setZones(await zRes.json());
         if (medRes?.ok) setMedicaid(await medRes.json());
         if (ringsRes?.ok) setFraudRings(await ringsRes.json());
         if (graphRes?.ok) setPalantirGraph(await graphRes.json());
