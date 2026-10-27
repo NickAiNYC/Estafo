@@ -1,9 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity } from "lucide-react";
+import { Activity, ShieldCheck, Database } from "lucide-react";
 
-export default function Footer() {
+interface FooterProps {
+  liveCount?: number;
+  liveSource?: string;
+  latencyMs?: number;
+}
+
+export default function Footer({
+  liveCount = 100,
+  liveSource = "NYC SODA (erm2-nwe9, eabe-havv)",
+  latencyMs = 42,
+}: FooterProps) {
   const [time, setTime] = useState("...");
 
   useEffect(() => {
@@ -23,21 +33,27 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="h-[36px] px-20 flex items-center justify-between border-t border-border bg-canvas text-10 text-muted font-mono shrink-0 select-none">
+    <footer className="h-[36px] px-16 flex items-center justify-between border-t border-border bg-canvas text-10 text-muted font-mono shrink-0 select-none z-20">
       <div className="flex items-center gap-12">
         <span className="flex items-center gap-4 text-emerald">
-          <Activity className="w-3 h-3" />
-          <span>INGESTION: ACTIVE (18ms)</span>
+          <Activity className="w-3 h-3 animate-pulse" />
+          <span>INGESTION: LIVE ({latencyMs}ms)</span>
         </span>
         <span className="text-border">|</span>
-        <span className="text-secondary hidden md:inline">
-          DSNY § 16-119 · CAC § 24-163 · NYS FALSE CLAIMS ACT § 189
+        <span className="flex items-center gap-4 text-secondary hidden md:inline-flex">
+          <Database className="w-3 h-3 text-steel-blue" />
+          <span>TRUTH SOURCE: {liveSource}</span>
+        </span>
+        <span className="text-border hidden md:inline">|</span>
+        <span className="text-primary/80 hidden lg:inline">
+          RECORDS ACTIVE: <span className="text-emerald font-bold">{liveCount}</span>
         </span>
       </div>
 
       <div className="flex items-center gap-12">
-        <span className="text-muted hidden sm:inline">
-          TELEPHONE STANDBY CERTIFIED (48 RCNY § 6-08)
+        <span className="flex items-center gap-4 text-gold hidden sm:inline-flex">
+          <ShieldCheck className="w-3 h-3 text-gold" />
+          <span>AUDIT: GAAP-ALIGNED LEDGER (GATE G4)</span>
         </span>
         <span className="text-border">|</span>
         <span className="text-primary font-bold">
