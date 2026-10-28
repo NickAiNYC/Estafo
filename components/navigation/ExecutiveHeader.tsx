@@ -9,6 +9,7 @@ interface ExecutiveHeaderProps {
   audioEnabled?: boolean;
   onToggleAudio?: () => void;
   onOpenCommandPalette: () => void;
+  onOpenSourceDrawer?: () => void;
 }
 
 const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
@@ -21,7 +22,12 @@ const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
   { id: "NEXUS_GRAPH", label: "Entity graph", icon: Network },
 ];
 
-export default function ExecutiveHeader({ currentView, onSelectView, onOpenCommandPalette }: ExecutiveHeaderProps) {
+export default function ExecutiveHeader({
+  currentView,
+  onSelectView,
+  onOpenCommandPalette,
+  onOpenSourceDrawer,
+}: ExecutiveHeaderProps) {
   return (
     <header className="shrink-0 border-b border-white/[0.08] bg-[#121214] px-4 py-3 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -44,18 +50,33 @@ export default function ExecutiveHeader({ currentView, onSelectView, onOpenComma
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 rounded bg-[#18181B] border border-white/[0.08] hover:border-white/[0.16] px-3 py-1.5 text-xs text-zinc-300 hover:text-white transition-all shadow-sm"
-          aria-label="Open search command palette"
-        >
-          <Search className="h-3.5 w-3.5 text-zinc-400" />
-          <span className="font-mono text-zinc-400">Search</span>
-          <span className="ml-1 text-[10px] font-mono bg-white/[0.06] text-zinc-400 px-1.5 py-0.5 rounded border border-white/[0.06]">
-            ⌘K
-          </span>
-        </button>
+        <div className="flex items-center gap-2">
+          {onOpenSourceDrawer && (
+            <button
+              type="button"
+              onClick={onOpenSourceDrawer}
+              className="hidden sm:flex items-center gap-2 rounded bg-[#18181B] border border-white/[0.08] hover:border-white/[0.16] px-2.5 py-1.5 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm"
+              title="Open System Telemetry Diagnostics (⌘D)"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] text-zinc-300">Telemetry</span>
+              <span className="text-[10px] text-zinc-500">⌘D</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onOpenCommandPalette}
+            className="flex items-center gap-2 rounded bg-[#18181B] border border-white/[0.08] hover:border-white/[0.16] px-3 py-1.5 text-xs text-zinc-300 hover:text-white transition-all shadow-sm"
+            aria-label="Open search command palette"
+          >
+            <Search className="h-3.5 w-3.5 text-zinc-400" />
+            <span className="font-mono text-zinc-400">Search</span>
+            <span className="ml-1 text-[10px] font-mono bg-white/[0.06] text-zinc-400 px-1.5 py-0.5 rounded border border-white/[0.06]">
+              ⌘K
+            </span>
+          </button>
+        </div>
       </div>
 
       <nav className="mt-3 flex w-full gap-1 overflow-x-auto pb-1" aria-label="Main navigation">

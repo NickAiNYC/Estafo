@@ -26,6 +26,8 @@ interface FooterProps {
   feeds?: FeedTelemetryItem[];
   onRefreshFeeds?: () => void;
   isRefreshing?: boolean;
+  isDrawerOpen?: boolean;
+  onToggleDrawer?: (open: boolean) => void;
 }
 
 export default function Footer({
@@ -33,8 +35,19 @@ export default function Footer({
   feeds = [],
   onRefreshFeeds,
   isRefreshing = false,
+  isDrawerOpen,
+  onToggleDrawer,
 }: FooterProps) {
-  const [showDetails, setShowDetails] = useState(false);
+  const [internalShowDetails, setInternalShowDetails] = useState(false);
+  const showDetails = isDrawerOpen !== undefined ? isDrawerOpen : internalShowDetails;
+
+  const toggleDetails = (nextVal: boolean) => {
+    if (onToggleDrawer) {
+      onToggleDrawer(nextVal);
+    } else {
+      setInternalShowDetails(nextVal);
+    }
+  };
   const liveCount = feeds
     .filter((feed) => feed.tier === "LIVE_SOURCED" && feed.status === "ONLINE")
     .reduce((sum, feed) => sum + feed.count, 0);
@@ -48,7 +61,7 @@ export default function Footer({
       {/* Slide-Up Telemetry & Diagnostic Drawer */}
       <SourceDetailsDrawer
         isOpen={showDetails}
-        onClose={() => setShowDetails(false)}
+        onClose={() => toggleDetails(false)}
         feeds={feeds}
         onRefresh={onRefreshFeeds}
         isRefreshing={isRefreshing}
@@ -101,7 +114,7 @@ export default function Footer({
 
             <button
               type="button"
-              onClick={() => setShowDetails((value) => !value)}
+              onClick={() => toggleDetails(!showDetails)}
               aria-expanded={showDetails}
               className="flex items-center gap-1.5 rounded bg-[#18181B] border border-white/[0.08] hover:border-white/[0.16] px-3 py-1 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm cursor-pointer"
             >

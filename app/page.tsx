@@ -30,6 +30,7 @@ import { FlyToInterpolator } from "@deck.gl/core";
 export default function Home() {
   const [currentView, setCurrentView] = useState<ConsoleView>("OVERVIEW");
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isSourceDrawerOpen, setIsSourceDrawerOpen] = useState(false);
 
   const { playClick, playChirp } = useTacticalAudio();
 
@@ -455,8 +456,16 @@ export default function Home() {
             setIsCommandPaletteOpen((prev) => !prev);
           }
           break;
+        case "d":
+        case "D":
+          if (e.metaKey || e.ctrlKey) {
+            e.preventDefault();
+            setIsSourceDrawerOpen((prev) => !prev);
+          }
+          break;
         case "Escape":
           setIsCommandPaletteOpen(false);
+          setIsSourceDrawerOpen(false);
           break;
       }
     };
@@ -525,6 +534,7 @@ export default function Home() {
         currentView={currentView}
         onSelectView={setCurrentView}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenSourceDrawer={() => setIsSourceDrawerOpen((prev) => !prev)}
       />
 
       {currentView === "WAR_ROOM" && <KpiStrip 
@@ -617,6 +627,8 @@ export default function Home() {
         feeds={feedTelemetry}
         onRefreshFeeds={loadData}
         isRefreshing={isRefreshing}
+        isDrawerOpen={isSourceDrawerOpen}
+        onToggleDrawer={setIsSourceDrawerOpen}
       />
 
       <CommandPalette 
@@ -634,6 +646,7 @@ export default function Home() {
           setCurrentView(v);
         }}
         onRefreshFeeds={loadData}
+        onOpenSourceDrawer={() => setIsSourceDrawerOpen(true)}
         liveRecordsCount={liveRecordCount || 598}
       />
     </>

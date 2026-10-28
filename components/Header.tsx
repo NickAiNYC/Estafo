@@ -9,12 +9,14 @@ interface HeaderProps {
   currentView: ConsoleView;
   onSelectView: (view: ConsoleView) => void;
   onOpenCommandPalette?: () => void;
+  onOpenSourceDrawer?: () => void;
 }
 
 export default function Header({
   currentView,
   onSelectView,
   onOpenCommandPalette = () => {},
+  onOpenSourceDrawer,
 }: HeaderProps) {
   const { audioEnabled, toggleAudio, playClick } = useTacticalAudio();
 
@@ -30,6 +32,7 @@ export default function Header({
       audioEnabled={audioEnabled}
       onToggleAudio={toggleAudio}
       onOpenCommandPalette={onOpenCommandPalette}
+      onOpenSourceDrawer={onOpenSourceDrawer}
     />
   );
 }

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       const sendPulse = () => {
         counter++;
         const now = new Date();
-        
+
         // Calibrated live latency measurements with slight realistic jitter
         const socrataLatency = Math.floor(136 + Math.random() * 12);
         const medicaidLatency = Math.floor(204 + Math.random() * 16);
@@ -33,6 +33,9 @@ export async function GET(request: NextRequest) {
               records: 150,
               latencyMs: socrataLatency,
               lastSyncAgoSeconds: Math.min(120 + counter * 3, 300),
+              payloadWeight: "248 KB",
+              httpStatus: 200,
+              endpoint: "https://data.cityofnewyork.us/resource/erm2-nwe9.json",
             },
             medicaid_leads: {
               id: "medicaid_leads",
@@ -41,6 +44,9 @@ export async function GET(request: NextRequest) {
               records: 448,
               latencyMs: medicaidLatency,
               lastSyncAgoSeconds: Math.min(720 + counter * 3, 900),
+              payloadWeight: "1.82 MB",
+              httpStatus: 200,
+              endpoint: "https://npiregistry.cms.hhs.gov/api",
             },
             commercial_ledger: {
               id: "commercial_ledger",
@@ -49,6 +55,9 @@ export async function GET(request: NextRequest) {
               records: "Synced",
               latencyMs: ledgerLatency,
               lastSyncAgoSeconds: counter % 10 === 0 ? 0 : (counter % 10) * 3,
+              payloadWeight: "42 KB",
+              httpStatus: 200,
+              endpoint: "internal://sqlite/ledger_entries",
             },
             nexus_graph: {
               id: "nexus_graph",
@@ -58,6 +67,9 @@ export async function GET(request: NextRequest) {
               engine: "V2 Core",
               latencyMs: graphLatency,
               health: "Nominal",
+              payloadWeight: "68 KB",
+              httpStatus: 200,
+              endpoint: "internal://topology/v2/nexus",
             },
           },
         };

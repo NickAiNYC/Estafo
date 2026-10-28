@@ -11,6 +11,7 @@ interface CommandPaletteProps {
   onSelectZone?: (lat: number, lon: number) => void;
   onSelectView?: (view: ConsoleView) => void;
   onRefreshFeeds?: () => void;
+  onOpenSourceDrawer?: () => void;
   isOpen?: boolean;
   onClose?: () => void;
   liveRecordsCount?: number;
@@ -22,6 +23,7 @@ export default function CommandPalette({
   onSelectZone,
   onSelectView,
   onRefreshFeeds,
+  onOpenSourceDrawer,
   isOpen: controlledIsOpen,
   onClose: controlledOnClose,
   liveRecordsCount = 598,
@@ -52,30 +54,34 @@ export default function CommandPalette({
         }
       } else if (e.key === "Escape") {
         handleClose();
-      } else if ((e.metaKey || e.ctrlKey) && isOpen && onSelectView) {
-        if (e.key === "1") {
+      } else if ((e.metaKey || e.ctrlKey) && isOpen) {
+        if (e.key === "1" && onSelectView) {
           e.preventDefault();
           onSelectView("OVERVIEW");
           handleClose();
-        } else if (e.key === "2") {
+        } else if (e.key === "2" && onSelectView) {
           e.preventDefault();
           onSelectView("WAR_ROOM");
           handleClose();
-        } else if (e.key === "3") {
+        } else if (e.key === "3" && onSelectView) {
           e.preventDefault();
           onSelectView("MEDICAID_RADAR");
           handleClose();
-        } else if (e.key === "4") {
+        } else if (e.key === "4" && onSelectView) {
           e.preventDefault();
           onSelectView("CASE_TIMELINE");
           handleClose();
-        } else if (e.key === "5") {
+        } else if (e.key === "5" && onSelectView) {
           e.preventDefault();
           onSelectView("LEGAL_WEAPONIZER");
           handleClose();
-        } else if (e.key === "6") {
+        } else if (e.key === "6" && onSelectView) {
           e.preventDefault();
           onSelectView("NEXUS_GRAPH");
+          handleClose();
+        } else if (e.key.toLowerCase() === "d" && onOpenSourceDrawer) {
+          e.preventDefault();
+          onOpenSourceDrawer();
           handleClose();
         }
       }
@@ -83,7 +89,7 @@ export default function CommandPalette({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, controlledIsOpen, controlledOnClose, handleClose, onSelectView]);
+  }, [isOpen, controlledIsOpen, controlledOnClose, handleClose, onSelectView, onOpenSourceDrawer]);
 
   if (!isOpen) return null;
 
@@ -190,15 +196,31 @@ export default function CommandPalette({
           {!q && (
             <div>
               <div className="pt-2 px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                System Feeds
+                System Feeds & Diagnostics
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onOpenSourceDrawer) onOpenSourceDrawer();
+                  handleClose();
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors text-xs text-left group"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Open System Telemetry & Diagnostics</span>
+                </span>
+                <span className="font-mono text-[10px] text-zinc-500 group-hover:text-zinc-300">
+                  ⌘D
+                </span>
+              </button>
               <button
                 type="button"
                 onClick={() => {
                   if (onRefreshFeeds) onRefreshFeeds();
                   handleClose();
                 }}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors text-xs text-left group"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-white/[0.06] transition-colors text-xs text-left group mt-0.5"
               >
                 <span className="flex items-center gap-2">
                   <RefreshCw className="w-3.5 h-3.5 text-zinc-400 group-hover:rotate-180 transition-transform duration-300" />
