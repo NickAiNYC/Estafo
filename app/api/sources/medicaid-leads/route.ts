@@ -317,6 +317,9 @@ export async function GET(request: Request) {
       else if (reviewed.disposition === "SETTLED_OR_RECOVERED") status = "RECOVERY_PENDING";
     }
 
+    const spendPerBen = Math.round(item.total_spend / item.total_beneficiaries);
+    const claimsPerBen = +((item.total_claims / item.total_beneficiaries).toFixed(1));
+
     return {
       id: item.id,
       npi: item.npi,
@@ -332,6 +335,11 @@ export async function GET(request: Request) {
       exposure_amount: item.total_spend,
       monthly_intensity: monthlyIntensity,
       months_active: item.months_active,
+      total_claims: item.total_claims,
+      total_beneficiaries: item.total_beneficiaries,
+      spend_per_beneficiary: spendPerBen,
+      claims_per_beneficiary: claimsPerBen,
+      selection_rule: "NPPES practice address in NYC 5-borough ZIP prefixes (100–104, 111–114, 116) cross-referenced against HHS aggregate provider spending (HCPCS T2024). Service location is an inferred proxy.",
       z_score: zScore,
       check_digit_valid: item.check_digit_valid,
       is_nyc_verified: true,
@@ -349,6 +357,8 @@ export async function GET(request: Request) {
   // Sort according to requested metric
   if (sortBy === "total_spending") {
     providers.sort((a, b) => b.exposure_amount - a.exposure_amount);
+  } else if (sortBy === "spend_per_beneficiary") {
+    providers.sort((a, b) => (b.spend_per_beneficiary || 0) - (a.spend_per_beneficiary || 0));
   } else {
     // Default: normalized monthly spending rate ($/mo)
     providers.sort((a, b) => (b.monthly_intensity || 0) - (a.monthly_intensity || 0));
@@ -361,10 +371,13 @@ export async function GET(request: Request) {
     provenance: {
       mode: "VETTED_NYC_COHORT_SCREENING",
       status: "VERIFIED_REGISTRY_COHORT",
-      disclaimer: "STATISTICAL SCREENING AID ONLY. Provider records verified against official CMS NPPES Registry v2.1 with 10-digit Luhn check digit validation. Statistical screening reflects peer deviation in normalized monthly spending intensity. Outlier status indicates screening utility and does not constitute an adjudicated finding of wrongdoing.",
+      selection_rule: "NPPES practice address in NYC 5-borough ZIP prefixes (100–104, 111–114, 116) with taxonomy 261QA0600X matched to HHS aggregate provider spending (HCPCS T2024). Service location is an inferred proxy; HHS records billing/servicing NPI totals, not point-of-service claims.",
+      disclaimer: "STATISTICAL SCREENING AID ONLY. Provider records verified against official CMS NPPES Registry v2.1 with 10-digit Luhn check digit validation. Statistical screening reflects peer deviation across normalized monthly spending ($/mo), claims per beneficiary, and spend per beneficiary. Outlier status indicates screening utility and does not constitute an adjudicated finding of wrongdoing.",
+      hhs_dataset_limitations: "HHS Medicaid Provider Spending dataset omits point-of-service location, suppresses small cells (<11 beneficiaries/claims) for privacy, and provides annual aggregates without claim-line or procedure modifier detail.",
+      legal_framework: "New York False Claims Act (NYS Finance Law § 190(9)) and Federal FCA (31 U.S.C. § 3730(e)(4)). Zero-PHI architecture: public aggregate data only, requiring no HIPAA Business Associate Agreement (BAA).",
       hcpcs_code: "T2024",
       specialty: "Adult Day Health Care",
-      location_scope: "New York City (Five Boroughs)",
+      location_scope: "New York City (NPPES Practice Location Proxy)",
       cohort_size: providers.length,
       retrievalLatencyMs: durationMs,
       allowlist_checksum_sha256: allowlistSha256,
@@ -372,7 +385,7 @@ export async function GET(request: Request) {
       normalized_mean_monthly_intensity: Math.round(meanIntensity),
       std_dev: Math.round(stdIntensity),
       all_check_digits_valid: providers.every(p => p.check_digit_valid),
-      methodology: "Normalized monthly spending intensity ($/active month) evaluated against peer group Z-score distribution."
+      methodology: "Multi-dimensional screening model: normalized monthly intensity ($/active month), spend/beneficiary, and claims/beneficiary evaluated against peer group Z-score distribution."
     },
     data: providers
   }, {

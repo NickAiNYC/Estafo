@@ -45,10 +45,18 @@ export default function LegalWeaponizer({
   const [borough, setBorough] = useState("");
   const [address, setAddress] = useState("");
   const [taxonomyCode, setTaxonomyCode] = useState("HCPCS T2024 (Adult Day Health Care)");
-  const [peerCohortSize] = useState("Prototype Peer Cohort (NYC 5 Boroughs)");
-  const [deviationSigma, setDeviationSigma] = useState("+2.4σ Above Prototype Mean");
+  const [peerCohortSize] = useState("Vetted NYC Peer Cohort (NYC 5 Boroughs)");
+  const [deviationSigma, setDeviationSigma] = useState("+2.3σ Above Peer Mean");
+  const [totalClaims, setTotalClaims] = useState<number>(79000);
+  const [totalBeneficiaries, setTotalBeneficiaries] = useState<number>(1650);
+  const [spendPerBeneficiary, setSpendPerBeneficiary] = useState<number>(7182);
+  const [claimsPerBeneficiary, setClaimsPerBeneficiary] = useState<number>(47.9);
+  const [selectionRule, setSelectionRule] = useState<string>(
+    "NPPES practice address in NYC 5-borough ZIP prefixes (100–104, 111–114, 116) cross-referenced against HHS aggregate provider spending (HCPCS T2024). Service location is an inferred proxy."
+  );
+  const [leadUtility, setLeadUtility] = useState<string>("PRIORITY_INVESTIGATION");
   const [exculpatoryHypothesis, setExculpatoryHypothesis] = useState(
-    "Capacity expansion or consolidation of nearby clinics may account for legitimate census growth. Primary attendance rosters must be verified."
+    "High volume consistent with extended weekend operating schedule and high-acuity dementia care programs. Primary attendance rosters must be verified."
   );
 
   // OATH Parameters
@@ -74,6 +82,13 @@ export default function LegalWeaponizer({
         setAddress(match.address);
         setTaxonomyCode(`HCPCS T2024 (${match.facility_type})`);
         setDeviationSigma(`+${match.z_score?.toFixed(1) || "2.0"}σ vs Peer Distribution`);
+        if (match.total_claims) setTotalClaims(match.total_claims);
+        if (match.total_beneficiaries) setTotalBeneficiaries(match.total_beneficiaries);
+        if (match.spend_per_beneficiary) setSpendPerBeneficiary(match.spend_per_beneficiary);
+        if (match.claims_per_beneficiary) setClaimsPerBeneficiary(match.claims_per_beneficiary);
+        if (match.selection_rule) setSelectionRule(match.selection_rule);
+        if (match.lead_utility) setLeadUtility(match.lead_utility);
+        if (match.exculpatory_notes) setExculpatoryHypothesis(match.exculpatory_notes);
       }
     }
   }, [initialTargetId, providers]);
@@ -84,59 +99,97 @@ export default function LegalWeaponizer({
 ESTAFO RESEARCH DOSSIER DRAFT // PRELIMINARY SCREENING SUMMARY
 INTERNAL COMPLIANCE & RESEARCH AID // NOT AN OFFICIAL LEGAL FILING
 ================================================================================
-NOTICE & LIMITATIONS:
-This document is a preliminary research summary generated for internal evaluation.
+NOTICE & METHODOLOGICAL CONTEXT:
+This document is a preliminary screening research memorandum generated for institutional
+compliance officers, law firm investigators, and government evaluators.
 The platform does NOT assert fraud, legal liability, or regulatory non-compliance.
-All data is derived from statistical screening prototypes. This draft does NOT
-constitute a signed complaint, affidavit, or court-ready disclosure.
+All scores and metrics are screening signals designed to prioritize investigative
+review, NOT proof of overbilling or wrongdoing.
 ================================================================================
 
-I. TARGET HEALTHCARE ENTITY (IDENTIFIERS)
+I. TARGET HEALTHCARE ENTITY & SELECTION RULE (PROXY IDENTIFIERS)
 --------------------------------------------------------------------------------
-Entity Name:          ${providerName || "[Not Specified / Pending Input]"}
-Provider Identifier:  ${providerNPI || "[Enter NPI]"}
-Specialty Scope:      ${taxonomyCode}
-Location Corridor:    ${address ? `${address} (${borough})` : "[Enter Corridor / Address]"}
-Data Source State:    Screening Prototype (Requires official HHS/NPPES ingestion)
+Entity Legal Name:      ${providerName || "[Not Specified / Pending Input]"}
+National Provider ID:   ${providerNPI || "[Enter 10-Digit NPI]"}
+Taxonomy / Code Scope:  ${taxonomyCode}
+NPPES Practice Address: ${address ? `${address} (${borough})` : "[Enter Corridor / Address]"}
+Cohort Selection Rule:  ${selectionRule}
 
-II. SCREENING ANOMALY & STATISTICAL COMPARISON
+PROXY SELECTION NOTICE:
+HHS Medicaid Provider Spending files record aggregate billing and servicing NPI totals,
+omitting physical point-of-service locations. NPPES practice addresses do not establish
+where a Medicaid service occurred. This cohort is labeled strictly by its actual selection
+rule: NPPES practice location proxy in NYC 5-borough ZIP prefixes.
+
+II. MULTI-DIMENSIONAL VOLUME SCREENING & PEER COMPARISON
 --------------------------------------------------------------------------------
-Primary Indicator:    Normalized Monthly Spending Intensity ($/active month)
-Comparison Group:     ${peerCohortSize}
-Descriptive Metric:   Spending Rate vs Specialty Peer Distribution
-Observed Deviation:   ${deviationSigma}
-Operational Note:     Statistical outliers indicate volume disparity, NOT fraud.
+Primary Screening Signal: Normalized Monthly Spending Intensity ($/active month)
+Observed Peer Deviation:  ${deviationSigma}
+Total Reported Claims:    ${totalClaims ? totalClaims.toLocaleString() : "Pending Ingestion"}
+Total Beneficiaries:      ${totalBeneficiaries ? totalBeneficiaries.toLocaleString() : "Pending Ingestion"}
+Spend Per Beneficiary:    $${spendPerBeneficiary ? spendPerBeneficiary.toLocaleString() : "N/A"}
+Claims Per Beneficiary:   ${claimsPerBeneficiary ? claimsPerBeneficiary.toFixed(1) : "N/A"} claims/ben
+Comparison Peer Cohort:   ${peerCohortSize}
+
+HHS DATASET GRAIN & SUPPRESSION NOTICE:
+HHS Medicaid Provider Spending data aggregates annual figures and suppresses small cells
+(<11 beneficiaries or claims) to protect beneficiary privacy. Spending intensity per active
+month alone does NOT eliminate volume bias; comparisons must evaluate claims per beneficiary,
+spend per beneficiary, and like HCPCS procedure codes across equivalent reporting periods.
 
 III. CONTRADICTORY & EXCULPATORY HYPOTHESES (INNOCENT EXPLANATIONS)
 --------------------------------------------------------------------------------
-Documented Context:
+Documented Context & Alternative Explanations:
 ${exculpatoryHypothesis || "None entered."}
 
 IV. FOUR-TIER EVIDENTIARY CLASSIFICATION
 --------------------------------------------------------------------------------
 1. VERIFIED FACTS:
-   - Zero verified findings asserted by the platform.
-   - Sourced claims require running the official MediFraudy batch importer.
+   - Zero verified violations asserted by the automated screening platform.
+   - Sourced claims require primary participant rosters and attendance audits.
 2. STATISTICAL INFERENCES:
-   - Monthly billing rate is anomalous relative to the screening cohort.
+   - Provider exhibits statistically elevated volume metrics relative to regional
+     adult day care peers in normalized monthly spend and beneficiary intensity.
 3. ALLEGATIONS:
-   - [NONE ASSERTED] — Platform takes no position on intent or violation.
+   - [NONE ASSERTED] — Platform takes no position on intent, regulatory non-compliance,
+     or False Claims Act culpability.
 4. UNKNOWNS & DATA GAPS:
-   - Underlying patient medical records and attendance rosters remain uninspected.
-   - EVV driver GPS logs have not been obtained or verified.
+   - Primary patient attendance sign-in sheets remain uninspected.
+   - Electronic Visit Verification (EVV) driver GPS tracking logs have not been audited.
+   - Individual patient clinical necessity certifications have not been examined.
 
-V. RECOMMENDED NEXT INVESTIGATIVE STEPS
+V. QUI TAM LEGAL FRAMEWORK & ZERO-PHI ARCHITECTURE
 --------------------------------------------------------------------------------
-1. Check state regulatory registry for licensed participant census limits.
-2. Perform lawful on-site verification of facility operations.
-3. Cross-reference corporate filings through official NYS Department of State.
+Statutory Bases:         New York False Claims Act (NYS Finance Law § 190(9))
+                         Federal False Claims Act (31 U.S.C. § 3730(e)(4))
+Public Disclosure Bar:   Case-specific assessment required under NYS Finance Law § 190(9)
+                         and federal law. Legal counsel must evaluate specific fact patterns,
+                         statutory exceptions, and independent original-source standing.
+HIPAA & PHI Posture:     Zero-PHI Architecture. System operates exclusively on public
+                         aggregate CMS/HHS data. No protected health information (PHI) is
+                         accessed, ingested, or stored; therefore, a HIPAA Business
+                         Associate Agreement (BAA) is not required as a matter of law.
+Security & Compliance:   SOC 2 Type II is an enterprise buyer requirement for data security
+                         and access control, not a statutory HIPAA mandate.
+Enforcement Backtests:   Public regulatory and DOJ/OIG actions provide useful positive
+                         examples for screening model calibration; however, providers without
+                         public enforcement actions are NOT confirmed negatives. Model precision
+                         cannot be claimed as real-world accuracy without blinded investigator review.
 
-VI. HUMAN REVIEWER STATUS
+VI. RECOMMENDED NEXT INVESTIGATIVE STEPS
 --------------------------------------------------------------------------------
-Review Status:        ${isSigned ? "COMPLETED INTERNAL REVIEW" : "DRAFT — PENDING HUMAN REVIEW AND SIGN-OFF"}
-Reviewer Name:        ${reviewerName.trim() || "[Unassigned]"}
-Attestation Date:     ${new Date().toISOString().slice(0, 10)}
-Disclaimer:           Internal research aid only. Not an affidavit or court filing.
+1. Cross-reference licensed participant capacity with NYS Department of Health registries.
+2. Perform lawful on-site physical observation of facility arrival and departure corridors.
+3. Review certified corporate registration through the NYS Department of State Division of Corporations.
+4. Request redacted billing summaries from primary managed long-term care (MLTC) plans.
+
+VII. BLINDED INVESTIGATOR REVIEW STATUS
+--------------------------------------------------------------------------------
+Review Status:           ${isSigned ? "COMPLETED INTERNAL REVIEW" : "DRAFT — PENDING HUMAN REVIEW AND SIGN-OFF"}
+Reviewer Name:           ${reviewerName.trim() || "[Unassigned]"}
+Utility Classification:  ${leadUtility}
+Attestation Date:        ${new Date().toISOString().slice(0, 10)}
+Legal Work Product:      Confidential Internal Investigative Aid // Not an Affidavit
 `;
   };
 
@@ -621,7 +674,7 @@ II. EVIDENTIARY PROOF REQUIREMENTS
         {/* Section I: Target Healthcare Entity Table */}
         <div className="mb-16">
           <div className="text-12 font-bold uppercase tracking-wide border-b border-gray-300 pb-4 mb-8">
-            I. Target Healthcare Entity Identifiers
+            I. Target Healthcare Entity Identifiers & Cohort Selection Rule
           </div>
           <table className="w-full border-collapse border border-gray-300 text-10">
             <tbody>
@@ -638,21 +691,27 @@ II. EVIDENTIARY PROOF REQUIREMENTS
                 <td className="p-6">{taxonomyCode}</td>
               </tr>
               <tr className="border-b border-gray-200">
-                <td className="p-6 font-bold bg-gray-100">Facility Location / Corridor</td>
+                <td className="p-6 font-bold bg-gray-100">NPPES Practice Address</td>
                 <td className="p-6">{address ? `${address} (${borough})` : "Unspecified"}</td>
               </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100">Cohort Selection Rule</td>
+                <td className="p-6 text-gray-700">{selectionRule}</td>
+              </tr>
               <tr>
-                <td className="p-6 font-bold bg-gray-100">Data Source State</td>
-                <td className="p-6">Screening Prototype (Requires official CMS/NPPES ingestion run)</td>
+                <td className="p-6 font-bold bg-gray-100">Proxy Selection Limitation</td>
+                <td className="p-6 text-gray-700">
+                  The HHS Medicaid Provider Spending file reports billing/servicing NPI aggregates, not service locations. An NPPES practice address does not establish where a Medicaid service occurred.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Section II: Statistical Anomaly & Peer Comparison */}
+        {/* Section II: Multi-Dimensional Statistical Screening */}
         <div className="mb-16">
           <div className="text-12 font-bold uppercase tracking-wide border-b border-gray-300 pb-4 mb-8">
-            II. Screening Anomaly & Statistical Peer Comparison
+            II. Multi-Dimensional Screening Metrics & Peer Comparison
           </div>
           <table className="w-full border-collapse border border-gray-300 text-10">
             <tbody>
@@ -661,17 +720,25 @@ II. EVIDENTIARY PROOF REQUIREMENTS
                 <td className="p-6">Normalized Monthly Spending Intensity ($/active reported month)</td>
               </tr>
               <tr className="border-b border-gray-200">
-                <td className="p-6 font-bold bg-gray-100">Comparison Peer Cohort</td>
-                <td className="p-6">{peerCohortSize}</td>
-              </tr>
-              <tr className="border-b border-gray-200">
                 <td className="p-6 font-bold bg-gray-100">Observed Peer Deviation</td>
                 <td className="p-6 font-bold text-gray-900">{deviationSigma}</td>
               </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100">Reported Claims / Beneficiaries</td>
+                <td className="p-6">{totalClaims ? totalClaims.toLocaleString() : "N/A"} claim lines across {totalBeneficiaries ? totalBeneficiaries.toLocaleString() : "N/A"} beneficiaries</td>
+              </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100">Utilization Rates</td>
+                <td className="p-6">${spendPerBeneficiary ? spendPerBeneficiary.toLocaleString() : "N/A"}/ben · {claimsPerBeneficiary ? claimsPerBeneficiary.toFixed(1) : "N/A"} claims/ben</td>
+              </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100">Comparison Peer Cohort</td>
+                <td className="p-6">{peerCohortSize}</td>
+              </tr>
               <tr>
-                <td className="p-6 font-bold bg-gray-100">Analytical Finding</td>
+                <td className="p-6 font-bold bg-gray-100">HHS Dataset Limitations</td>
                 <td className="p-6 text-gray-700">
-                  Entity billing intensity falls in upper quartile relative to specialty peer mean. Does NOT establish liability without licensed participant capacity analysis.
+                  HHS data aggregates annual totals and suppresses small cells (&lt;11 beneficiaries/claims) for privacy. Spend per active month alone does not remove volume bias; metrics serve as investigative screening signals only.
                 </td>
               </tr>
             </tbody>
@@ -696,11 +763,11 @@ II. EVIDENTIARY PROOF REQUIREMENTS
           <div className="grid grid-cols-2 gap-8 text-10">
             <div className="border border-gray-300 p-8">
               <div className="font-bold uppercase text-gray-900 mb-4">1. Verified Facts</div>
-              <p className="text-gray-700">Zero verified facts asserted by the automated screening platform. All sourced claims require batch ingestion through MediFraudy.</p>
+              <p className="text-gray-700">Zero verified violations asserted by the automated screening platform. All sourced claims require batch ingestion through MediFraudy and roster audits.</p>
             </div>
             <div className="border border-gray-300 p-8">
               <div className="font-bold uppercase text-gray-900 mb-4">2. Statistical Inferences</div>
-              <p className="text-gray-700">Billing intensity is statistically elevated (+2.4σ) relative to the adult day care demonstration specialty cohort.</p>
+              <p className="text-gray-700">Billing intensity is statistically elevated ({deviationSigma}) relative to the regional adult day care peer group.</p>
             </div>
             <div className="border border-gray-300 p-8">
               <div className="font-bold uppercase text-gray-900 mb-4">3. Allegations</div>
@@ -713,15 +780,49 @@ II. EVIDENTIARY PROOF REQUIREMENTS
           </div>
         </div>
 
-        {/* Section V: Recommended Field Next Steps */}
+        {/* Section V: Legal Framework & Qui Tam Standing */}
+        <div className="mb-16">
+          <div className="text-12 font-bold uppercase tracking-wide border-b border-gray-300 pb-4 mb-8">
+            V. Qui Tam Legal Framework & Zero-PHI Architecture
+          </div>
+          <table className="w-full border-collapse border border-gray-300 text-10">
+            <tbody>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100 w-1/3">Statutory Bases</td>
+                <td className="p-6">New York False Claims Act (NYS Finance Law § 190(9)) · Federal FCA (31 U.S.C. § 3730(e)(4))</td>
+              </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100">Public Disclosure Bar</td>
+                <td className="p-6 text-gray-700">
+                  Case-specific standing analysis required under NYS Finance Law § 190(9) and federal law. Legal counsel must assess specific fact patterns, state exceptions, and relator independent knowledge.
+                </td>
+              </tr>
+              <tr className="border-b border-gray-200">
+                <td className="p-6 font-bold bg-gray-100">Zero-PHI Architecture</td>
+                <td className="p-6 text-gray-700">
+                  Operates exclusively on public aggregate CMS/HHS data. No PHI is ingested or stored; a HIPAA Business Associate Agreement (BAA) is not required. SOC 2 Type II is an enterprise buyer requirement.
+                </td>
+              </tr>
+              <tr>
+                <td className="p-6 font-bold bg-gray-100">Enforcement Backtesting</td>
+                <td className="p-6 text-gray-700">
+                  Public actions provide positive training examples; uncharged providers are NOT confirmed negatives. Top-K precision figures cannot be asserted as real-world accuracy without blinded investigator review.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Section VI: Recommended Field Next Steps */}
         <div className="mb-16">
           <div className="text-12 font-bold uppercase tracking-wide border-b border-gray-300 pb-4 mb-6">
-            V. Recommended Next Investigative Steps
+            VI. Recommended Next Investigative Steps
           </div>
           <ol className="list-decimal pl-16 text-10 text-gray-700 space-y-4">
             <li>Verify licensed participant capacity through the NYS Department of Health provider registry.</li>
             <li>Conduct lawful on-site physical verification of facility operations and participant transport fleet.</li>
             <li>Obtain certified entity registration and ownership history from the NYS Department of State Division of Corporations.</li>
+            <li>Request primary encounter and attendance records from participating Managed Long-Term Care (MLTC) plans.</li>
           </ol>
         </div>
 

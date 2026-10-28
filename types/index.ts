@@ -57,6 +57,11 @@ export interface MedicaidProviderRecord {
   monthly_intensity?: number;
   months_active?: number;
   z_score?: number;
+  total_claims?: number;
+  total_beneficiaries?: number;
+  spend_per_beneficiary?: number;
+  claims_per_beneficiary?: number;
+  selection_rule?: string;
   is_nyc_verified?: boolean;
   verification_source?: string;
   enumeration_date?: string;

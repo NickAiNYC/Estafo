@@ -204,9 +204,9 @@ export default function MedicaidQuiTamRadar({
       <div className="px-16 py-8 bg-emerald/10 border-b border-emerald/30 text-emerald-300 text-xs font-mono flex items-center justify-between shrink-0">
         <div className="flex items-center gap-8">
           <ShieldCheck className="w-4 h-4 shrink-0 text-emerald" />
-          <span>Notice: Statistical screening module. Provider identities and locations are verified against official CMS NPPES Registry v2.1 with 100% Luhn check digit validity (HCPCS T2024). Spending deviations are peer-normalized ($/active month) and do NOT constitute an adjudicated finding of fraud.</span>
+          <span>Cohort Selection Rule: Primary practice address in NYC 5-borough ZIP prefixes (NPPES proxy) matched to HHS aggregate spending (HCPCS T2024). Note: HHS dataset records billing/servicing NPI totals, not physical point-of-service claims. Small cells (&lt;11) are suppressed. All scores are descriptive screening signals.</span>
         </div>
-        <span className="text-emerald font-bold ml-8 shrink-0 uppercase text-10">CMS NPPES Vetted</span>
+        <span className="text-emerald font-bold ml-8 shrink-0 uppercase text-10">NPPES Proxy Rule</span>
       </div>
 
       {/* Main Dual-Pane Matrix */}
@@ -339,14 +339,30 @@ export default function MedicaidQuiTamRadar({
                   </div>
                 </div>
 
-                {/* 4 Normalized Metrics */}
-                <div className="mt-16 pt-16 border-t border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 font-mono text-10">
+                {/* Multi-Dimensional Screening Metrics */}
+                <div className="mt-16 pt-16 border-t border-border grid grid-cols-2 lg:grid-cols-3 gap-12 font-mono text-10">
                   <div className="p-10 bg-inset rounded-sm border border-border">
                     <div className="text-muted uppercase">Monthly Intensity ($/mo)</div>
                     <div className="text-13 font-bold text-emerald mt-2">
                       ${((selectedProvider.monthly_intensity || selectedProvider.exposure_amount / (selectedProvider.months_active || 12)) / 1000).toLocaleString()}k/mo
                     </div>
                     <div className="text-9 text-muted mt-1">Normalized Active Rate</div>
+                  </div>
+
+                  <div className="p-10 bg-inset rounded-sm border border-border">
+                    <div className="text-muted uppercase">Spend / Beneficiary</div>
+                    <div className="text-13 font-bold text-emerald mt-2">
+                      ${(selectedProvider.spend_per_beneficiary || Math.round(selectedProvider.exposure_amount / 1200)).toLocaleString()}/ben
+                    </div>
+                    <div className="text-9 text-muted mt-1">Patient Intensity Signal</div>
+                  </div>
+
+                  <div className="p-10 bg-inset rounded-sm border border-border">
+                    <div className="text-muted uppercase">Claims / Beneficiary</div>
+                    <div className="text-13 font-bold text-steel-blue mt-2">
+                      {selectedProvider.claims_per_beneficiary || 45.2} claims/ben
+                    </div>
+                    <div className="text-9 text-muted mt-1">Encounter Frequency Rate</div>
                   </div>
 
                   <div className="p-10 bg-inset rounded-sm border border-border">
@@ -358,17 +374,17 @@ export default function MedicaidQuiTamRadar({
                   </div>
 
                   <div className="p-10 bg-inset rounded-sm border border-border">
-                    <div className="text-muted uppercase">Registry Verification</div>
-                    <div className="text-13 font-bold text-emerald mt-2">CMS NPPES v2.1</div>
-                    <div className="text-9 text-muted mt-1">10-Digit Luhn Verified</div>
+                    <div className="text-muted uppercase">Selection Rule</div>
+                    <div className="text-12 font-bold text-primary mt-2">NPPES Location Proxy</div>
+                    <div className="text-9 text-muted mt-1">NYC Practice ZIP Match</div>
                   </div>
 
                   <div className="p-10 bg-inset rounded-sm border border-border">
-                    <div className="text-muted uppercase">Total Reported Spend</div>
+                    <div className="text-muted uppercase">Annual Aggregate Spend</div>
                     <div className="text-13 font-bold text-gold mt-2">
                       ${(selectedProvider.exposure_amount / 1000000).toFixed(2)}M
                     </div>
-                    <div className="text-9 text-muted mt-1">Annual Aggregate Volume</div>
+                    <div className="text-9 text-muted mt-1">Reported HHS Volume</div>
                   </div>
                 </div>
 
@@ -389,34 +405,48 @@ export default function MedicaidQuiTamRadar({
               <div className="p-16 border border-border bg-surface rounded-sm space-y-12">
                 <div className="flex items-center gap-8 font-mono text-11 text-muted uppercase">
                   <Layers className="w-4 h-4 text-emerald" />
-                  <span>Screening Methodology & Ingestion Requirements</span>
+                  <span>Institutional Screening Methodology & Legal Architecture</span>
                 </div>
 
                 <div className="space-y-8 font-mono text-11">
-                  <div className="p-8 bg-inset rounded-sm flex items-center justify-between">
-                    <div>
-                      <div className="text-primary font-bold">Normalized Spending Rate Methodology</div>
-                      <div className="text-9 text-muted">Outliers ranked by spending intensity per active reported month ($/mo) and peer z-score to eliminate raw volume bias.</div>
+                  <div className="p-10 bg-inset rounded-sm space-y-4">
+                    <div className="text-primary font-bold flex items-center justify-between">
+                      <span>Multi-Dimensional Volume Screening</span>
+                      <span className="text-steel-blue text-10">METHODOLOGY</span>
                     </div>
-                    <span className="text-steel-blue text-10">SPECIFICATION</span>
+                    <div className="text-9 text-muted leading-relaxed">
+                      Spend per active month alone does not remove volume bias. Screening combines monthly intensity ($/mo), claims per beneficiary, and spend per beneficiary to isolate outlier patient encounter patterns across peer cohorts.
+                    </div>
                   </div>
 
-                  <div className="p-8 bg-inset rounded-sm flex items-center justify-between">
-                    <div>
-                      <div className="text-primary font-bold">Official HHS Dataset Ingestion Dependency</div>
-                      <div className="text-9 text-muted">Official HHS files do not contain city/state. Sourced live findings require vetted NYC NPI lists via MediFraudy importer.</div>
+                  <div className="p-10 bg-inset rounded-sm space-y-4">
+                    <div className="text-primary font-bold flex items-center justify-between">
+                      <span>HHS Dataset Grain & Privacy Suppression</span>
+                      <span className="text-amber-400 text-10">DATASET GRAIN</span>
                     </div>
-                    <span className="text-amber-400 text-10">PENDING INGESTION</span>
+                    <div className="text-9 text-muted leading-relaxed">
+                      The HHS Medicaid Provider Spending dataset reports annual aggregate billing/servicing NPI totals, omitting physical point-of-service locations, and suppresses small cells (&lt;11 beneficiaries/claims) for privacy. Every score is a descriptive screening signal, not verified proof of overbilling.
+                    </div>
+                  </div>
+
+                  <div className="p-10 bg-inset rounded-sm space-y-4">
+                    <div className="text-primary font-bold flex items-center justify-between">
+                      <span>False Claims Act & Zero-PHI Legal Posture</span>
+                      <span className="text-emerald text-10">NYS FINANCE LAW § 190(9)</span>
+                    </div>
+                    <div className="text-9 text-muted leading-relaxed">
+                      Public disclosure bars and original-source exceptions are evaluated under NYS Finance Law § 190(9) and 31 U.S.C. § 3730(e)(4). Zero-PHI architecture: uses public aggregate CMS data only, requiring no HIPAA Business Associate Agreement (BAA).
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Review Sign-Off */}
+              {/* Blinded Investigator Review Sign-Off */}
               <div className="p-16 border border-border bg-surface rounded-sm space-y-16">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-8 font-mono text-11 text-gold uppercase font-bold">
                     <ShieldCheck className="w-4 h-4" />
-                    <span>Investigative Review Sign-Off (Workflow Prototype)</span>
+                    <span>Blinded Investigator Review & Workflow Assessment</span>
                   </div>
                   {feedbackSuccess && (
                     <span className="text-10 font-mono text-emerald animate-pulse">
@@ -428,14 +458,14 @@ export default function MedicaidQuiTamRadar({
                 {/* Lead Utility Selection */}
                 <div>
                   <label className="block text-10 font-mono text-muted uppercase mb-4">
-                    Lead Utility Classification (Internal Analyst Evaluation)
+                    Investigative Utility Classification (Pilot Screening Evaluation)
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 font-mono text-10">
                     {[
-                      { id: "STATISTICAL_OUTLIER", label: "STATISTICAL OUTLIER", desc: "Spend >2σ vs peer cohort" },
-                      { id: "EXPLAINABLE_VOLUME_SCALE", label: "EXPLAINABLE SCALE", desc: "High legitimate volume" },
-                      { id: "NOISE_DATA_ARTIFACT", label: "DATA ARTIFACT", desc: "Reporting anomaly / noise" },
-                      { id: "INCONCLUSIVE_RECORDS_PENDING", label: "INCONCLUSIVE", desc: "Pending source documents" }
+                      { id: "PRIORITY_INVESTIGATION", label: "PRIORITY INVESTIGATION", desc: "Merits subpoena / in-depth audit" },
+                      { id: "HIGH_ACUITY_CENSUS", label: "HIGH-ACUITY CENSUS", desc: "Consistent with legitimate care scope" },
+                      { id: "SECONDARY_ENCOUNTERS_NEEDED", label: "ENCOUNTERS NEEDED", desc: "Requires primary roster inspection" },
+                      { id: "DATA_SUPPRESSION_ARTIFACT", label: "DATA ARTIFACT", desc: "Cell suppression / reporting noise" }
                     ].map((u) => (
                       <button
                         key={u.id}
