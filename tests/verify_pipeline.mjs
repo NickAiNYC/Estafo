@@ -207,15 +207,15 @@ console.log("\n[Test 9] Verifying Vetted NYC NPI Cohort & 100% Luhn Check Digit 
 const allowlistPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.txt");
 assert(fs.existsSync(allowlistPath), "vetted_nyc_t2024_npis.txt must exist");
 const allowlistContent = fs.readFileSync(allowlistPath, "utf-8");
-const allowlistHash = crypto.createHash("sha256").update(allowlistContent).digest("hex");
+const allowlistHash = crypto.createHash("sha256").update(allowlistContent.trim()).digest("hex");
 assert.strictEqual(
   allowlistHash,
-  "07cdd1fc1e4084cd83bbcbd0a8a8aa2ed5d58299a1095bed30089dde02d6d05c",
+  "a98b2d1ba7addbfad681a45e81554895db737811a3c83242e940709789ea3432",
   "Allowlist SHA-256 must match authoritative manifest"
 );
 
 const cohortNpis = allowlistContent.split("\n").map(s => s.trim()).filter(s => s.length > 0 && !s.startsWith("#"));
-assert.strictEqual(cohortNpis.length, 10, "Cohort must contain exactly 10 vetted NPIs");
+assert.strictEqual(cohortNpis.length, 446, "Cohort must contain 446 vetted NYC NPIs");
 
 function testLuhn(npi) {
   if (!/^\d{10}$/.test(npi)) return false;

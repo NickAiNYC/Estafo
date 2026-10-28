@@ -387,17 +387,23 @@ export default function MedicaidQuiTamRadar({
               <div className="p-16 border border-border bg-surface rounded-sm">
                 <div className="flex flex-wrap items-start justify-between gap-12 mb-12">
                   <div>
-                    <div className="text-10 font-mono text-muted uppercase flex items-center gap-6">
+                    <div className="text-10 font-mono text-muted uppercase flex flex-wrap items-center gap-6">
                       <span>NPPES Vetted // NPI: {selectedProvider.npi}</span>
                       <span className="text-emerald text-9 font-bold bg-emerald/15 px-6 py-1 rounded-sm border border-emerald/40 flex items-center gap-3">
                         <CheckCircle2 className="w-2.5 h-2.5" /> CMS NPPES VERIFIED
                       </span>
                       <span className="text-steel-blue text-9 font-bold bg-steel-blue/15 px-6 py-1 rounded-sm border border-steel-blue/40">
-                        LUHN VALID
+                        {selectedProvider.service_code || "HCPCS T2024"}
+                      </span>
+                      <span className="text-gold text-9 font-bold bg-gold/15 px-6 py-1 rounded-sm border border-gold/40">
+                        {selectedProvider.source_release || "HHS 2018–2024"}
+                      </span>
+                      <span className="text-muted text-9 font-bold bg-inset px-6 py-1 rounded-sm border border-border">
+                        {selectedProvider.months_active || 12} MO ACTIVE
                       </span>
                     </div>
-                    <h2 className="text-18 font-bold font-jakarta text-primary mt-2">
-                      {isBlinded ? `BLINDED COHORT PROFILE #${selectedProvider.id.replace("SYN-SADC-", "")}` : selectedProvider.name}
+                    <h2 className="text-18 font-bold font-jakarta text-primary mt-4">
+                      {isBlinded ? `BLINDED COHORT PROFILE #${selectedProvider.npi.slice(-4)}` : selectedProvider.name}
                     </h2>
                     <div className="text-12 text-secondary mt-2">
                       {selectedProvider.address} ({selectedProvider.borough}) · Taxonomy: {selectedProvider.taxonomy_code || "261QA0600X"} · Enum: {selectedProvider.enumeration_date || "Verified"} · {selectedProvider.months_active || 12} Active Months
@@ -489,6 +495,22 @@ export default function MedicaidQuiTamRadar({
                       ${(selectedProvider.exposure_amount / 1000000).toFixed(2)}M
                     </div>
                     <div className="text-9 text-muted mt-1">Reported HHS Volume</div>
+                  </div>
+                </div>
+
+                {/* Uncertainty & Reviewer Guidance Banner */}
+                <div className="mt-14 p-12 border border-amber/30 bg-amber/5 rounded-sm flex items-start gap-10 font-mono text-11">
+                  <AlertTriangle className="w-4 h-4 text-amber shrink-0 mt-2" />
+                  <div>
+                    <div className="text-amber font-bold uppercase text-10">
+                      Uncertainty Notice & Reviewer Requirement
+                    </div>
+                    <div className="text-primary mt-2 leading-relaxed text-10">
+                      {selectedProvider.uncertainty || "Descriptive screening signal only. High spending is a research lead, not evidence of fraud. Service location is inferred from practice address proxy. Small cell counts (<11) are suppressed upstream by HHS; missing cells are not zero."}
+                    </div>
+                    <div className="text-9 text-muted mt-4">
+                      Reviewer standard: Reviewers must check unusual patterns against records they can lawfully access. High spending alone is an investigative lead, never proof of wrongdoing.
+                    </div>
                   </div>
                 </div>
 

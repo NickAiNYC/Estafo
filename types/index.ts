@@ -80,6 +80,10 @@ export interface MedicaidProviderRecord {
   reviewed_by?: string;
   reviewed_at?: string;
   source_records_hash?: string;
+  source_release?: string;
+  source_sha256?: string;
+  service_code?: string;
+  uncertainty?: string;
 }
 
 export interface FraudRingRecord {
