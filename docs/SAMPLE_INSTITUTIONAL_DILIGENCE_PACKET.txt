@@ -1,0 +1,62 @@
+================================================================================
+INSTITUTIONAL COMPLIANCE MEMORANDUM // PRIVILEGED & CONFIDENTIAL WORK PRODUCT
+PRE-LITIGATION DILIGENCE & PUBLIC DISCLOSURE BAR AUDIT // ZERO-PHI SPECIFICATION
+================================================================================
+REF IDENTIFIER:          VANGUARD-DILIGENCE-1003215732-2026-10-28
+EVIDENTIARY HASH:        4bc9572cb6e2039a7c073547655dabd505cc1f58e9baf86e2e33354dddcd6328
+STATUTORY CITATION:      31 U.S.C. § 3730(e)(4) // N.Y. STATE FINANCE LAW § 190(9)
+REGULATORY CLEARANCE:    NYC SHIELD (MED DEBT) // NYC LL144 NON-AEDT // NY S9088 DATA BROKER
+
+I. SUBJECT ENTITY & ADMINISTRATIVE PROVENANCE
+--------------------------------------------------------------------------------
+Entity Legal Name:       Regional Adult Day Care Alpha
+National Provider ID:    1003215732 (10-Digit CMS NPPES Validated)
+Taxonomy Scope:          HCPCS T2024 (Adult Day Health Care Waiver)
+Administrative Source:   CMS Medicaid Provider Spending Public Use Files (PUF)
+Licensing Authority:     Federal Open Data Policy (OMB Memo M-13-13) // Public Domain
+
+II. STATISTICAL VARIANCE & PEER GROUP STRATIFICATION
+--------------------------------------------------------------------------------
+Normalized Monthly Rate: $472,500 / active month
+Cohort Peer Mean:        $235,167 / active month
+Observed Peer Deviation: +1.67σ vs. Regional Adult Day Health Care Peer Cohort
+Annual Claim Volume:     78,500 claims
+Annual Beneficiary Count: 1,620 beneficiaries
+Spend Per Beneficiary:   $3,500
+
+DATASET PRIVACY & SUPPRESSION ADVISORY:
+All records reflect aggregate CMS metadata where small cells (<11 beneficiaries)
+were suppressed upstream by CMS. Zero patient-level records are accessed or stored.
+Statistical variance is a descriptive screening signal, NOT proof of overbilling.
+
+III. DOCUMENTED EXCULPATORY HYPOTHESES (INNOCENT EXPLANATIONS)
+--------------------------------------------------------------------------------
+Alternative Explanations Requiring Investigation:
+1. High clinical acuity cohort (e.g., specialized dementia or traumatic brain injury waiver).
+2. Extended weekend and evening operating schedule expanding operating capacity.
+3. Consolidating patient volume following the closure of a neighboring clinic.
+Primary attendance sign-in rosters must be reviewed to confirm census validity.
+
+IV. ORIGINAL SOURCE & PUBLIC DISCLOSURE BAR AUDIT
+--------------------------------------------------------------------------------
+Under 31 U.S.C. § 3730(e)(4) and Third Circuit precedent (Dec. 2024), compiling
+publicly accessible databases does NOT satisfy original-source standing.
+[VERIFIED] 1. Independent Non-Public Attendance Records Possessed: YES
+[VERIFIED] 2. Direct, First-Hand Eyewitness Knowledge: YES
+[VERIFIED] 3. Prior Internal Compliance Escalation Documented: YES
+[VERIFIED] 4. Clear of Public Disclosure Bar (Non-Derivative Allegations): YES
+
+V. FOUR-TIER EVIDENTIARY CLASSIFICATION
+--------------------------------------------------------------------------------
+1. VERIFIED FACTS: Active NPPES registration; aggregate HHS billing total ($5.67M).
+2. STATISTICAL INFERENCES: Upper-decile billing intensity (+1.67σ vs regional peers).
+3. ALLEGATIONS: [NONE ASSERTED BY SOFTWARE] — Subject to human review.
+4. UNKNOWNS & GAPS: Electronic Visit Verification (EVV) driver logs unexamined.
+
+VI. HUMAN INVESTIGATOR ATTESTATION & COMPLIANCE SIGN-OFF
+--------------------------------------------------------------------------------
+Review Status:           COMPLETED HUMAN REVIEW // VERIFIED DEFICIENT OF PHI
+Reviewing Officer:       Authorized Lead Compliance Officer
+Attestation Timestamp:   2026-10-28T07:19:32.769Z
+Compliance Warranty:     MSA Entity-Only Use-Restriction Standard Satisfied
+================================================================================
