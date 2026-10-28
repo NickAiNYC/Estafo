@@ -629,6 +629,12 @@ export default function Home() {
           setCurrentView("WAR_ROOM");
           handleZoneClick(lat, lon);
         }}
+        onSelectView={(v) => {
+          playClick();
+          setCurrentView(v);
+        }}
+        onRefreshFeeds={loadData}
+        liveRecordsCount={liveRecordCount || 598}
       />
     </>
   );

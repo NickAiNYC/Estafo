@@ -23,47 +23,61 @@ const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
 
 export default function ExecutiveHeader({ currentView, onSelectView, onOpenCommandPalette }: ExecutiveHeaderProps) {
   return (
-    <header className="shrink-0 border-b border-border bg-canvas px-4 py-3 md:px-6">
+    <header className="shrink-0 border-b border-white/[0.08] bg-[#121214] px-4 py-3 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-white px-2.5 py-1 rounded-md border border-white/20 shadow-sm h-8 shrink-0">
+          <div className="flex items-center bg-white px-2.5 py-1 rounded border border-white/20 shadow-sm h-7 shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src="/images/estafotir-logo.png" 
               alt="ESTAFOTIR" 
-              className="h-5 w-auto object-contain"
+              className="h-4.5 w-auto object-contain"
             />
           </div>
           <div className="hidden sm:block">
-            <div className="text-11 font-mono text-secondary tracking-wider uppercase font-semibold">Enforcement Intelligence</div>
-            <div className="text-9 text-muted font-mono">NYC Medicaid & Qui Tam Research</div>
+            <div className="text-[11px] font-mono text-[#EDECE9] tracking-wider uppercase font-semibold">
+              Enforcement Intelligence
+            </div>
+            <div className="text-[10px] text-zinc-500 font-mono">
+              Municipal Compliance & Healthcare Lead Terminal
+            </div>
           </div>
         </div>
+
         <button
           type="button"
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 rounded-lg border border-border-highlight bg-surface px-3 py-2 text-sm text-secondary transition-colors hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald"
-          aria-label="Open search"
+          className="flex items-center gap-2 rounded bg-[#18181B] border border-white/[0.08] hover:border-white/[0.16] px-3 py-1.5 text-xs text-zinc-300 hover:text-white transition-all shadow-sm"
+          aria-label="Open search command palette"
         >
-          <Search className="h-4 w-4" />
-          <span>Search</span>
+          <Search className="h-3.5 w-3.5 text-zinc-400" />
+          <span className="font-mono text-zinc-400">Search</span>
+          <span className="ml-1 text-[10px] font-mono bg-white/[0.06] text-zinc-400 px-1.5 py-0.5 rounded border border-white/[0.06]">
+            ⌘K
+          </span>
         </button>
       </div>
+
       <nav className="mt-3 flex w-full gap-1 overflow-x-auto pb-1" aria-label="Main navigation">
-        {navItems.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => onSelectView(id)}
-            aria-current={currentView === id ? "page" : undefined}
-            className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald ${
-              currentView === id ? "bg-surface-elevated text-primary" : "text-secondary hover:bg-surface hover:text-primary"
-            }`}
-          >
-            <Icon className="h-4 w-4" />
-            {label}
-          </button>
-        ))}
+        {navItems.map(({ id, label, icon: Icon }) => {
+          const isActive = currentView === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onSelectView(id)}
+              aria-current={isActive ? "page" : undefined}
+              className={`flex shrink-0 items-center gap-2 rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                isActive
+                  ? "bg-white/[0.08] text-[#EDECE9] border border-white/[0.12] shadow-sm"
+                  : "text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200 border border-transparent"
+              }`}
+            >
+              <Icon className={`h-3.5 w-3.5 ${isActive ? "text-emerald-400" : "text-zinc-500"}`} />
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </nav>
     </header>
   );

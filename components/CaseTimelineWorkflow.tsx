@@ -293,47 +293,73 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
               </div>
             </div>
 
-            <div className="space-y-12">
+            <div className="relative pl-7 space-y-6 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[1px] before:bg-white/10">
               {events.length === 0 && (
-                <div className="rounded-lg border border-dashed border-border-highlight bg-surface p-16 text-center">
-                  <h3 className="font-semibold text-primary">No events recorded</h3>
-                  <p className="mt-2 text-sm text-secondary">Start with a dated account you can clearly attribute. No sample allegations are preloaded.</p>
+                <div className="relative rounded-lg border border-dashed border-white/[0.12] bg-[#18181B] p-12 text-center">
+                  <div className="absolute -left-[23px] top-6 w-2 h-2 rounded-full bg-zinc-600 ring-4 ring-[#0A0A0C]" />
+                  <h3 className="font-sans font-semibold text-[#EDECE9]">No chronological events logged</h3>
+                  <p className="mt-2 text-xs font-mono text-zinc-500 max-w-md mx-auto">
+                    Start by logging a dated, attributed account. Sourced records from public databases and personal witness notes are strictly segregated.
+                  </p>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="mt-4 px-3 py-1.5 rounded bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors"
+                  >
+                    + Log Initial Observation
+                  </button>
                 </div>
               )}
               {events.map((evt, idx) => (
                 <div 
                   key={evt.id} 
-                  className="p-16 border border-border bg-surface rounded-lg space-y-12 transition-all hover:border-border-highlight"
+                  className="relative p-5 border border-white/[0.08] bg-[#18181B] hover:border-white/[0.16] rounded-lg space-y-3 transition-all shadow-xl group"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-12">
-                    <div className="flex items-center gap-8">
-                      <span className="font-mono text-10 font-bold text-muted bg-inset px-6 py-2 rounded-md border border-border">
+                  {/* Spine Node Marker */}
+                  <div 
+                    className={`absolute -left-[23px] top-6 w-2 h-2 rounded-full ring-4 ring-[#0A0A0C] transition-transform group-hover:scale-125 ${
+                      evt.observer_role === "DOCUMENTED_RECORD"
+                        ? "bg-blue-400"
+                        : evt.observer_role === "FIRSTHAND_WORKER"
+                        ? "bg-emerald-400"
+                        : "bg-amber-400"
+                    }`} 
+                  />
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/[0.06]">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="font-mono text-[10px] text-zinc-500 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
                         #{idx + 1}
                       </span>
-                      <span className="font-mono text-12 font-bold text-emerald bg-emerald/15 px-8 py-2 rounded-md border border-emerald/30">
-                        {evt.event_date}
+                      {/* Monospaced UTC Timestamp */}
+                      <span className="font-mono text-xs font-semibold text-[#EDECE9] bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.08]">
+                        {evt.event_date.includes(":") ? evt.event_date : `${evt.event_date} 00:00 UTC`}
                       </span>
-                      <span className="text-12 font-bold text-primary font-jakarta">
-                        {evt.facility_name}
+                      <span className="text-xs font-medium text-[#EDECE9] font-sans">
+                        {evt.facility_name || "Unspecified Facility"}
                       </span>
                       {evt.transport_company && (
-                        <span className="flex items-center gap-4 text-11 font-mono text-steel-blue bg-steel-blue/15 px-6 py-1 rounded-sm border border-steel-blue/30">
+                        <span className="flex items-center gap-1.5 text-[11px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
                           <Car className="w-3 h-3" /> {evt.transport_company}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-6 font-mono text-10">
-                      <span className={`px-6 py-2 rounded-sm border font-bold ${
-                        evt.observer_role === "FIRSTHAND_WORKER"
-                          ? "bg-emerald/15 border-emerald/40 text-emerald"
-                          : evt.observer_role === "DOCUMENTED_RECORD"
-                          ? "bg-steel-blue/15 border-steel-blue/40 text-steel-blue"
-                          : "bg-amber/15 border-amber/40 text-amber"
-                      }`}>
-                        {evt.observer_role.replace("_", " ")}
-                      </span>
-                      <span className="bg-inset px-6 py-2 rounded-sm border border-border text-muted">
+                    {/* Attribution Badges: Sourced Record vs Personal Note */}
+                    <div className="flex items-center gap-2 font-mono text-[10px]">
+                      {evt.observer_role === "DOCUMENTED_RECORD" ? (
+                        <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded uppercase font-medium">
+                          SOURCED RECORD
+                        </span>
+                      ) : evt.observer_role === "FIRSTHAND_WORKER" ? (
+                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded uppercase font-medium">
+                          FIRSTHAND WITNESS
+                        </span>
+                      ) : (
+                        <span className="bg-zinc-800 text-zinc-400 border border-zinc-700/50 px-2 py-0.5 rounded uppercase font-medium">
+                          PERSONAL NOTE / HEARSAY
+                        </span>
+                      )}
+                      <span className="bg-[#141416] px-2 py-0.5 rounded border border-white/[0.06] text-zinc-500">
                         {evt.evidence_level}
                       </span>
                     </div>
@@ -341,31 +367,31 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
 
                   {/* Cash Incentive & Alleged Purpose */}
                   {evt.cash_amount_offered && evt.cash_amount_offered > 0 && (
-                    <div className="p-10 bg-inset rounded-md border border-border flex items-start gap-10 font-mono text-11">
-                      <DollarSign className="w-4 h-4 text-gold shrink-0 mt-2" />
+                    <div className="p-2.5 bg-[#141416] rounded border border-amber-500/20 flex items-start gap-2.5 font-mono text-xs">
+                      <DollarSign className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-bold text-gold uppercase text-10">Alleged Remuneration / Cash Offer:</span>{" "}
-                        <span className="font-bold text-primary">${evt.cash_amount_offered}</span>
-                        <div className="text-secondary mt-1">{evt.cash_purpose_alleged}</div>
+                        <span className="font-bold text-amber-400 uppercase text-[10px]">Alleged Cash Remuneration:</span>{" "}
+                        <span className="font-bold text-[#EDECE9]">${evt.cash_amount_offered.toLocaleString()}</span>
+                        <div className="text-zinc-400 text-[11px] mt-0.5">{evt.cash_purpose_alleged}</div>
                       </div>
                     </div>
                   )}
 
                   {/* Observation Narrative */}
-                  <div className="text-12 text-primary font-mono leading-relaxed bg-surface-elevated/40 p-12 rounded-md border border-border">
-                    <div className="text-9 uppercase text-muted font-bold mb-4">Firsthand Statement / Logged Detail:</div>
+                  <div className="text-xs text-zinc-300 font-mono leading-relaxed bg-[#141416] p-3 rounded border border-white/[0.06]">
+                    <div className="text-[9px] uppercase text-zinc-500 font-bold mb-1">Observation Statement:</div>
                     {evt.observation_notes}
                   </div>
 
                   {/* Claimed Code vs Innocent Explanation */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 font-mono text-10 pt-4 border-t border-border">
-                    <div className="p-8 bg-inset rounded-sm border border-border">
-                      <div className="text-muted uppercase text-9">Claimed Service Code Target</div>
-                      <div className="text-primary font-bold mt-2">{evt.claimed_service_code || "Unspecified"}</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-[11px] pt-1">
+                    <div className="p-2.5 bg-[#141416] rounded border border-white/[0.06]">
+                      <div className="text-zinc-500 uppercase text-[9px]">Procedure Code Target</div>
+                      <div className="text-[#EDECE9] font-semibold mt-1">{evt.claimed_service_code || "Unspecified"}</div>
                     </div>
-                    <div className="p-8 bg-inset rounded-sm border border-border">
-                      <div className="text-muted uppercase text-9">Plausible Innocent Explanation (To Disprove)</div>
-                      <div className="text-secondary mt-2">{evt.innocent_explanation}</div>
+                    <div className="p-2.5 bg-[#141416] rounded border border-white/[0.06]">
+                      <div className="text-zinc-500 uppercase text-[9px]">Plausible Innocent Explanation</div>
+                      <div className="text-zinc-400 mt-1">{evt.innocent_explanation}</div>
                     </div>
                   </div>
                 </div>

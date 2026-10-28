@@ -4,53 +4,53 @@
 
 @layer base {
   :root {
-    --bg-canvas: #090A0F;
-    --bg-surface: #12141C;
-    --border-slate: #1E2230;
+    --bg-canvas: #0A0A0C;
+    --bg-surface: #141416;
+    --border-slate: rgba(255, 255, 255, 0.08);
   }
 
   body {
-    background-color: #090A0F;
-    color: #F8FAFC;
+    background-color: #0A0A0C;
+    color: #EDECE9;
     font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
   }
 
-  /* Custom tactical scrollbar */
+  /* Custom institutional scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
-    background: #090A0F;
+    background: #0A0A0C;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1E2230;
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2A3044;
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
 @layer components {
-  /* Tactical Glass Panel */
+  /* Institutional Glass Panel with Micro-border */
   .tactical-panel {
-    background: rgba(18, 20, 28, 0.78);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid #1E2230;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    background: rgba(20, 20, 22, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .tactical-border-b {
-    border-bottom: 1px solid #1E2230;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .tactical-border-r {
-    border-right: 1px solid #1E2230;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   /* Monospace Data Cell */
@@ -58,6 +58,12 @@
     font-family: var(--font-mono), monospace;
     font-feature-settings: "tnum" 1, "zero" 1;
     letter-spacing: -0.02em;
+  }
+
+  /* Network Dot Grid Background */
+  .dot-grid-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 16px 16px;
   }
 }
 

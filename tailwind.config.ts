@@ -9,15 +9,27 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#090A0F",
-        surface: "#12141C",
-        "surface-elevated": "#181B26",
-        "surface-hover": "#1C202E",
-        inset: "#0C0E14",
-        border: "#1E2230",
-        "border-highlight": "#2A3044",
-        "border-subtle": "rgba(255, 255, 255, 0.06)",
+        canvas: "#0A0A0C",
+        surface: "#141416",
+        "surface-elevated": "#18181B",
+        "surface-hover": "#1C1C21",
+        inset: "#0E0E10",
+        border: "rgba(255, 255, 255, 0.08)",
+        "border-highlight": "rgba(255, 255, 255, 0.16)",
+        "border-subtle": "rgba(255, 255, 255, 0.05)",
         
+        // Warm Clinical Luxury Palette
+        parchment: "#EDECE9",
+        "parchment-muted": "#D1D0CB",
+        charcoal: {
+          950: "#0A0A0C",
+          900: "#121214",
+          850: "#141416",
+          800: "#18181B",
+          700: "#1C1C21",
+          600: "#27272A",
+        },
+
         // Tactical accents
         emerald: {
           DEFAULT: "#10B981",
@@ -41,10 +53,10 @@ const config: Config = {
         },
 
         // Typography scale
-        primary: "#F8FAFC",
-        secondary: "#94A3B8",
-        muted: "#64748B",
-        faint: "#475569",
+        primary: "#EDECE9",
+        secondary: "#A1A1AA",
+        muted: "#71717A",
+        faint: "#52525B",
       },
       fontSize: {
         "9": "9px",
