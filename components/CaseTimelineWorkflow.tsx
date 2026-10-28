@@ -744,10 +744,11 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
                   <div className="font-bold text-amber uppercase text-10">What Cannot Be Established From the Street:</div>
                   <ul className="text-secondary space-y-4 list-disc list-inside text-11">
                     <li><strong className="text-primary">Medicaid Billing:</strong> Parked vans do not prove Medicaid was billed for those specific individuals.</li>
-                    <li><strong className="text-primary">Duration vs Billing Code:</strong> Short visits do not prove fraud; brief treatment (H0004+U5) is permitted under OASAS rules.</li>
+                    <li><strong className="text-primary">Alternative Medical Destination:</strong> Vans may serve co-located physical therapy or internal medicine practices in the building (CitiMedical Services P.C.).</li>
+                    <li><strong className="text-primary">Duration vs Billing Code:</strong> Short visits do not prove fraud; brief treatment (H0004+U5) and single 15-min therapy units (97110) are legitimate codes.</li>
                     <li><strong className="text-primary">Patient Diagnoses:</strong> Cannot assume SUD diagnosis or medical necessity from physical appearance.</li>
                     <li><strong className="text-primary">Cash Transactions:</strong> Unless directly witnessed, attendee payment remains unverified report/hearsay.</li>
-                    <li><strong className="text-primary">Strict Zero-PHI:</strong> Never record patient names or identifiable clinical attributes.</li>
+                    <li><strong className="text-primary">Strict Zero-PHI & No Patient Tracking:</strong> Never follow, photograph, or attempt to identify patients from the street.</li>
                   </ul>
                 </div>
               </div>

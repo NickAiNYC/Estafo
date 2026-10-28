@@ -70,12 +70,12 @@ For each item, keep the original intact. Record an exact hash and any later copi
 
 ## 7. Plausible explanations to test
 
-- Ambulettes may be transporting people to medically necessary, authorized treatment.
-- A vehicle in front of a clinic may serve another business or location (such as the co-located multi-specialty medical clinic).
+- **Co-located practices as an alternative destination:** A vehicle stopping in front of 63-36 99th Street may be transporting individuals to an entirely separate medical practice in the building (such as CitiMedical Services P.C., NPI 1275172280, or CitiMedical I PLLC, NPI 1447597828), which provide physical therapy and internal medicine, rather than Rego Park Counseling.
+- **Public litigation context (CitiMed):** In *Union Mutual Fire Ins. Co. v. Citimed Complete Medical Care, P.C.* (EDNY Case No. 1:24-cv-06111), a private insurer asserted civil fraud claims regarding auto No-Fault diagnostic reports. The court allowed the principal claim to proceed to discovery and dismissed two claims; this is an unadjudicated allegation, not a judicial finding of fraud. Crucially, the court order does not mention Medicaid, Rego Park Counseling, or 63-36 99th Street. NPPES lists CitiMed Complete (NPI 1316543085, the defendant) at 65-55 Woodhaven Blvd, while CitiMedical Services P.C. is at 63-36 99th St. Shared addresses or similar names do not establish shared patients, cross-referrals, common ownership, or joint billing. Furthermore, enumeration in NPPES does not establish health-plan enrollment or Medicaid payment.
+- **Physical duration cannot prove false billing:** Physical presence outside the building cannot establish whether a billed service occurred. While OASAS lists H0005/90853 group counseling as a 60-minute service, OASAS guidance also permits brief treatment (e.g. 8–14 minute brief treatment billed under H0004 with modifier U5). Similarly, physical therapy code 97110 is billed in 15-minute timed increments. A 20–30 minute stop could reflect legitimate brief counseling, a single timed therapy unit, or an intake check-in. You must have the actual billed claim codes, modifiers, dates, and medical records before comparing duration to billing rules.
+- **Investigative boundary — do not follow patients:** The question of whether any specific claims connect the same dates or patients is strictly for an authorized investigator or counsel with legal access to claims and clinical records. Do not follow, track, or attempt to identify patients from the street.
 - Group attendance does not reveal a person's diagnosis or whether a service was billed.
-- **Brief treatment exception:** A short visit does not establish a false group claim. While OASAS lists H0005/90853 group counseling as a 60-minute service, OASAS guidance also permits brief treatment (e.g. 8–14 minute brief treatment billed under H0004 with modifier U5). You must have the actual billed service code, modifier, and date before comparing clinical duration to a billing rule.
-- **Clinic capacity vs blanket caps:** Certified facility group capacities depend on operating certificate conditions; do not assert an unverified blanket 15-patient cap without documented program terms.
-- A lawful benefit or meal should not be assumed to be a cash inducement.
+- A lawful transportation benefit, grant stipend, or meal should not be assumed to be a cash inducement.
 - A practice or corporate address does not prove where a service was rendered.
 
 The tip should explain what evidence distinguishes the reported concern from these possibilities.
