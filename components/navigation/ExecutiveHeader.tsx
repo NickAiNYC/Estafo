@@ -26,12 +26,12 @@ export default function ExecutiveHeader({ currentView, onSelectView, onOpenComma
     <header className="shrink-0 border-b border-white/[0.08] bg-[#121214] px-4 py-3 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-white px-2.5 py-1 rounded border border-white/20 shadow-sm h-7 shrink-0">
+          <div className="flex items-center h-8 shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src="/images/estafotir-logo.png" 
               alt="ESTAFOTIR" 
-              className="h-4.5 w-auto object-contain"
+              className="h-6 w-auto object-contain"
             />
           </div>
           <div className="hidden sm:block">
