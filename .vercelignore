@@ -1,0 +1,9 @@
+backend/data/*.zip
+backend/data/*.csv
+backend/data/LEIE.csv
+backend/data/hhs_spending_*.csv.zip
+.venv/
+venv/
+*.db
+*.db-shm
+*.db-wal
