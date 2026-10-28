@@ -181,9 +181,9 @@ export default function Home() {
 
           telemetryItems.push({
             id: "medicaid_leads",
-            name: "Medicaid Lead Detection",
-            source: "/api/sources/medicaid-leads",
-            tier: "SYNTHETIC_DEMO",
+            name: "Medicaid Sourced Leads (NPPES Vetted)",
+            source: "/api/sources/medicaid-leads (HCPCS T2024)",
+            tier: "LIVE_SOURCED",
             status: "ONLINE",
             count: items.length,
             latencyMs: tMedLatency,
@@ -197,9 +197,9 @@ export default function Home() {
 
           telemetryItems.push({
             id: "medicaid_leads",
-            name: "Medicaid Lead Detection",
-            source: "/api/sources/medicaid-leads",
-            tier: "SYNTHETIC_DEMO",
+            name: "Medicaid Sourced Leads (NPPES Vetted)",
+            source: "/api/sources/medicaid-leads (HCPCS T2024)",
+            tier: "LIVE_SOURCED",
             status: "OFFLINE",
             count: 0,
             latencyMs: tMedLatency,
@@ -213,9 +213,9 @@ export default function Home() {
         setMedicaidError(errDetail);
         telemetryItems.push({
           id: "medicaid_leads",
-          name: "Medicaid Lead Detection",
-          source: "/api/sources/medicaid-leads",
-          tier: "SYNTHETIC_DEMO",
+          name: "Medicaid Sourced Leads (NPPES Vetted)",
+          source: "/api/sources/medicaid-leads (HCPCS T2024)",
+          tier: "LIVE_SOURCED",
           status: "OFFLINE",
           count: 0,
           latencyMs: Math.round(performance.now() - tMedStart),

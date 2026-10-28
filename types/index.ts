@@ -59,6 +59,10 @@ export interface MedicaidProviderRecord {
   z_score?: number;
   is_nyc_verified?: boolean;
   verification_source?: string;
+  enumeration_date?: string;
+  taxonomy_code?: string;
+  check_digit_valid?: boolean;
+  exculpatory_notes?: string;
   estimated_bounty: number;
   anomaly_types: string[];
   status: "INVESTIGATING" | "EVIDENCE_GATHERED" | "FILED_SEALED" | "DOJ_REVIEW" | "RECOVERY_PENDING" | "PAID";

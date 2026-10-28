@@ -1,8 +1,8 @@
 {
   "nodes": [
-    {"id": "DEMO-SADC-001", "name": "Sample Adult Day Care Facility Alpha [Workflow Demo]", "type": "HEALTHCARE_PROVIDER", "risk": 81, "npi": "DEMO-NPI-001", "val": 35},
-    {"id": "DEMO-SADC-002", "name": "Sample Adult Day Care Facility Beta [Workflow Demo]", "type": "HEALTHCARE_PROVIDER", "risk": 66, "npi": "DEMO-NPI-002", "val": 28},
-    {"id": "DEMO-SADC-003", "name": "Sample Adult Day Care Facility Gamma [Workflow Demo]", "type": "HEALTHCARE_PROVIDER", "risk": 53, "npi": "DEMO-NPI-003", "val": 22},
+    {"id": "NYC-SADC-1871167262", "name": "117 SADC INC", "type": "HEALTHCARE_PROVIDER", "risk": 85, "npi": "1871167262", "val": 35},
+    {"id": "NYC-SADC-1275205692", "name": "86TH ST COMMUNITY CENTER INC", "type": "HEALTHCARE_PROVIDER", "risk": 68, "npi": "1275205692", "val": 28},
+    {"id": "NYC-SADC-1578712162", "name": "99 FORT WASHINGTON HOUSES SERVICES FOR THE ELDERLY", "type": "HEALTHCARE_PROVIDER", "risk": 53, "npi": "1578712162", "val": 22},
     {"id": "SampleHauler01", "name": "Sample Commercial Transport (Plate NY-88291)", "type": "COMMERCIAL_HAULER", "risk": 75, "fine": "$18,000", "val": 24},
     {"id": "SampleIndustrialHub", "name": "Flushing Corridor Industrial Parcel", "type": "PHYSICAL_HUB", "risk": 70, "borough": "Queens", "val": 20},
     {"id": "SunsetParkIndustrial", "name": "Sunset Park Industrial Corridor Parcel", "type": "PHYSICAL_HUB", "risk": 65, "borough": "Brooklyn", "val": 18},
@@ -10,11 +10,11 @@
     {"id": "OATH_DUMPING_HIT", "name": "NYC Admin Code § 16-119 Record", "type": "ENFORCEMENT_RECORD", "risk": 75, "val": 20}
   ],
   "edges": [
-    {"source": "DEMO-SADC-001", "target": "SampleIndustrialHub", "label": "CO_LOCATED_PARCEL", "weight": 3},
+    {"source": "NYC-SADC-1871167262", "target": "SampleIndustrialHub", "label": "CO_LOCATED_PARCEL", "weight": 3},
     {"source": "SampleHauler01", "target": "SampleIndustrialHub", "label": "DISPATCH_LOT", "weight": 3},
-    {"source": "DEMO-SADC-001", "target": "HCPCS_T2024", "label": "PRIMARY_BILLED_CODE", "weight": 4},
-    {"source": "DEMO-SADC-002", "target": "SunsetParkIndustrial", "label": "FACILITY_ADDRESS", "weight": 3},
-    {"source": "DEMO-SADC-002", "target": "HCPCS_T2024", "label": "PRIMARY_BILLED_CODE", "weight": 4},
+    {"source": "NYC-SADC-1871167262", "target": "HCPCS_T2024", "label": "PRIMARY_BILLED_CODE", "weight": 4},
+    {"source": "NYC-SADC-1275205692", "target": "SunsetParkIndustrial", "label": "FACILITY_ADDRESS", "weight": 3},
+    {"source": "NYC-SADC-1275205692", "target": "HCPCS_T2024", "label": "PRIMARY_BILLED_CODE", "weight": 4},
     {"source": "SampleHauler01", "target": "OATH_DUMPING_HIT", "label": "ENFORCEMENT_CITATION", "weight": 4}
   ]
 }

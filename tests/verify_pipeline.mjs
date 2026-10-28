@@ -190,4 +190,39 @@ testDb.close();
 if (fs.existsSync(testDbPath)) fs.unlinkSync(testDbPath);
 console.log(`✓ Serverless SQLite CRUD Verified: Clean write, read, and cleanup on /tmp filesystem.`);
 
-console.log("\n>>> ALL PIPELINE TESTS (Gates G1 - G8) PASSED WITH 100% SUCCESS <<<");
+// Test 9: Vetted NYC NPI Cohort & Luhn Check Digit Verification (Gate G9)
+console.log("\n[Test 9] Verifying Vetted NYC NPI Cohort & 100% Luhn Check Digit Integrity...");
+const allowlistPath = path.join(process.cwd(), "backend", "data", "vetted_nyc_t2024_npis.txt");
+assert(fs.existsSync(allowlistPath), "vetted_nyc_t2024_npis.txt must exist");
+const allowlistContent = fs.readFileSync(allowlistPath, "utf-8");
+const allowlistHash = crypto.createHash("sha256").update(allowlistContent).digest("hex");
+assert.strictEqual(
+  allowlistHash,
+  "07cdd1fc1e4084cd83bbcbd0a8a8aa2ed5d58299a1095bed30089dde02d6d05c",
+  "Allowlist SHA-256 must match authoritative manifest"
+);
+
+const cohortNpis = allowlistContent.split("\n").map(s => s.trim()).filter(s => s.length > 0 && !s.startsWith("#"));
+assert.strictEqual(cohortNpis.length, 10, "Cohort must contain exactly 10 vetted NPIs");
+
+function testLuhn(npi) {
+  if (!/^\d{10}$/.test(npi)) return false;
+  const full = "80840" + npi;
+  let sum = 0;
+  for (let i = full.length - 1, alt = false; i >= 0; i--, alt = !alt) {
+    let digit = parseInt(full[i], 10);
+    if (alt) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+  }
+  return sum % 10 === 0;
+}
+
+for (const npi of cohortNpis) {
+  assert(testLuhn(npi), `NPI ${npi} must pass CMS Luhn check digit test`);
+}
+console.log(`✓ Vetted NPI Cohort Verified: All ${cohortNpis.length} NPIs pass Luhn check digits with SHA-256: ${allowlistHash.slice(0, 16)}...`);
+
+console.log("\n>>> ALL PIPELINE TESTS (Gates G1 - G9) PASSED WITH 100% SUCCESS <<<");
