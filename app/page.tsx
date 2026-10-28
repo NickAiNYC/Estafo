@@ -9,6 +9,7 @@ import ZoneTable from "@/components/ZoneTable";
 import CommandPalette from "@/components/CommandPalette";
 import PalantirNexusGraph from "@/components/PalantirNexusGraph";
 import MedicaidQuiTamRadar from "@/components/MedicaidQuiTamRadar";
+import CaseTimelineWorkflow from "@/components/CaseTimelineWorkflow";
 import ProfitEngineLedger from "@/components/ProfitEngineLedger";
 import LegalWeaponizer from "@/components/LegalWeaponizer";
 import { useTacticalAudio } from "@/hooks/useTacticalAudio";
@@ -588,6 +589,10 @@ export default function Home() {
             onAuthenticate={handleMedicaidAuth}
             onLogout={handleMedicaidLogout}
           />
+        )}
+
+        {currentView === "CASE_TIMELINE" && (
+          <CaseTimelineWorkflow />
         )}
 
         {currentView === "PROFIT_LEDGER" && (

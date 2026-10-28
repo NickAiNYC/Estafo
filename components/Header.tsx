@@ -3,7 +3,7 @@
 import ExecutiveHeader from "./navigation/ExecutiveHeader";
 import { useTacticalAudio } from "@/hooks/useTacticalAudio";
 
-export type ConsoleView = "WAR_ROOM" | "NEXUS_GRAPH" | "MEDICAID_RADAR" | "PROFIT_LEDGER" | "LEGAL_WEAPONIZER";
+export type ConsoleView = "WAR_ROOM" | "NEXUS_GRAPH" | "MEDICAID_RADAR" | "CASE_TIMELINE" | "LEGAL_WEAPONIZER" | "PROFIT_LEDGER";
 
 interface HeaderProps {
   currentView: ConsoleView;

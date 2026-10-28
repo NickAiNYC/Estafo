@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, DollarSign, FileText, Map as MapIcon, Network, Search, Shield } from "lucide-react";
+import { Activity, Calendar, DollarSign, FileText, Map as MapIcon, Network, Search } from "lucide-react";
 import { ConsoleView } from "@/components/Header";
 
 interface ExecutiveHeaderProps {
@@ -14,6 +14,7 @@ interface ExecutiveHeaderProps {
 const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
   { id: "WAR_ROOM", label: "Map", icon: MapIcon },
   { id: "MEDICAID_RADAR", label: "Healthcare", icon: Activity },
+  { id: "CASE_TIMELINE", label: "Case Timeline", icon: Calendar },
   { id: "LEGAL_WEAPONIZER", label: "Drafts", icon: FileText },
   { id: "PROFIT_LEDGER", label: "Financial examples", icon: DollarSign },
   { id: "NEXUS_GRAPH", label: "Entity graph", icon: Network },
@@ -24,12 +25,17 @@ export default function ExecutiveHeader({ currentView, onSelectView, onOpenComma
     <header className="shrink-0 border-b border-border bg-canvas px-4 py-3 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-highlight bg-surface" aria-hidden="true">
-            <Shield className="h-4 w-4 text-emerald" />
-          </span>
-          <div>
-            <div className="text-base font-semibold leading-tight text-primary">Estafotir</div>
-            <div className="text-xs text-secondary">NYC research workspace</div>
+          <div className="flex items-center bg-white px-2.5 py-1 rounded-md border border-white/20 shadow-sm h-8 shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src="/images/estafotir-logo.png" 
+              alt="ESTAFOTIR" 
+              className="h-5 w-auto object-contain"
+            />
+          </div>
+          <div className="hidden sm:block">
+            <div className="text-11 font-mono text-secondary tracking-wider uppercase font-semibold">Enforcement Intelligence</div>
+            <div className="text-9 text-muted font-mono">NYC Medicaid & Qui Tam Research</div>
           </div>
         </div>
         <button

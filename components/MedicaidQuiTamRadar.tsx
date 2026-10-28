@@ -543,6 +543,20 @@ export default function MedicaidQuiTamRadar({
                 <div className="space-y-8 font-mono text-11">
                   <div className="p-10 bg-inset rounded-sm space-y-4">
                     <div className="text-primary font-bold flex items-center justify-between">
+                      <span>Official Service Code Master Taxonomy (CMS vs. NY DOH vs. OASAS)</span>
+                      <span className="text-emerald text-10 font-mono">STANDARDS</span>
+                    </div>
+                    <div className="text-9 text-muted leading-relaxed space-y-2">
+                      <div><span className="text-primary font-bold">T2024 (CMS Manual R3674CP):</span> Service assessment / plan of care development, waiver. (Intake/care-plan development, NOT per-diem day care attendance).</div>
+                      <div><span className="text-primary font-bold">S5102 (NY DOH DAL 2024-08-05):</span> Day care services, adult; per diem (Adult Day Health Care / ADHC clinical medical model).</div>
+                      <div><span className="text-primary font-bold">S5105 (NY DOH DAL 2024-08-05):</span> Day care services, adult; per 15 minutes (Social Adult Day Care / SADC social model).</div>
+                      <div><span className="text-primary font-bold">A0130 / T2003 / A0425 (NY DOH NEMT):</span> Nonemergency medical transportation (wheelchair van trip / base encounter / mileage rate).</div>
+                      <div><span className="text-primary font-bold">H0005 (NYS OASAS Part 822):</span> Chemical dependence outpatient group counseling (60-minute clinical minimum, strict 42 CFR Part 2 privacy).</div>
+                    </div>
+                  </div>
+
+                  <div className="p-10 bg-inset rounded-sm space-y-4">
+                    <div className="text-primary font-bold flex items-center justify-between">
                       <span>Multi-Dimensional Volume Screening</span>
                       <span className="text-steel-blue text-10">METHODOLOGY</span>
                     </div>
