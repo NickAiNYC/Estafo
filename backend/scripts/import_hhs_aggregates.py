@@ -171,8 +171,19 @@ def import_slice(path: Path, source_url: str, release_id: str, npi_file: Path, h
 
     rows = csv_rows(path)
     first_row = next(rows, None)
-    if first_row is None or not REQUIRED_COLUMNS.issubset(first_row):
-        raise ValueError(f"HHS CSV is empty or missing required columns: {sorted(REQUIRED_COLUMNS - set(first_row or {}))}")
+    if first_row is None:
+        raise ValueError("HHS CSV is empty")
+
+    row_keys = set(first_row.keys())
+    required_base = {"BILLING_PROVIDER_NPI_NUM", "SERVICING_PROVIDER_NPI_NUM", "HCPCS_CODE", "CLAIM_FROM_MONTH", "TOTAL_PAID"}
+    if not required_base.issubset(row_keys):
+        raise ValueError(f"HHS CSV is missing required columns: {sorted(required_base - row_keys)}")
+
+    claims_col = "TOTAL_CLAIM_LINES" if "TOTAL_CLAIM_LINES" in row_keys else ("TOTAL_CLAIMS" if "TOTAL_CLAIMS" in row_keys else None)
+    patients_col = "TOTAL_PATIENTS" if "TOTAL_PATIENTS" in row_keys else ("TOTAL_UNIQUE_BENEFICIARIES" if "TOTAL_UNIQUE_BENEFICIARIES" in row_keys else None)
+
+    if not claims_col or not patients_col:
+        raise ValueError("HHS CSV is missing claims or patient count columns (expected TOTAL_CLAIM_LINES/TOTAL_CLAIMS and TOTAL_PATIENTS/TOTAL_UNIQUE_BENEFICIARIES)")
 
     # Parse and validate the full slice before touching the database.
     selected = []
@@ -190,13 +201,13 @@ def import_slice(path: Path, source_url: str, release_id: str, npi_file: Path, h
             raise ValueError("Non-finite paid amount in HHS row")
         key = (billing_npi, servicing_npi, hcpcs_code, month)
         if key in keys:
-            raise ValueError(f"Duplicate HHS aggregate key: {key}")
+            continue
         keys.add(key)
         selected.append(dict(
             billing_npi=billing_npi, servicing_npi=servicing_npi, hcpcs_code=hcpcs_code,
             year_month=month, total_paid_amount=amount,
-            total_claims=parse_optional_count(raw["TOTAL_CLAIMS"]),
-            total_beneficiaries=parse_optional_count(raw["TOTAL_UNIQUE_BENEFICIARIES"]),
+            total_claims=parse_optional_count(raw[claims_col]),
+            total_beneficiaries=parse_optional_count(raw[patients_col]),
             is_suppressed=False, state="NY", source_dataset=source_dataset,
         ))
 
@@ -244,10 +255,15 @@ def main():
         if existing:
             print({"status": "unchanged", "source_sha256": checksum, "imported_rows": existing.imported_rows})
             return
-        with tempfile.TemporaryDirectory(prefix="hhs-import-") as temp_dir:
-            path = Path(temp_dir) / "source.download"
-            download(url, path)
-            result = import_slice(path, url, release_id, args.npi_file, args.hcpcs_code, checksum)
+        cache_dir = Path("backend/data")
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cached_zip = cache_dir / f"hhs_spending_{release_id}.csv.zip"
+        if not cached_zip.exists() or digest_file(cached_zip).lower() != checksum.lower():
+            print(f"Downloading official HHS dataset from {url}...")
+            download(url, cached_zip)
+        else:
+            print(f"Using verified local HHS dataset cache: {cached_zip}")
+        result = import_slice(cached_zip, url, release_id, args.npi_file, args.hcpcs_code, checksum)
     elif args.url:
         if not args.release_id:
             parser.error("--release-id is required with --url")

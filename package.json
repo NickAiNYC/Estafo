@@ -4,9 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "backend": "DATABASE_URL='sqlite:///./test.db' PYTHONPATH=backend ./.venv/bin/uvicorn main:app --port 8000 --reload",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:pipeline": "node tests/verify_pipeline.mjs",
+    "import:hhs": "DATABASE_URL='sqlite:///./test.db' PYTHONPATH=backend ./.venv/bin/python backend/scripts/import_hhs_aggregates.py"
   },
   "dependencies": {
     "@deck.gl/aggregation-layers": "^9.3.11",
