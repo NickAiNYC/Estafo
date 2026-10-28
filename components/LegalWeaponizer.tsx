@@ -27,11 +27,13 @@ export default function LegalWeaponizer({
   providers = [],
   onBackToRadar
 }: LegalWeaponizerProps) {
-  const [packType, setPackType] = useState<"RESEARCH_DOSSIER" | "OATH_IDLING" | "OATH_DUMPING">(
+  const [packType, setPackType] = useState<"RESEARCH_DOSSIER" | "DOJ_WHIP_TIP" | "OATH_IDLING" | "OATH_DUMPING">(
     initialTrack === "TRACK_1_IDLING"
       ? "OATH_IDLING"
       : initialTrack === "TRACK_5_DUMPING"
       ? "OATH_DUMPING"
+      : initialTrack === "DOJ_WHIP"
+      ? "DOJ_WHIP_TIP"
       : "RESEARCH_DOSSIER"
   );
 
@@ -193,6 +195,83 @@ Legal Work Product:      Confidential Internal Investigative Aid // Not an Affid
 `;
   };
 
+  const generateDOJTipText = () => {
+    const isSigned = reviewerSignedOff && reviewerName.trim().length > 0;
+    return `================================================================================
+DOJ CRIMINAL FRAUD ENFORCEMENT DIVISION // CONFIDENTIAL TIP SUBMISSION DRAFT
+PILOT PROGRAM REWARD INTAKE MEMORANDUM // 31 U.S.C. § 3730 / AMERICA.GOV/FRAUD
+================================================================================
+NOTICE TO WHISTLEBLOWER COUNSEL & INVESTIGATIVE EVALUATORS:
+This document is a confidential research and tip preparation intake memorandum formatted
+for submission to the U.S. Department of Justice Criminal Fraud Enforcement Division.
+It establishes an original-source factual baseline for review under the DOJ Whistleblower
+Rewards Pilot Program (discretionary $10,000–$30,000 fee upon filing of unsealed criminal charges).
+================================================================================
+
+I. TARGET HEALTHCARE PROVIDER & OPERATIONAL IDENTITY
+--------------------------------------------------------------------------------
+Subject Legal Entity:    ${providerName || "[Not Specified / Pending Input]"}
+National Provider ID:    ${providerNPI || "[Enter 10-Digit NPI]"}
+Billing Taxonomy:        ${taxonomyCode}
+Primary Practice Site:   ${address ? `${address} (${borough})` : "[Enter Corridor / Address]"}
+Cohort Selection Rule:   ${selectionRule}
+OIG LEIE Screening:      Screened against official HHS OIG LEIE exclusion database.
+
+II. VERIFIED PUBLIC SPENDING BASELINE & INTENSITY ANOMALIES
+--------------------------------------------------------------------------------
+Total Reported Claims:   ${totalClaims ? totalClaims.toLocaleString() : "Pending Ingestion"}
+Total Beneficiaries:     ${totalBeneficiaries ? totalBeneficiaries.toLocaleString() : "Pending Ingestion"}
+Spend Per Beneficiary:   $${spendPerBeneficiary ? spendPerBeneficiary.toLocaleString() : "N/A"}
+Claims Per Beneficiary:  ${claimsPerBeneficiary ? claimsPerBeneficiary.toFixed(1) : "N/A"} claims/ben
+Peer Cohort Context:     ${peerCohortSize}
+Observed Peer Deviation: ${deviationSigma}
+
+III. CONCURRENCY & THREE-WAY CROSS-VERIFICATION STANDARD
+--------------------------------------------------------------------------------
+To clear the False Claims Act Public Disclosure Bar and establish criminal intent,
+investigators must review non-public contemporaneous records across three independent tiers:
+
+  1. Transportation Authorization Tier:
+     - Medical Answering Services (MAS) prior authorizations.
+     - Ambulette GPS logs and driver trip ticket drop-off timestamps.
+  2. Physical Attendance Tier:
+     - Daily clinic sign-in rosters signed by participants at the facility.
+     - Facility badge logs and physical reception check-in records.
+  3. Submitted Medicaid Claim Tier:
+     - MMIS claim lines for 60-minute group counseling (H0005) or day care (T2024).
+     - Contemporaneous clinical progress notes signed by licensed clinicians.
+
+PRIMARY DISCREPANCY HYPOTHESIS FOR OFFICIAL INQUIRY:
+Determine whether Medicaid reimbursed transportation claims and clinical sessions
+for individuals who were either not physically present, present for under 15 minutes,
+or visiting co-located medical practices in the same commercial hub.
+
+IV. CONTRADICTORY & EXCULPATORY HYPOTHESES (DEFENSE HYPOTHESES TO TEST)
+--------------------------------------------------------------------------------
+Investigators must evaluate and rule out the following legitimate medical alternatives:
+1. Co-Located Medical Hubs: Independent practices at the same address legitimately
+   generate ambulette drop-offs for physical therapy, internal medicine, or imaging.
+2. Brief Treatment Modifiers: OASAS Part 822 authorizes brief treatment (H0004+U5, 8–14 min)
+   and physical therapy codes (97110, 15-min units) which explain brief attendee visits.
+3. Multi-Cohort Staggered Schedules: Volume may reflect multiple daily certified sessions.
+Documented Context:
+${exculpatoryHypothesis || "None entered."}
+
+V. COMPLIANCE WITH FEDERAL 42 CFR PART 2 & ZERO-PHI DISCIPLINE
+--------------------------------------------------------------------------------
+This intake memorandum was generated in strict compliance with federal 42 CFR Part 2
+and HIPAA privacy rules. No patient medical records, personal names, or individual
+claims were accessed or stored. All leads are derived from public datasets and lawful
+exterior street vantage points.
+
+Attestation & Custody:
+Reviewer:  ${reviewerName.trim() || "[Unassigned Investigator]"}
+Status:    ${isSigned ? "VERIFIED & SIGNED OFF" : "DRAFT SCREENING REVIEW"}
+Generated: ${new Date().toISOString()}
+================================================================================
+`;
+  };
+
   const generateOATHIdlingText = () => {
     const verifiedGatesCount = [
       checklistDuration,
@@ -278,6 +357,8 @@ II. EVIDENTIARY PROOF REQUIREMENTS
     switch (packType) {
       case "RESEARCH_DOSSIER":
         return generateResearchDossierText();
+      case "DOJ_WHIP_TIP":
+        return generateDOJTipText();
       case "OATH_IDLING":
         return generateOATHIdlingText();
       case "OATH_DUMPING":
@@ -296,7 +377,12 @@ II. EVIDENTIARY PROOF REQUIREMENTS
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Estafotir_Research_Dossier_Draft_${providerNPI || "draft"}_${Date.now()}.txt`;
+    const prefix = packType === "DOJ_WHIP_TIP" 
+      ? "DOJ_WHIP_Tip_Intake" 
+      : packType === "RESEARCH_DOSSIER" 
+      ? "Estafotir_Research_Dossier_Draft" 
+      : "OATH_Citizen_Complaint";
+    a.download = `${prefix}_${providerNPI || vehiclePlate || "draft"}_${Date.now()}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -386,11 +472,11 @@ II. EVIDENTIARY PROOF REQUIREMENTS
             {/* Dossier Type Selector */}
             <div>
               <label className="block text-10 font-mono text-muted uppercase mb-6">Dossier Category</label>
-              <div className="grid grid-cols-2 gap-8 font-mono text-11">
+              <div className="grid grid-cols-3 gap-6 font-mono text-10">
                 <button
                   type="button"
                   onClick={() => setPackType("RESEARCH_DOSSIER")}
-                  className={`p-8 rounded-sm border text-left transition-colors ${
+                  className={`p-6 rounded-sm border text-left transition-colors ${
                     packType === "RESEARCH_DOSSIER"
                       ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
                       : "bg-inset border-border text-muted hover:text-primary"
@@ -400,8 +486,19 @@ II. EVIDENTIARY PROOF REQUIREMENTS
                 </button>
                 <button
                   type="button"
+                  onClick={() => setPackType("DOJ_WHIP_TIP")}
+                  className={`p-6 rounded-sm border text-left transition-colors ${
+                    packType === "DOJ_WHIP_TIP"
+                      ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
+                      : "bg-inset border-border text-muted hover:text-primary"
+                  }`}
+                >
+                  DOJ Criminal Tip
+                </button>
+                <button
+                  type="button"
                   onClick={() => setPackType("OATH_IDLING")}
-                  className={`p-8 rounded-sm border text-left transition-colors ${
+                  className={`p-6 rounded-sm border text-left transition-colors ${
                     packType === "OATH_IDLING"
                       ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
                       : "bg-inset border-border text-muted hover:text-primary"
@@ -412,7 +509,7 @@ II. EVIDENTIARY PROOF REQUIREMENTS
               </div>
             </div>
 
-            {packType === "RESEARCH_DOSSIER" ? (
+            {packType === "RESEARCH_DOSSIER" || packType === "DOJ_WHIP_TIP" ? (
               <>
                 {/* Target Entity Parameters */}
                 <div className="space-y-10">
