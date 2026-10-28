@@ -7,8 +7,10 @@
 - **Entity:** Rego Park Counseling LLC. New York OASAS lists provider **51310**, outpatient program **53489**, as a Part 822 outpatient chemical dependence program.
 - **OASAS listed locations:** 63-36 99th Street, Rego Park, NY 11374; 71-82 Parsons Boulevard, Fresh Meadows, NY 11365.
 - **Verified Organization NPIs (CMS NPPES API Verified):**
-  - **1235760927** (Primary Rego Park Clinic): Enumerated **2020-01-31** (active across the 2020–2024 HHS Medicaid spending period). Primary taxonomy **261QR0405X** (*Clinic/Center, Rehabilitation, Substance Use Disorder*). Address: 63-36 99th St, Rego Park, NY 11374. Authorized Official: Emanuil Kalendarev, CEO.
-  - **1932061611** (Secondary Fresh Meadows Clinic): Enumerated **2025-12-01**. Primary taxonomy *Clinic/Center, Multi-Specialty*. Address: 71-82 Parsons Blvd, Fresh Meadows, NY 11365. Authorized Official: Emanuil Kalendarev, CEO.
+  - **1235760927** (Primary Rego Park Clinic): Enumerated **2020-01-31**. Primary taxonomy **261QR0405X** (*Clinic/Center, Rehabilitation, Substance Use Disorder*). Address: 63-36 99th St, Rego Park, NY 11374. Authorized Official: Emanuil Kalendarev, CEO.
+  - **1932061611** (Secondary Fresh Meadows Clinic): Enumerated **2025-12-01**. Primary taxonomy **261QM1300X** (*Clinic/Center, Multi-Specialty*). Address: 71-82 Parsons Blvd, Fresh Meadows, NY 11365. Authorized Official: Emanuil Kalendarev, CEO.
+  - *Disclaimer on Affiliation:* Shared leadership establishes a common organizational link between the two sites, not proof of a billing, patient-sharing, or transport scheme.
+- **HHS Aggregate Spending Baseline Status:** **PENDING INGESTION / UNVERIFIED**. The local Estafotir database currently holds 18 imported HHS rows for T2024 and **zero rows** for either Rego Park Counseling NPI (`1235760927` or `1932061611`). Being active during the HHS 2018–2024 release window does not establish that NPI 1235760927 appears in the dataset or billed H0005. That analysis remains pending.
 - **Historical public record:** OMIG's final-audit index lists project **21-6442**, dated 2021-12-01, for this entity. The index alone does not establish the audit's findings or any current violation.
 
 Public sources: [OASAS program directory](https://webapps.oasas.ny.gov/providerDirectory/index.cfm?search_type=2); [CMS NPPES 1235760927](https://npiregistry.cms.hhs.gov/provider-view/1235760927); [CMS NPPES 1932061611](https://npiregistry.cms.hhs.gov/provider-view/1932061611); [OMIG final-audit index](https://omig.ny.gov/audit/final-audit-reports).
@@ -69,8 +71,10 @@ For each item, keep the original intact. Record an exact hash and any later copi
 ## 7. Plausible explanations to test
 
 - Ambulettes may be transporting people to medically necessary, authorized treatment.
-- A vehicle in front of a clinic may serve another business or location.
+- A vehicle in front of a clinic may serve another business or location (such as the co-located multi-specialty medical clinic).
 - Group attendance does not reveal a person's diagnosis or whether a service was billed.
+- **Brief treatment exception:** A short visit does not establish a false group claim. While OASAS lists H0005/90853 group counseling as a 60-minute service, OASAS guidance also permits brief treatment (e.g. 8–14 minute brief treatment billed under H0004 with modifier U5). You must have the actual billed service code, modifier, and date before comparing clinical duration to a billing rule.
+- **Clinic capacity vs blanket caps:** Certified facility group capacities depend on operating certificate conditions; do not assert an unverified blanket 15-patient cap without documented program terms.
 - A lawful benefit or meal should not be assumed to be a cash inducement.
 - A practice or corporate address does not prove where a service was rendered.
 
@@ -78,17 +82,18 @@ The tip should explain what evidence distinguishes the reported concern from the
 
 ## 8. Records an authorized investigator could compare
 
-1. Clinic claims by billing/rendering NPI, service code, service date, and site for the specified date range. OASAS's Part 822 billing guidance identifies **H0005** and **90853** for group counseling; the code must be verified against the actual service billed. [OASAS APG billing guidance](https://oasas.ny.gov/node/28196).
+1. Clinic claims by billing/rendering NPI, service code, modifiers (e.g. U5), service date, and site for the specified date range. OASAS's Part 822 billing guidance identifies **H0005** and **90853** for 60-minute group counseling, but also covers individual/brief sessions; the code must be verified against the actual service billed. [OASAS APG billing guidance](https://oasas.ny.gov/node/28196).
 2. Clinical notes, signed attendance rosters, treatment plans, medical-necessity and diagnosis documentation, and staff schedules.
 3. Transportation authorizations, including any applicable MAS medical-necessity/mode documentation, dispatch logs, driver and vehicle records, trip manifests, pickup/drop-off timestamps, and transport claims. OMIG's ambulette audit protocol lists the recipient, date, origin, destination, pickup and drop-off times, plate, driver, and trip attestation among trip documentation; it also tests whether the medical service can be corroborated. [NYS DOH transportation FAQ](https://www.health.ny.gov/health_care/medicaid/members/faqs.htm); [OMIG ambulette audit protocol](https://omig.ny.gov/media/92261/download?attachment=).
 4. Any documented patient incentives or cash-disbursement records, if investigators have legal access.
 5. Contracts or ownership links between the clinic and transport companies.
 
-These are **investigator leads**, not records currently in the local Estafo/MediFraudy databases.
+*Investigative Boundary:* These are **investigator leads and hypotheses**, not records currently in the local Estafotir databases. Public vehicle observations and NPPES records alone cannot perform a three-way match; that requires an authorized investigator with claims, dispatch, and clinical records.
 
 ## 9. Filing route and tracking
 
-- **Potential DOJ reward submission:** Review the [DOJ Fraud Division program terms](https://www.justice.gov/fraud/national-fraud-enforcement-division-criminal-tip-rewards-pilot-program) and [FAQ](https://www.justice.gov/fraud/criminal-tip-rewards-pilot-program-faqs). DOJ strongly recommends its signed intake form at [America.gov/fraud](https://www.america.gov/fraud). A lawyer must submit on the individual's behalf for an anonymous submission. Award eligibility is discretionary and depends on original, specific, truthful, timely information leading to unsealed federal criminal charges.
+- **Potential DOJ reward submission:** Review the [DOJ Fraud Division program terms](https://www.justice.gov/fraud/national-fraud-enforcement-division-criminal-tip-rewards-pilot-program) and [FAQ](https://www.justice.gov/fraud/criminal-tip-rewards-pilot-program-faqs). DOJ strongly recommends its signed intake form at [America.gov/fraud](https://www.america.gov/fraud). A lawyer must submit on the individual's behalf for an anonymous submission. Award eligibility ($10,000–$30,000) is **discretionary** and depends on original, specific, truthful, timely information leading to qualifying unsealed federal criminal charges. There is no automatic percentage fee and no confirmed standard payout.
+- **Commercial research pilots ($5,000–$25,000):** Flat retainers for research deliverables and peer outlier analytics are business proposals and operational hypotheses, not guaranteed legal recovery outcomes.
 - **New York Medicaid allegation:** [OMIG provider-allegation form](https://apps.omig.ny.gov/bmfa/bmfa.aspx). Its confirmation page should be saved if used. This route is for reporting; it is not itself a reward application.
 - **Before choosing routes:** Ask whistleblower counsel to assess who has original information, whether any sealed qui tam path is appropriate, and how to coordinate disclosures without harming rights or source confidentiality. Do not count on an award or claim someone else's knowledge as your own.
 

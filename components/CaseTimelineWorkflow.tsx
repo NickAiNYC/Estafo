@@ -698,21 +698,21 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
                 <div className="space-y-6 text-11">
                   <div>
                     <span className="text-muted block text-9 uppercase">Applicable Billing Codes</span>
-                    <span className="text-primary font-bold">H0005 (Group Session) & 90853 (Group Psychotherapy)</span>
+                    <span className="text-primary font-bold">H0005 (Group Session), 90853 (Group Psychotherapy), H0004+U5 (Brief Session)</span>
                   </div>
                   <div>
                     <span className="text-muted block text-9 uppercase">Mandatory Clinical Standard</span>
                     <ul className="text-secondary list-disc list-inside space-y-3 mt-2 text-10">
-                      <li>Minimum 60 minutes clinical duration (OASAS rule)</li>
-                      <li>Maximum 15 participants per group encounter</li>
-                      <li>Signed clinician progress note in EHR</li>
-                      <li>Documented SUD diagnosis & medical necessity</li>
+                      <li>H0005 / 90853: Minimum 60 minutes clinical duration</li>
+                      <li>H0004 + U5 modifier: 8–14 minute brief intervention allowable under OASAS rules</li>
+                      <li>Signed clinician progress note in EHR supporting medical necessity</li>
+                      <li>Operating certificate certified capacity rules apply</li>
                     </ul>
                   </div>
                   <div>
                     <span className="text-muted block text-9 uppercase">Forensic Discrepancy Tested</span>
                     <p className="text-amber text-10 leading-relaxed mt-1">
-                      Were 10–15 minute check-ins billed as full 60-minute H0005 sessions? Were sessions billed without licensed clinician notes? Was attendance induced with $20–$30 cash?
+                      Did an authorized investigator identify 10–15 minute check-ins billed under full 60-minute H0005 codes? Was attendance induced with $20–$30 cash?
                     </p>
                   </div>
                 </div>
@@ -726,7 +726,7 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
                 <span className="uppercase">Field Observation Protocol: Next 9 A.M. Sweep Checklist</span>
               </div>
               <p className="text-secondary text-11 leading-relaxed">
-                When conducting lawful observations from a publicly accessible street location, log only objective, verifiable facts. Do not photograph patient faces, record conversations without consent, or approach attendees.
+                When conducting lawful observations from a publicly accessible street location, log only objective, verifiable facts. Public street observations and NPPES records alone cannot perform a three-way match; that remains an investigative lead for authorized investigators with subpoena access to claims, dispatch, and clinical records.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-border">
@@ -744,6 +744,7 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
                   <div className="font-bold text-amber uppercase text-10">What Cannot Be Established From the Street:</div>
                   <ul className="text-secondary space-y-4 list-disc list-inside text-11">
                     <li><strong className="text-primary">Medicaid Billing:</strong> Parked vans do not prove Medicaid was billed for those specific individuals.</li>
+                    <li><strong className="text-primary">Duration vs Billing Code:</strong> Short visits do not prove fraud; brief treatment (H0004+U5) is permitted under OASAS rules.</li>
                     <li><strong className="text-primary">Patient Diagnoses:</strong> Cannot assume SUD diagnosis or medical necessity from physical appearance.</li>
                     <li><strong className="text-primary">Cash Transactions:</strong> Unless directly witnessed, attendee payment remains unverified report/hearsay.</li>
                     <li><strong className="text-primary">Strict Zero-PHI:</strong> Never record patient names or identifiable clinical attributes.</li>
