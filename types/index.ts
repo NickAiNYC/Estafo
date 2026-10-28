@@ -86,10 +86,10 @@ export interface MedicaidProviderRecord {
   uncertainty?: string;
 }
 
-export interface FraudRingRecord {
+export interface EntityClusterRecord {
   id: string;
   name: string;
-  type: "CROSS_VECTOR_SHELL" | "CDPAP_GHOST_NETWORK" | "MEDICAID_KICKBACK" | "COMMERCIAL_DUMPING_SYNDICATE";
+  type: "CROSS_VECTOR_SPATIAL" | "VELOCITY_SPIKE_CLUSTER" | "CO_LOCATION_VARIANCE" | "COMMERCIAL_CARRIER_HUB" | "CROSS_VECTOR_SHELL" | "CDPAP_GHOST_NETWORK" | "MEDICAID_KICKBACK" | "COMMERCIAL_DUMPING_SYNDICATE";
   total_exposure: number;
   estimated_whistleblower_bounty: number;
   nodes_count: number;
@@ -99,6 +99,8 @@ export interface FraudRingRecord {
   key_entities: string[];
   patterns: string[];
 }
+
+export type FraudRingRecord = EntityClusterRecord;
 
 export interface BountyLedgerItem {
   id: string;
