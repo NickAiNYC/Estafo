@@ -2,7 +2,7 @@
   "metadata": {
     "title": "NPPES Co-Location & Public Spending Research Leads",
     "classification": "UNVERIFIED_PRELIMINARY_RESEARCH_LEADS",
-    "generated_at": "2026-10-28T04:33:48.271779Z",
+    "generated_at": "2026-10-28T04:36:09.220096Z",
     "hhs_spending_status": "Local database holds 18 rows across 1 NPI(s). All other NPI spend is unimported ($0.00 matched).",
     "leie_status": "VERIFIED_FILE_INGESTED",
     "disclaimer": "Co-location at a commercial address does NOT establish common ownership, shell companies, or shared billing. Suite notation indicates an address format clue, NOT a physical square footage or fire capacity measurement. Street observations alone do not establish billing fraud and do not guarantee whistleblower rewards under WHIP or FCA."
@@ -12,13 +12,13 @@
       "clean_street": "4525 162ND ST",
       "distinct_npis_count": 3,
       "entity_names": [
-        "K PROJECT 1, INC.",
+        "C & K 1004 CORP",
         "EDEN ADULT DAY CARE, INC",
-        "C & K 1004 CORP"
+        "K PROJECT 1, INC."
       ],
       "npi_list": [
-        "1316664857",
         "1053049437",
+        "1316664857",
         "1407572852"
       ],
       "db_matched_spend": 0.0,
@@ -32,8 +32,8 @@
         "SIAL ACQUISITION LLC"
       ],
       "npi_list": [
-        "1376164855",
-        "1003733064"
+        "1003733064",
+        "1376164855"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -42,12 +42,12 @@
       "clean_street": "13208 POPLE AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "BIG APPLE ADULT DAY CARE, INC.",
-        "AMERICAN ADULT DAY CARE CENTER, INC."
+        "AMERICAN ADULT DAY CARE CENTER, INC.",
+        "BIG APPLE ADULT DAY CARE, INC."
       ],
       "npi_list": [
-        "1821506387",
-        "1053734277"
+        "1053734277",
+        "1821506387"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -56,12 +56,12 @@
       "clean_street": "13241 41 ROAD",
       "distinct_npis_count": 2,
       "entity_names": [
-        "HARMONY ADULT DAY CARE, INC.",
-        "AMERICAN ADULT DAY CARE CENTER, INC."
+        "AMERICAN ADULT DAY CARE CENTER, INC.",
+        "HARMONY ADULT DAY CARE, INC."
       ],
       "npi_list": [
-        "1295461747",
-        "1083208870"
+        "1083208870",
+        "1295461747"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -74,8 +74,8 @@
         "WHEELING FORWARD INC."
       ],
       "npi_list": [
-        "1851766539",
-        "1073851499"
+        "1073851499",
+        "1851766539"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -84,12 +84,12 @@
       "clean_street": "13610 BOOTH MEMORIAL AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "GOOD MORNING ADULT DAYCARE CENTER INC.",
-        "BRYAN CHAN"
+        "BRYAN CHAN",
+        "GOOD MORNING ADULT DAYCARE CENTER INC."
       ],
       "npi_list": [
-        "1639822158",
-        "1245803592"
+        "1245803592",
+        "1639822158"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -98,8 +98,8 @@
       "clean_street": "13812 NORTHERN BLVD FL 2",
       "distinct_npis_count": 2,
       "entity_names": [
-        "HONING ADULT DAY CARE SERVICES INC.",
-        "CARING ADULT DAY CARE INC"
+        "CARING ADULT DAY CARE INC",
+        "HONING ADULT DAY CARE SERVICES INC."
       ],
       "npi_list": [
         "1467724377",
@@ -112,8 +112,8 @@
       "clean_street": "1385 BAY ST",
       "distinct_npis_count": 2,
       "entity_names": [
-        "GOOD FAITH SOCIAL DAYCARE",
-        "GOOD FAITH ADULT DAY CARE INC"
+        "GOOD FAITH ADULT DAY CARE INC",
+        "GOOD FAITH SOCIAL DAYCARE"
       ],
       "npi_list": [
         "1205233111",
@@ -140,8 +140,8 @@
       "clean_street": "14489 38TH AVE STE CF1",
       "distinct_npis_count": 2,
       "entity_names": [
-        "KENT SENIOR CARE INC.",
-        "KENT SENIOR CARE"
+        "KENT SENIOR CARE",
+        "KENT SENIOR CARE INC."
       ],
       "npi_list": [
         "1578823670",
@@ -154,8 +154,8 @@
       "clean_street": "14627 BEECH AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "FLUSHING ADULT DAY CARE CENTER",
-        "EXCELLENCE AND LONGEVITY CENTER"
+        "EXCELLENCE AND LONGEVITY CENTER",
+        "FLUSHING ADULT DAY CARE CENTER"
       ],
       "npi_list": [
         "1821543620",
@@ -172,8 +172,8 @@
         "MORNINGSIDE HOUSE ADULT DAY CARE"
       ],
       "npi_list": [
-        "1902865645",
-        "1750530655"
+        "1750530655",
+        "1902865645"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -182,8 +182,8 @@
       "clean_street": "15431545 INWOOD AVENUE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "SUN RIVER HEALTH INC",
-        "BRIGHTPOINT HEALTH"
+        "BRIGHTPOINT HEALTH",
+        "SUN RIVER HEALTH INC"
       ],
       "npi_list": [
         "1619369584",
@@ -200,8 +200,8 @@
         "BOULEVARD ADULT DAY CARE OF FLUSHING"
       ],
       "npi_list": [
-        "1669045894",
-        "1336516954"
+        "1336516954",
+        "1669045894"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -214,8 +214,8 @@
         "PARK AVENUE ADULT DAY CARE CENTER"
       ],
       "npi_list": [
-        "1922435379",
-        "1801239371"
+        "1801239371",
+        "1922435379"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -224,12 +224,12 @@
       "clean_street": "2015 FOREST AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "SI ADULT DAY CARE CENTER INC",
-        "RICHMOND ADULT DAY CENTER INC."
+        "RICHMOND ADULT DAY CENTER INC.",
+        "SI ADULT DAY CARE CENTER INC"
       ],
       "npi_list": [
-        "1518520857",
-        "1427441575"
+        "1427441575",
+        "1518520857"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -238,8 +238,8 @@
       "clean_street": "2039 BATH AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "APNA SOCIAL ADULT DAYCARE INC",
-        "APNA ADULT DAYCARE OF BRIGHTON LLC"
+        "APNA ADULT DAYCARE OF BRIGHTON LLC",
+        "APNA SOCIAL ADULT DAYCARE INC"
       ],
       "npi_list": [
         "1093631749",
@@ -256,8 +256,8 @@
         "HANNAH HONG"
       ],
       "npi_list": [
-        "1871167262",
-        "1477127108"
+        "1477127108",
+        "1871167262"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -294,8 +294,8 @@
       "clean_street": "2451 E TREMONT AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "QUEENS SOCIAL ADULT DAY CARE INC",
-        "DESHI ADULT DAY CARE CENTER INC"
+        "DESHI ADULT DAY CARE CENTER INC",
+        "QUEENS SOCIAL ADULT DAY CARE INC"
       ],
       "npi_list": [
         "1447117007",
@@ -308,8 +308,8 @@
       "clean_street": "251 E 5TH ST",
       "distinct_npis_count": 2,
       "entity_names": [
-        "AMITY SOCIAL DAYCARE, INC.",
-        "AMAZING ADULT DAYCARE, INC."
+        "AMAZING ADULT DAYCARE, INC.",
+        "AMITY SOCIAL DAYCARE, INC."
       ],
       "npi_list": [
         "1083024285",
@@ -322,8 +322,8 @@
       "clean_street": "2542 BOSTON RD",
       "distinct_npis_count": 2,
       "entity_names": [
-        "IDEAL CARE 4 U ,INC.",
-        "2ND HOME ADC LLC"
+        "2ND HOME ADC LLC",
+        "IDEAL CARE 4 U ,INC."
       ],
       "npi_list": [
         "1154666048",
@@ -336,8 +336,8 @@
       "clean_street": "3093 OCEAN AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "BAINBRIDGE NURSING & REHABILITATION ADC",
-        "BAINBRIDGE ADULT DAY CARE CENTER I, LLC"
+        "BAINBRIDGE ADULT DAY CARE CENTER I, LLC",
+        "BAINBRIDGE NURSING & REHABILITATION ADC"
       ],
       "npi_list": [
         "1598847352",
@@ -350,12 +350,12 @@
       "clean_street": "3140 CONEY ISLAND AVE STE 2",
       "distinct_npis_count": 2,
       "entity_names": [
-        "APNA SOCIAL ADULT DAYCARE INC",
-        "APNA ADULT DAYCARE OF BRIGHTON LLC"
+        "APNA ADULT DAYCARE OF BRIGHTON LLC",
+        "APNA SOCIAL ADULT DAYCARE INC"
       ],
       "npi_list": [
-        "1942177951",
-        "1053239079"
+        "1053239079",
+        "1942177951"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -364,12 +364,12 @@
       "clean_street": "3305 3RD AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "HEART TO HEART ADULT DAY CENTER LLC",
-        "FOREVER YOUNG SOCIAL ADULT DAY CARE, INC"
+        "FOREVER YOUNG SOCIAL ADULT DAY CARE, INC",
+        "HEART TO HEART ADULT DAY CENTER LLC"
       ],
       "npi_list": [
-        "1578020509",
-        "1215283213"
+        "1215283213",
+        "1578020509"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -382,8 +382,8 @@
         "SPLIT ROCK REHABILITATION AND HEALTH CARE CENTER, LLC"
       ],
       "npi_list": [
-        "1275733297",
-        "1194152546"
+        "1194152546",
+        "1275733297"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -410,8 +410,8 @@
         "HARMONY ADULT DAY CARE, INC."
       ],
       "npi_list": [
-        "1548854334",
-        "1407435142"
+        "1407435142",
+        "1548854334"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -424,8 +424,8 @@
         "KATHLEEN FALK"
       ],
       "npi_list": [
-        "1700972114",
-        "1104057090"
+        "1104057090",
+        "1700972114"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -434,8 +434,8 @@
       "clean_street": "80 BRUCKNER BLVD",
       "distinct_npis_count": 2,
       "entity_names": [
-        "FOREVER US SOCIAL ADULT DAY CARE, INC",
-        "BRUCKNER FOREVER YOUNG SOCIAL ADULT DAY CARE, INC"
+        "BRUCKNER FOREVER YOUNG SOCIAL ADULT DAY CARE, INC",
+        "FOREVER US SOCIAL ADULT DAY CARE, INC"
       ],
       "npi_list": [
         "1043959414",
@@ -462,12 +462,12 @@
       "clean_street": "823 55TH ST FL 1",
       "distinct_npis_count": 2,
       "entity_names": [
-        "BK SADC INC",
-        "BEST ADULT DAYCARE INC"
+        "BEST ADULT DAYCARE INC",
+        "BK SADC INC"
       ],
       "npi_list": [
-        "1922709757",
-        "1265278956"
+        "1265278956",
+        "1922709757"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -476,12 +476,12 @@
       "clean_street": "8895 26TH AVE",
       "distinct_npis_count": 2,
       "entity_names": [
-        "CROWN ADULT SOCIAL DAY CARE LLC",
-        "CROWN ADULT DAY CARE LLC"
+        "CROWN ADULT DAY CARE LLC",
+        "CROWN ADULT SOCIAL DAY CARE LLC"
       ],
       "npi_list": [
-        "1164933990",
-        "1063884724"
+        "1063884724",
+        "1164933990"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -494,8 +494,8 @@
         "SWEET HOME SENIOR DAYCARE INC"
       ],
       "npi_list": [
-        "1447504311",
-        "1306102363"
+        "1306102363",
+        "1447504311"
       ],
       "db_matched_spend": 0.0,
       "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
@@ -697,9 +697,9 @@
       "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
     },
     {
-      "npi": "1053239079",
+      "npi": "1427976448",
       "name": "APNA SOCIAL ADULT DAYCARE INC",
-      "address": "3140 CONEY ISLAND AVE STE 2, Brooklyn, NY 11235",
+      "address": "236 NEPTUNE AVE FL 1, Brooklyn, NY 11235",
       "borough": "Brooklyn",
       "taxonomy_code": "261QA0600X",
       "facility_type": "Adult Day Care (T2024)",
@@ -709,9 +709,9 @@
       "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
     },
     {
-      "npi": "1427976448",
+      "npi": "1053239079",
       "name": "APNA SOCIAL ADULT DAYCARE INC",
-      "address": "236 NEPTUNE AVE FL 1, Brooklyn, NY 11235",
+      "address": "3140 CONEY ISLAND AVE STE 2, Brooklyn, NY 11235",
       "borough": "Brooklyn",
       "taxonomy_code": "261QA0600X",
       "facility_type": "Adult Day Care (T2024)",

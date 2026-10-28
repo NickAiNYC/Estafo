@@ -81,8 +81,8 @@ clustered AS (
     SELECT 
         clean_street,
         COUNT(DISTINCT npi) AS distinct_npi_count,
-        list(DISTINCT name) AS entity_names,
-        list(DISTINCT npi) AS npi_list
+        list_sort(list(DISTINCT name)) AS entity_names,
+        list_sort(list(DISTINCT npi)) AS npi_list
     FROM address_cleaning
     GROUP BY clean_street
     HAVING COUNT(DISTINCT npi) >= 2
