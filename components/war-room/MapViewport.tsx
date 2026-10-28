@@ -461,7 +461,7 @@ export default function MapViewport({
   };
 
   return (
-    <div className="relative flex-1 h-full bg-canvas overflow-hidden">
+    <div className="relative h-[360px] min-h-[360px] flex-none overflow-hidden bg-canvas lg:h-full lg:min-h-0 lg:flex-1">
       <DeckGL
         layers={layers}
         viewState={viewState}

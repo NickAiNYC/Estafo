@@ -157,7 +157,7 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
   };
 
   return (
-    <div className="w-full lg:w-[460px] flex flex-col border-t lg:border-t-0 lg:border-l border-border bg-surface shrink-0 h-full overflow-hidden select-none">
+    <div className="flex h-[340px] min-h-[340px] w-full shrink-0 flex-col overflow-hidden border-t border-border bg-surface select-none lg:h-full lg:min-h-0 lg:w-[460px] lg:border-l lg:border-t-0">
       {/* Tab Switcher Header */}
       <div className="px-16 py-10 border-b border-border bg-inset flex items-center justify-between shrink-0">
         <div className="flex items-center gap-6">

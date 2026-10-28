@@ -544,7 +544,7 @@ export default function Home() {
       {/* Main View Switcher */}
       <main className="flex-1 flex overflow-hidden">
         {currentView === "WAR_ROOM" && (
-          <div className="flex-1 flex overflow-hidden lg:flex-row flex-col">
+          <div className="min-h-0 flex-1 flex flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
             <MapPanel 
               dumping={dumping}
               noise={noise}
