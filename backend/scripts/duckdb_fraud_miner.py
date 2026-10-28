@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """
-DuckDB Healthcare Fraud Signal Miner (2026 Production Edition)
-Zero-token, high-speed out-of-core public data pipeline for Medicaid & Medicare leads.
+DuckDB Healthcare Lead Miner & Co-Location Screener (Rigorous 2026 Edition)
+Cross-references public CMS NPPES, HHS Aggregate Spending, and OIG LEIE.
 
-Extracts & cross-references:
-1. HHS Medicaid Provider Spending (Aggregate paid amounts, claim lines, beneficiaries)
-2. CMS NPPES Provider Registry (NPI, practice location, authorized official, taxonomy)
-3. HHS OIG LEIE (List of Excluded Individuals/Entities)
-4. NYC Municipal / Address Clustering (Multi-tenant medical hubs, single-floor suites)
-
-Outputs:
-- Ranked "Visit Next" target leads with composite anomaly scoring
-- Dual-track packaging: WHIP Criminal Tip memo + Qui Tam Original Source exhibits
+Methodological Discipline:
+1. Address co-location in commercial buildings is a preliminary research lead, NOT proof of common ownership or shell companies.
+2. Suite / floor identifiers are address clues, NOT verified square footage or fire capacity measurements.
+3. Monthly acceleration requires calendar-month matching for the same billing NPI and HCPCS code.
+4. LEIE exclusion matches require strict date comparison against effective exclusion dates (YYYYMMDD).
+5. Unimported datasets are surfaced with explicit INCOMPLETE status, never silently masked.
 """
 
 import os
@@ -19,6 +16,7 @@ import sys
 import json
 import argparse
 from pathlib import Path
+from datetime import datetime
 
 try:
     import duckdb
@@ -26,75 +24,95 @@ except ImportError:
     print("Error: duckdb not installed. Run '.venv/bin/pip install duckdb' to install.")
     sys.exit(1)
 
-# SQL Pattern 1: Capacity Impossibility (High patients/claims in single floor or suite)
-SQL_CAPACITY_IMPOSSIBILITY = """
-WITH ranked_providers AS (
+# SQL Pattern 1: Address Suite Screening Clue (Unverified Physical Footprint)
+# Note: Suite or floor notation indicates a subdivided commercial unit.
+# It does NOT establish square footage or fire capacity without municipal building records.
+SQL_SUITE_SCREENING_CLUES = """
+WITH provider_spending AS (
     SELECT 
-        s.billing_npi,
+        p.npi,
         p.name,
         p.address,
         p.borough,
         p.taxonomy_code,
-        s.hcpcs_code,
-        SUM(s.total_paid_amount) AS total_spend,
-        COUNT(DISTINCT s.year_month) AS months_active,
-        ROUND(SUM(s.total_paid_amount) / GREATEST(1, COUNT(DISTINCT s.year_month)), 2) AS monthly_intensity,
-        MAX(s.total_beneficiaries) AS peak_monthly_patients,
-        SUM(s.total_claims) AS total_claims,
-        -- Detect small footprint clues in address
+        p.facility_type,
+        COALESCE(SUM(s.total_paid_amount), 0.0) AS db_matched_spend,
+        COUNT(DISTINCT s.year_month) AS db_months_active,
+        COALESCE(MAX(s.total_beneficiaries), 0) AS db_peak_patients,
         CASE 
             WHEN regexp_matches(p.address, '(?i)\\b(STE|SUITE|FL|FLOOR|APT|UNIT|#)\\b') THEN 1 
             ELSE 0 
-        END AS is_subdivided_footprint
-    FROM aggregate_spending s
-    JOIN providers p ON s.billing_npi = p.npi
-    GROUP BY s.billing_npi, p.name, p.address, p.borough, p.taxonomy_code, s.hcpcs_code
+        END AS has_suite_floor_indicator
+    FROM providers p
+    LEFT JOIN aggregate_spending s ON p.npi = s.billing_npi
+    GROUP BY p.npi, p.name, p.address, p.borough, p.taxonomy_code, p.facility_type
 )
 SELECT 
-    billing_npi,
+    npi,
     name,
     address,
     borough,
-    hcpcs_code,
-    total_spend,
-    monthly_intensity,
-    peak_monthly_patients,
-    total_claims,
-    is_subdivided_footprint,
-    -- Capacity impossibility score (patients per estimated small footprint)
-    ROUND((monthly_intensity / 10000.0) * (CASE WHEN is_subdivided_footprint = 1 THEN 1.8 ELSE 1.0 END), 2) AS capacity_risk_score
-FROM ranked_providers
-WHERE (peak_monthly_patients >= 200 OR monthly_intensity >= 150000)
-  AND is_subdivided_footprint = 1
-ORDER BY capacity_risk_score DESC;
+    taxonomy_code,
+    facility_type,
+    db_matched_spend,
+    db_months_active,
+    db_peak_patients,
+    has_suite_floor_indicator
+FROM provider_spending
+WHERE has_suite_floor_indicator = 1
+ORDER BY db_matched_spend DESC, name ASC;
 """
 
-# SQL Pattern 2: Shared Hub & Shell Cluster (Addresses hosting 3+ related billing entities)
-SQL_SHARED_ADDRESS_CLUSTERS = """
-WITH address_stats AS (
+# SQL Pattern 2: NPPES Co-Located Practice Clusters
+# Note: Co-location in a multi-tenant commercial property indicates a shared physical site,
+# NOT proof of common ownership, shared control, or joint billing without corporate registry documentation.
+SQL_COLOCATED_CLUSTERS = """
+WITH address_cleaning AS (
     SELECT 
-        regexp_replace(upper(trim(split_part(address, ',', 1))), '[^A-Z0-9 ]', '', 'g') AS clean_street,
-        COUNT(DISTINCT npi) AS distinct_npis,
+        npi,
+        name,
+        address,
+        borough,
+        taxonomy_code,
+        regexp_replace(upper(trim(split_part(address, ',', 1))), '[^A-Z0-9 ]', '', 'g') AS clean_street
+    FROM providers
+),
+clustered AS (
+    SELECT 
+        clean_street,
+        COUNT(DISTINCT npi) AS distinct_npi_count,
         list(DISTINCT name) AS entity_names,
         list(DISTINCT npi) AS npi_list
-    FROM providers
+    FROM address_cleaning
     GROUP BY clean_street
     HAVING COUNT(DISTINCT npi) >= 2
 )
 SELECT 
-    a.clean_street,
-    a.distinct_npis,
-    a.entity_names,
-    a.npi_list,
-    COALESCE(SUM(s.total_paid_amount), 0) AS cluster_total_spend
-FROM address_stats a
-LEFT JOIN aggregate_spending s ON list_contains(a.npi_list, s.billing_npi)
-GROUP BY a.clean_street, a.distinct_npis, a.entity_names, a.npi_list
-ORDER BY cluster_total_spend DESC, distinct_npis DESC;
+    c.clean_street,
+    c.distinct_npi_count,
+    c.entity_names,
+    c.npi_list,
+    COALESCE(SUM(s.total_paid_amount), 0.0) AS db_matched_cluster_spend
+FROM clustered c
+LEFT JOIN aggregate_spending s ON list_contains(c.npi_list, s.billing_npi)
+GROUP BY c.clean_street, c.distinct_npi_count, c.entity_names, c.npi_list
+ORDER BY c.distinct_npi_count DESC, c.clean_street ASC;
 """
 
-# SQL Pattern 3: OIG LEIE Excluded Provider Intercept
-SQL_EXCLUSION_INTERCEPT = """
+# SQL Pattern 3: OIG LEIE Excluded Provider Billing Intercept
+# LEIE dates are stored as YYYYMMDD strings. Spending dates are stored as YYYY-MM.
+# Compares service month start against exclusion date and reinstatement date.
+SQL_LEIE_INTERCEPT = """
+WITH formatted_spending AS (
+    SELECT 
+        billing_npi,
+        hcpcs_code,
+        year_month,
+        -- Convert YYYY-MM to YYYYMM01 integer for precise comparison with LEIE YYYYMMDD
+        CAST(replace(year_month, '-', '') || '01' AS INTEGER) AS service_date_int,
+        total_paid_amount
+    FROM aggregate_spending
+)
 SELECT 
     s.billing_npi,
     p.name AS provider_name,
@@ -107,56 +125,85 @@ SELECT
     e.reindate,
     SUM(s.total_paid_amount) AS post_exclusion_spend,
     COUNT(DISTINCT s.year_month) AS post_exclusion_billing_months
-FROM aggregate_spending s
+FROM formatted_spending s
 JOIN providers p ON s.billing_npi = p.npi
 JOIN leie_exclusions e ON s.billing_npi = e.npi
 WHERE e.npi IS NOT NULL 
   AND e.npi != '0000000000'
-  AND (e.reindate IS NULL OR e.reindate = '' OR e.reindate > s.year_month)
+  AND CAST(e.excldate AS INTEGER) <= s.service_date_int
+  AND (
+      e.reindate IS NULL 
+      OR e.reindate = '' 
+      OR e.reindate = '00000000'
+      OR CAST(e.reindate AS INTEGER) > s.service_date_int
+  )
 GROUP BY s.billing_npi, p.name, p.address, e.npi, e.lastname, e.firstname, e.excltype, e.excldate, e.reindate
 ORDER BY post_exclusion_spend DESC;
 """
 
-# SQL Pattern 4: Velocity Surge (Billing acceleration >= 3.0x above peer baseline)
+# SQL Pattern 4: Calendar-Month Velocity Surge
+# Partitions by billing_npi AND hcpcs_code, joining on exact 3-calendar-month offset.
 SQL_VELOCITY_SURGE = """
-WITH monthly_trend AS (
+WITH monthly_series AS (
     SELECT 
         billing_npi,
-        year_month,
-        total_paid_amount,
-        LAG(total_paid_amount, 3) OVER (PARTITION BY billing_npi ORDER BY year_month) AS spend_3mo_ago
+        hcpcs_code,
+        CAST(year_month || '-01' AS DATE) AS service_month,
+        total_paid_amount
     FROM aggregate_spending
+),
+calendar_lag AS (
+    SELECT 
+        curr.billing_npi,
+        curr.hcpcs_code,
+        curr.service_month AS current_month,
+        curr.total_paid_amount AS current_spend,
+        prior.service_month AS prior_month,
+        prior.total_paid_amount AS spend_3mo_prior,
+        ROUND(curr.total_paid_amount / GREATEST(1.0, prior.total_paid_amount), 2) AS acceleration_multiple
+    FROM monthly_series curr
+    JOIN monthly_series prior 
+      ON curr.billing_npi = prior.billing_npi 
+     AND curr.hcpcs_code = prior.hcpcs_code 
+     AND prior.service_month = (curr.service_month - INTERVAL 3 MONTH)
+    WHERE prior.total_paid_amount >= 5000.0
+      AND (curr.total_paid_amount / prior.total_paid_amount) >= 3.0
 )
 SELECT 
-    t.billing_npi,
+    l.billing_npi,
     p.name,
     p.address,
-    t.year_month,
-    t.total_paid_amount AS current_spend,
-    t.spend_3mo_ago,
-    ROUND(t.total_paid_amount / GREATEST(1.0, t.spend_3mo_ago), 2) AS acceleration_multiple
-FROM monthly_trend t
-JOIN providers p ON t.billing_npi = p.npi
-WHERE t.spend_3mo_ago IS NOT NULL 
-  AND t.spend_3mo_ago > 5000
-  AND (t.total_paid_amount / t.spend_3mo_ago) >= 3.0
-ORDER BY acceleration_multiple DESC;
+    l.hcpcs_code,
+    CAST(l.current_month AS VARCHAR) AS current_month,
+    l.current_spend,
+    CAST(l.prior_month AS VARCHAR) AS prior_month,
+    l.spend_3mo_prior,
+    l.acceleration_multiple
+FROM calendar_lag l
+JOIN providers p ON l.billing_npi = p.npi
+ORDER BY l.acceleration_multiple DESC;
 """
 
 def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
-    print("=================================================================")
-    print("  ESTAFOTIR PUBLIC DATA FRAUD MINER // DUCKDB OUT-OF-CORE ENGINE")
-    print("=================================================================\n")
+    print("==========================================================================")
+    print("  ESTAFOTIR NPPES CO-LOCATION & PUBLIC SPENDING SCREENER (2026)")
+    print("  Status: Unverified Research Screening // Strict Evidentiary Standards")
+    print("==========================================================================\n")
     
     con = duckdb.connect()
     Path(export_dir).mkdir(parents=True, exist_ok=True)
 
-    # 1. Attach SQLite or local tables
+    # 1. Inspect local SQLite database
     print(f"[*] Attaching local database: {db_path}")
+    db_file = Path(db_path)
+    if not db_file.exists():
+        print(f"[-] Database file not found at {db_path}.")
+        return
+
     con.execute("INSTALL sqlite; LOAD sqlite;")
     con.execute(f"ATTACH '{db_path}' AS local_db (TYPE SQLITE);")
 
-    # Mirror tables into in-memory DuckDB for columnar execution speed
+    # Mirror spending table into columnar memory
     con.execute("""
         CREATE TEMPORARY TABLE aggregate_spending AS 
         SELECT 
@@ -169,13 +216,20 @@ def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
         FROM local_db.aggregate_spending_records;
     """)
 
-    # Load vetted providers
+    db_spending_count = con.execute("SELECT COUNT(*) FROM aggregate_spending;").fetchone()[0]
+    db_distinct_npis = con.execute("SELECT COUNT(DISTINCT billing_npi) FROM aggregate_spending;").fetchone()[0]
+    print(f"    Loaded {db_spending_count} spending rows across {db_distinct_npis} distinct billing NPI(s) from local DB.")
+    if db_distinct_npis <= 1:
+        print("    [!] NOTICE: Local database holds limited HHS rows (Dragon Home Care T2024 only).")
+        print("        Unimported providers will show $0.00 matched spend pending full HHS dataset ingestion.")
+
+    # 2. Ingest Provider Registry Cohort
     vetted_json = Path("public/data/medicaid_providers.json")
     if not vetted_json.exists():
         vetted_json = Path("backend/data/vetted_nyc_adhc_cohort.json")
 
     if vetted_json.exists():
-        print(f"[*] Ingesting vetted provider cohort from {vetted_json}...")
+        print(f"[*] Ingesting vetted provider cohort from: {vetted_json}")
         con.execute(f"""
             CREATE TEMPORARY TABLE providers AS 
             SELECT 
@@ -187,90 +241,149 @@ def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
                 facility_type
             FROM read_json_auto('{vetted_json}');
         """)
+        provider_count = con.execute("SELECT COUNT(*) FROM providers;").fetchone()[0]
+        print(f"    Ingested {provider_count} vetted provider records.")
     else:
-        con.execute("""
-            CREATE TEMPORARY TABLE providers AS 
-            SELECT DISTINCT 
-                billing_npi AS npi,
-                'MEDICAID PROVIDER ' || billing_npi AS name,
-                'NYC PRACTICE ADDRESS' AS address,
-                'NYC' AS borough,
-                '261QA0600X' AS taxonomy_code,
-                'Healthcare Facility' AS facility_type
-            FROM aggregate_spending;
-        """)
+        print("[-] Provider cohort file not found. Creating empty provider table.")
+        con.execute("CREATE TEMPORARY TABLE providers (npi VARCHAR, name VARCHAR, address VARCHAR, borough VARCHAR, taxonomy_code VARCHAR, facility_type VARCHAR);")
+        provider_count = 0
 
-    # Check for LEIE file
+    # 3. Ingest OIG LEIE Exclusions (Explicit Status Handling)
     leie_csv = Path("backend/data/LEIE.csv")
-    if leie_csv.exists():
-        print(f"[*] Loading HHS OIG LEIE exclusions from {leie_csv}...")
+    has_leie = leie_csv.exists()
+    if has_leie:
+        print(f"[*] Ingesting HHS OIG LEIE exclusions from: {leie_csv}")
         con.execute(f"""
             CREATE TEMPORARY TABLE leie_exclusions AS 
-            SELECT NPI AS npi, LASTNAME AS lastname, FIRSTNAME AS firstname, 
-                   EXCLTYPE AS excltype, EXCLDATE AS excldate, REINDATE AS reindate
+            SELECT 
+                CAST(NPI AS VARCHAR) AS npi, 
+                LASTNAME AS lastname, 
+                FIRSTNAME AS firstname, 
+                EXCLTYPE AS excltype, 
+                CAST(EXCLDATE AS VARCHAR) AS excldate, 
+                CAST(COALESCE(REINDATE, '00000000') AS VARCHAR) AS reindate
             FROM read_csv_auto('{leie_csv}');
         """)
+        leie_count = con.execute("SELECT COUNT(*) FROM leie_exclusions;").fetchone()[0]
+        print(f"    Ingested {leie_count} exclusion records.")
     else:
-        con.execute("""
-            CREATE TEMPORARY TABLE leie_exclusions (
-                npi VARCHAR, lastname VARCHAR, firstname VARCHAR, 
-                excltype VARCHAR, excldate VARCHAR, reindate VARCHAR
-            );
-        """)
+        print("[!] NOTICE: backend/data/LEIE.csv is absent.")
+        print("    Exclusion intercept screening marked as INCOMPLETE (data file not present).")
+        con.execute("CREATE TEMPORARY TABLE leie_exclusions (npi VARCHAR, lastname VARCHAR, firstname VARCHAR, excltype VARCHAR, excldate VARCHAR, reindate VARCHAR);")
 
-    # 2. Execute SQL Signals
-    print("\n[+] Running Pattern 1: Capacity Impossibility (Small footprint / high census)...")
-    cap_results = con.execute(SQL_CAPACITY_IMPOSSIBILITY).fetchall()
-    print(f"    Found {len(cap_results)} capacity mismatch leads.")
+    # 4. Execute Screenings
+    print("\n[+] Screening 1: Address Suite Indicators (Physical Footprint Clues)...")
+    suite_results = con.execute(SQL_SUITE_SCREENING_CLUES).fetchall()
+    print(f"    Identified {len(suite_results)} providers located in subdivided suites/floors.")
 
-    print("\n[+] Running Pattern 2: Shared Address & Corporate Cluster Hubs...")
-    hub_results = con.execute(SQL_SHARED_ADDRESS_CLUSTERS).fetchall()
-    print(f"    Found {len(hub_results)} shared address clusters.")
+    print("\n[+] Screening 2: NPPES Co-Located Practice Clusters...")
+    cluster_results = con.execute(SQL_COLOCATED_CLUSTERS).fetchall()
+    print(f"    Identified {len(cluster_results)} multi-tenant commercial addresses hosting 2+ NPIs.")
 
-    print("\n[+] Running Pattern 3: OIG LEIE Excluded Provider Billing Intercept...")
-    leie_results = con.execute(SQL_EXCLUSION_INTERCEPT).fetchall()
-    print(f"    Found {len(leie_results)} excluded billing leads.")
+    print("\n[+] Screening 3: OIG LEIE Exclusion Cross-Reference...")
+    if has_leie:
+        leie_results = con.execute(SQL_LEIE_INTERCEPT).fetchall()
+        print(f"    Identified {len(leie_results)} potential post-exclusion billing matches.")
+    else:
+        leie_results = []
+        print("    Status: SKIPPED (LEIE.csv missing).")
 
-    print("\n[+] Running Pattern 4: Billing Velocity & Rapid Escalation Surge...")
+    print("\n[+] Screening 4: Calendar-Month Velocity Surge (HCPCS-Specific)...")
     surge_results = con.execute(SQL_VELOCITY_SURGE).fetchall()
-    print(f"    Found {len(surge_results)} billing surge leads.")
+    print(f"    Identified {len(surge_results)} calendar-month acceleration leads (3x surge).")
 
-    # 3. Export high-signal triage matrix
-    triage_file = Path(export_dir) / "shirley_triage_leads.json"
-    triage_leads = []
+    # 5. Export Structured Research Leads
+    leads_export_path = Path(export_dir) / "nppes_colocation_research_leads.json"
+    shirley_legacy_path = Path(export_dir) / "shirley_triage_leads.json"
 
-    for r in cap_results[:10]:
-        triage_leads.append({
-            "npi": r[0],
-            "name": r[1],
-            "address": r[2],
-            "borough": r[3],
-            "hcpcs": r[4],
-            "monthly_intensity": float(r[6]),
-            "peak_patients": int(r[7]),
-            "primary_signal": "CAPACITY_IMPOSSIBILITY",
-            "capacity_risk_score": float(r[10])
-        })
+    export_payload = {
+        "metadata": {
+            "title": "NPPES Co-Location & Public Spending Research Leads",
+            "classification": "UNVERIFIED_PRELIMINARY_RESEARCH_LEADS",
+            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "hhs_spending_status": f"Local database holds {db_spending_count} rows across {db_distinct_npis} NPI(s). All other NPI spend is unimported ($0.00 matched).",
+            "leie_status": "VERIFIED_FILE_INGESTED" if has_leie else "INCOMPLETE_MISSING_LEIE_CSV",
+            "disclaimer": "Co-location at a commercial address does NOT establish common ownership, shell companies, or shared billing. Suite notation indicates an address format clue, NOT a physical square footage or fire capacity measurement. Street observations alone do not establish billing fraud and do not guarantee whistleblower rewards under WHIP or FCA."
+        },
+        "colocated_address_clusters": [
+            {
+                "clean_street": r[0],
+                "distinct_npis_count": int(r[1]),
+                "entity_names": r[2],
+                "npi_list": r[3],
+                "db_matched_spend": float(r[4]),
+                "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+            }
+            for r in cluster_results
+        ],
+        "suite_footprint_screening_clues": [
+            {
+                "npi": r[0],
+                "name": r[1],
+                "address": r[2],
+                "borough": r[3],
+                "taxonomy_code": r[4],
+                "facility_type": r[5],
+                "db_matched_spend": float(r[6]),
+                "db_months_active": int(r[7]),
+                "db_peak_patients": int(r[8]),
+                "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+            }
+            for r in suite_results[:50]
+        ],
+        "leie_exclusion_matches": [
+            {
+                "billing_npi": r[0],
+                "provider_name": r[1],
+                "address": r[2],
+                "leie_npi": r[3],
+                "name": f"{r[5]} {r[4]}",
+                "excltype": r[6],
+                "excldate": r[7],
+                "reindate": r[8],
+                "post_exclusion_spend": float(r[9]),
+                "billing_months": int(r[10])
+            }
+            for r in leie_results
+        ],
+        "calendar_velocity_surges": [
+            {
+                "billing_npi": r[0],
+                "name": r[1],
+                "address": r[2],
+                "hcpcs_code": r[3],
+                "current_month": r[4],
+                "current_spend": float(r[5]),
+                "prior_month": r[6],
+                "prior_spend": float(r[7]),
+                "acceleration_multiple": float(r[8])
+            }
+            for r in surge_results
+        ]
+    }
 
-    for r in hub_results[:15]:
-        triage_leads.append({
-            "clean_street": r[0],
-            "distinct_npis_count": int(r[1]),
-            "entity_names": r[2],
-            "npi_list": r[3],
-            "cluster_spend": float(r[4]),
-            "primary_signal": "SHARED_ADDRESS_CLUSTER",
-            "risk_type": "MULTI_ENTITY_HUB"
-        })
+    with open(leads_export_path, "w") as f:
+        json.dump(export_payload, f, indent=2)
 
-    with open(triage_file, "w") as f:
-        json.dump(triage_leads, f, indent=2)
+    with open(shirley_legacy_path, "w") as f:
+        json.dump(export_payload, f, indent=2)
 
-    print(f"\n[✓] Successfully exported top triage leads to: {triage_file}")
-    print("[✓] Pipeline execution finished with 100% data integrity.")
+    print(f"\n[✓] Exported complete research leads to: {leads_export_path}")
+    print(f"[✓] Mirrored to legacy path: {shirley_legacy_path}")
+    print("\n--------------------------------------------------------------------------")
+    print("  SUMMARY AUDIT REPORT:")
+    print(f"  - Ingested Providers: {provider_count}")
+    print(f"  - Database Spending Rows: {db_spending_count} ({db_distinct_npis} NPI)")
+    print(f"  - Co-Located Address Clusters: {len(cluster_results)}")
+    print(f"  - Suite Footprint Clues: {len(suite_results)}")
+    print(f"  - LEIE File Present: {'YES' if has_leie else 'NO (INCOMPLETE)'}")
+    print(f"  - LEIE Exclusion Matches: {len(leie_results)}")
+    print(f"  - Calendar Velocity Surges: {len(surge_results)}")
+    print("  - Legal Finding: 0 (All items are exploratory screening leads)")
+    print("--------------------------------------------------------------------------")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="DuckDB Healthcare Fraud Signal Miner")
+    parser = argparse.ArgumentParser(description="DuckDB Healthcare Lead Miner")
     parser.add_argument("--db", default="test.db", help="Path to SQLite database")
     parser.add_argument("--export-dir", default="exports", help="Directory for output leads")
     args = parser.parse_args()

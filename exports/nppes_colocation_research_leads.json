@@ -1,0 +1,1122 @@
+{
+  "metadata": {
+    "title": "NPPES Co-Location & Public Spending Research Leads",
+    "classification": "UNVERIFIED_PRELIMINARY_RESEARCH_LEADS",
+    "generated_at": "2026-10-28T04:14:26.347889Z",
+    "hhs_spending_status": "Local database holds 18 rows across 1 NPI(s). All other NPI spend is unimported ($0.00 matched).",
+    "leie_status": "INCOMPLETE_MISSING_LEIE_CSV",
+    "disclaimer": "Co-location at a commercial address does NOT establish common ownership, shell companies, or shared billing. Suite notation indicates an address format clue, NOT a physical square footage or fire capacity measurement. Street observations alone do not establish billing fraud and do not guarantee whistleblower rewards under WHIP or FCA."
+  },
+  "colocated_address_clusters": [
+    {
+      "clean_street": "4525 162ND ST",
+      "distinct_npis_count": 3,
+      "entity_names": [
+        "EDEN ADULT DAY CARE, INC",
+        "K PROJECT 1, INC.",
+        "C & K 1004 CORP"
+      ],
+      "npi_list": [
+        "1407572852",
+        "1316664857",
+        "1053049437"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "110 HENDERSON AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "SIAL ACQUISITION LLC",
+        "BAYWOOD LLC"
+      ],
+      "npi_list": [
+        "1003733064",
+        "1376164855"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "13208 POPLE AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "BIG APPLE ADULT DAY CARE, INC.",
+        "AMERICAN ADULT DAY CARE CENTER, INC."
+      ],
+      "npi_list": [
+        "1821506387",
+        "1053734277"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "13241 41 ROAD",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "HARMONY ADULT DAY CARE, INC.",
+        "AMERICAN ADULT DAY CARE CENTER, INC."
+      ],
+      "npi_list": [
+        "1083208870",
+        "1295461747"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "1325 5TH AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "WHEELING FORWARD INC.",
+        "FIFTH AVENUE SADC INC."
+      ],
+      "npi_list": [
+        "1073851499",
+        "1851766539"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "13610 BOOTH MEMORIAL AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "GOOD MORNING ADULT DAYCARE CENTER INC.",
+        "BRYAN CHAN"
+      ],
+      "npi_list": [
+        "1639822158",
+        "1245803592"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "13812 NORTHERN BLVD FL 2",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "HONING ADULT DAY CARE SERVICES INC.",
+        "CARING ADULT DAY CARE INC"
+      ],
+      "npi_list": [
+        "1467724377",
+        "1831543222"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "1385 BAY ST",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "GOOD FAITH SOCIAL DAYCARE",
+        "GOOD FAITH ADULT DAY CARE INC"
+      ],
+      "npi_list": [
+        "1205233111",
+        "1255940052"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "14218 38TH AVE STE CFD",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "DYJ LLC",
+        "EAST WEST SENIOR DAY CARE LLC"
+      ],
+      "npi_list": [
+        "1982317897",
+        "1689021289"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "14489 38TH AVE STE CF1",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "KENT SENIOR CARE",
+        "KENT SENIOR CARE INC."
+      ],
+      "npi_list": [
+        "1992665749",
+        "1578823670"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "14627 BEECH AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "FLUSHING ADULT DAY CARE CENTER",
+        "EXCELLENCE AND LONGEVITY CENTER"
+      ],
+      "npi_list": [
+        "1871841635",
+        "1821543620"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "1500 PELHAM PKWY S",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "AGING IN AMERICA COMMUNITY SERVICES SENIOR ADULT DAY SERVICES",
+        "MORNINGSIDE HOUSE ADULT DAY CARE"
+      ],
+      "npi_list": [
+        "1902865645",
+        "1750530655"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "15431545 INWOOD AVENUE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "SUN RIVER HEALTH INC",
+        "BRIGHTPOINT HEALTH"
+      ],
+      "npi_list": [
+        "1740763275",
+        "1619369584"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "15813 72ND AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "BOULEVARD ADULT DAY CARE OF FLUSHING",
+        "BOROUGH ADULT DAY CARE INC."
+      ],
+      "npi_list": [
+        "1669045894",
+        "1336516954"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "1916 PARK AVE STE 102",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "FORT TRYON CENTER FOR REHABILITATION AND NURSING",
+        "PARK AVENUE ADULT DAY CARE CENTER"
+      ],
+      "npi_list": [
+        "1801239371",
+        "1922435379"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "2015 FOREST AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "SI ADULT DAY CARE CENTER INC",
+        "RICHMOND ADULT DAY CENTER INC."
+      ],
+      "npi_list": [
+        "1427441575",
+        "1518520857"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "2039 BATH AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "APNA SOCIAL ADULT DAYCARE INC",
+        "APNA ADULT DAYCARE OF BRIGHTON LLC"
+      ],
+      "npi_list": [
+        "1841167855",
+        "1093631749"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "213 E 117TH ST",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "117 SADC INC",
+        "HANNAH HONG"
+      ],
+      "npi_list": [
+        "1871167262",
+        "1477127108"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "213 E 117TH ST STE 700",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "GRACE ADULT DAYCARE INC",
+        "GIL HONG"
+      ],
+      "npi_list": [
+        "1720810559",
+        "1508639998"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "229 E 2ND ST",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "ALPHABET ADULT DAYCARE INC.",
+        "KEY TO LIFE ADULT DAYCARE, INC."
+      ],
+      "npi_list": [
+        "1639505647",
+        "1467866244"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "2451 E TREMONT AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "QUEENS SOCIAL ADULT DAY CARE INC",
+        "DESHI ADULT DAY CARE CENTER INC"
+      ],
+      "npi_list": [
+        "1871130369",
+        "1447117007"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "251 E 5TH ST",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "AMITY SOCIAL DAYCARE, INC.",
+        "AMAZING ADULT DAYCARE, INC."
+      ],
+      "npi_list": [
+        "1083024285",
+        "1154710630"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "2542 BOSTON RD",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "2ND HOME ADC LLC",
+        "IDEAL CARE 4 U ,INC."
+      ],
+      "npi_list": [
+        "1427647569",
+        "1154666048"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "3093 OCEAN AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "BAINBRIDGE ADULT DAY CARE CENTER I, LLC",
+        "BAINBRIDGE NURSING & REHABILITATION ADC"
+      ],
+      "npi_list": [
+        "1598847352",
+        "1689920811"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "3140 CONEY ISLAND AVE STE 2",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "APNA ADULT DAYCARE OF BRIGHTON LLC",
+        "APNA SOCIAL ADULT DAYCARE INC"
+      ],
+      "npi_list": [
+        "1053239079",
+        "1942177951"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "3305 3RD AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "FOREVER YOUNG SOCIAL ADULT DAY CARE, INC",
+        "HEART TO HEART ADULT DAY CENTER LLC"
+      ],
+      "npi_list": [
+        "1578020509",
+        "1215283213"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "3525 BAYCHESTER AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "SPLIT ROCK ADULT DAY HEALTH CARE",
+        "SPLIT ROCK REHABILITATION AND HEALTH CARE CENTER, LLC"
+      ],
+      "npi_list": [
+        "1194152546",
+        "1275733297"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "4014 157TH STREET",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "BRUSHWICK SOCIAL DAYCARE INC.",
+        "BUSHWICK SOCIAL DAYCARE INC."
+      ],
+      "npi_list": [
+        "1497344139",
+        "1629942727"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "455 EAST 138TH STREET",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "AMERICAN ADULT DAY CARE CENTER, INC.",
+        "HARMONY ADULT DAY CARE, INC."
+      ],
+      "npi_list": [
+        "1407435142",
+        "1548854334"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "612 ALLERTON AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "KATHLEEN FALK",
+        "BETH ABRAHAM HEALTH SERVICES"
+      ],
+      "npi_list": [
+        "1104057090",
+        "1700972114"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "80 BRUCKNER BLVD",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "FOREVER US SOCIAL ADULT DAY CARE, INC",
+        "BRUCKNER FOREVER YOUNG SOCIAL ADULT DAY CARE, INC"
+      ],
+      "npi_list": [
+        "1043959414",
+        "1558603449"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "801 CO OP CITY BLVD",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "BAYPARK ADC",
+        "HEBREW HOSPITAL HOME, INC. - ADULT DAY CARE BRONX"
+      ],
+      "npi_list": [
+        "1942297783",
+        "1568720035"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "823 55TH ST FL 1",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "BK SADC INC",
+        "BEST ADULT DAYCARE INC"
+      ],
+      "npi_list": [
+        "1922709757",
+        "1265278956"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "8895 26TH AVE",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "CROWN ADULT SOCIAL DAY CARE LLC",
+        "CROWN ADULT DAY CARE LLC"
+      ],
+      "npi_list": [
+        "1164933990",
+        "1063884724"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "90 LUDLOW ST",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "CHINATOWN SENIOR SERVICE INC",
+        "SWEET HOME SENIOR DAYCARE INC"
+      ],
+      "npi_list": [
+        "1447504311",
+        "1306102363"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    },
+    {
+      "clean_street": "9021 160TH ST FL 2",
+      "distinct_npis_count": 2,
+      "entity_names": [
+        "FRIENDS ADULT DAYCARE CORP",
+        "SHINING STARS ADULT DAYCARE CORP"
+      ],
+      "npi_list": [
+        "1407685753",
+        "1396581849"
+      ],
+      "db_matched_spend": 0.0,
+      "evidentiary_note": "Shared address requires corporate registry / officer cross-reference before inferring common control."
+    }
+  ],
+  "suite_footprint_screening_clues": [
+    {
+      "npi": "1609518372",
+      "name": "3RD AVENUE SADC CORP",
+      "address": "2929 3RD AVE FL 2, Bronx, NY 10455",
+      "borough": "Bronx",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1629556014",
+      "name": "775 SOCIAL DAY CENTER INC",
+      "address": "775 50TH ST FL 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1356013346",
+      "name": "A & J ADULT DAYCARE LLC",
+      "address": "6013 7TH AVE STE 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1659952950",
+      "name": "AASHA SOCIAL ADULT DAY CARE LLC",
+      "address": "8914 168TH ST UNIT B, Queens, NY 11432",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1609486554",
+      "name": "ACCESS SADC UPTOWN LLC.",
+      "address": "64 E 111TH ST APT 907, Manhattan, NY 10029",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1306627088",
+      "name": "AHMED ELMALLAH",
+      "address": "13241 41ST RD FL 1, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1003285743",
+      "name": "AIHEART ADULT DAY CARE INC",
+      "address": "27 E BROADWAY FL 2, Manhattan, NY 10002",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1619649373",
+      "name": "AJNY SOCIAL DAYCARE INC",
+      "address": "148 AVENUE T, 1ST AND 2ND FLOOR, Brooklyn, NY 11223",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1275239121",
+      "name": "AJUEYITSI CAPITAL",
+      "address": "67 WEST ST STE 225, Brooklyn, NY 11222",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1760208540",
+      "name": "ALL COUNTY EMERGENCY SERVICES INC",
+      "address": "15047 HILLSIDE AVE FL 2, Queens, NY 11432",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1598021404",
+      "name": "ALLIANCE CARE INC",
+      "address": "762 59TH ST 8TH FL, Brooklyn, NY 11214",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1730652470",
+      "name": "AM SOCIAL ADULT DAYCARE INC",
+      "address": "4128 HAIGHT ST STE C1, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1386917151",
+      "name": "AMERICAN ADULT DAY CARE CENTER, INC.",
+      "address": "13338 SANFORD AVE FL 2, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1477252021",
+      "name": "APEX HOME AND COMMUNITY CARE SERVICES",
+      "address": "4240 HUTCHINSON RIVER PKWY E APT 8E, Bronx, NY 10475",
+      "borough": "Bronx",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1942177951",
+      "name": "APNA ADULT DAYCARE OF BRIGHTON LLC",
+      "address": "3140 CONEY ISLAND AVE STE 2, Brooklyn, NY 11235",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1427976448",
+      "name": "APNA SOCIAL ADULT DAYCARE INC",
+      "address": "236 NEPTUNE AVE FL 1, Brooklyn, NY 11235",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1053239079",
+      "name": "APNA SOCIAL ADULT DAYCARE INC",
+      "address": "3140 CONEY ISLAND AVE STE 2, Brooklyn, NY 11235",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1245122811",
+      "name": "ARTSAVE HUMAN SERVICE, LLC",
+      "address": "365 W 125TH ST UNIT 1471, Manhattan, NY 10027",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1649112699",
+      "name": "ASCC 202 INC",
+      "address": "202 CENTRE ST FL 4, Manhattan, NY 10013",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1033494257",
+      "name": "ASIAN ELDERS DAY CARE CENTER",
+      "address": "4711 8TH AVE FL 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1851269195",
+      "name": "BAO KANG ADULT DAYCARE CENTER INC.",
+      "address": "1561 127TH ST FL 2, Queens, NY 11356",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1922709757",
+      "name": "BEST ADULT DAYCARE INC",
+      "address": "823 55TH ST FL 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1255963351",
+      "name": "BEST SOLUTION HOME CARE SERVICES",
+      "address": "4250 BROADWAY STE 3W-C, Manhattan, NY 10033",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1265278956",
+      "name": "BK SADC INC",
+      "address": "823 55TH ST FL 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1841120953",
+      "name": "BLOOM SENIOR CARE CENTER INC",
+      "address": "8616 21ST AVE APT 1B, Brooklyn, NY 11214",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1821618919",
+      "name": "BNB ADULT DAYCARE CORP",
+      "address": "15301 NORTHERN BLVD STE 1B, Queens, NY 11354",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1083246888",
+      "name": "BRIGHTEST ADULT DAY CARE CENTER LLC",
+      "address": "86 ELIZABETH ST FL 2, Manhattan, NY 10013",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1013871789",
+      "name": "BROADWAY ADULT DAY CARE CENTER INC",
+      "address": "4231 COLDEN ST STE 101, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1366216616",
+      "name": "BROEKCARE CENTER",
+      "address": "1084 ROGERS AVE FL 2, Brooklyn, NY 11226",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1457073009",
+      "name": "BROOKLYN SOCIAL ADULT DAY CARE CENTER INC",
+      "address": "1122 CONEY ISLAND AVE STE 1, Brooklyn, NY 11230",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1821341769",
+      "name": "BROOKLYN SOCIAL DAY CARE INC",
+      "address": "2502 86TH ST FL 4, Brooklyn, NY 11214",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1609407220",
+      "name": "CARING ADULT DAY CARE CENTER INC",
+      "address": "4102 8TH AVENUE FL 1, Brooklyn, NY 11232",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1831543222",
+      "name": "CARING ADULT DAY CARE INC",
+      "address": "138-12 NORTHERN BLVD FL 2, Queens, NY 11354",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1295602308",
+      "name": "CHIFU CENTER, INC.",
+      "address": "3749 81 ST UNIT 1A, Queens, NY 11372",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1427815190",
+      "name": "CRYSTAL LAKE SENIOR DAYCARE, INC.",
+      "address": "4317 UNION ST STE A, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1598539678",
+      "name": "DAVAUGHN MOORER",
+      "address": "1419 SHAKESPEARE AVE APT 3C, Bronx, NY 10452",
+      "borough": "Bronx",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1639552045",
+      "name": "DAVIS SOCIAL ADULT SERVICES",
+      "address": "1349 BROADWAY FL 3, Brooklyn, NY 11221",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1972465722",
+      "name": "DAZHONG ADULT DAY CARE INC",
+      "address": "13680 41ST AVE STE 2C, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1063988822",
+      "name": "DORADO SOCIAL DAY CARE",
+      "address": "128 MOTT ST STE 208, Manhattan, NY 10013",
+      "borough": "Manhattan",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1689021289",
+      "name": "DYJ LLC",
+      "address": "14218 38TH AVE STE CFD, Queens, NY 11354",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1023747417",
+      "name": "E JIA ADULT DAYCARE LLC",
+      "address": "876 60TH ST FL 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1982317897",
+      "name": "EAST WEST SENIOR DAY CARE LLC",
+      "address": "14218 38TH AVE STE CFD, Queens, NY 11354",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1245952183",
+      "name": "ELDERLY SOCIAL DAYCARE INC",
+      "address": "828 57TH ST FL 1, Brooklyn, NY 11220",
+      "borough": "Brooklyn",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1245758838",
+      "name": "ELDERVILLE GROUP INC",
+      "address": "14803 HILLSIDE AVE STE A, Queens, NY 11435",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1427826957",
+      "name": "EUNHAE DAYCARE INC",
+      "address": "3541 156TH ST FL 2, Queens, NY 11354",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1649682444",
+      "name": "EVERGREEN ADULT DAY CARE IN NEW YORK CN",
+      "address": "13235 41ST RD STE 1E, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1801457080",
+      "name": "FAMILY ADULT DAY CARE, INC.",
+      "address": "2332 HOFFMAN STREET, 2ND & 3RD FLOOR, Bronx, NY 10458",
+      "borough": "Bronx",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1871437202",
+      "name": "FARRINGTON ADULT DAYCARE CENTER INC",
+      "address": "13438 35TH AVE APT 2, Queens, NY 11354",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1952276065",
+      "name": "FIESTA ADULT DAYCARE LLC",
+      "address": "2200 VICTORY BLVD FL 2, Staten Island, NY 10314",
+      "borough": "Staten Island",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    },
+    {
+      "npi": "1346963493",
+      "name": "FLUSHING GARDEN ADULT DAYCARE CENTER, LLC",
+      "address": "14425 SANFORD AVE STE SC1, Queens, NY 11355",
+      "borough": "Queens",
+      "taxonomy_code": "261QA0600X",
+      "facility_type": "Adult Day Care (T2024)",
+      "db_matched_spend": 0.0,
+      "db_months_active": 0,
+      "db_peak_patients": 0,
+      "evidentiary_note": "Subdivided address notation. Square footage and capacity require municipal DOB records or physical inspection."
+    }
+  ],
+  "leie_exclusion_matches": [],
+  "calendar_velocity_surges": []
+}
