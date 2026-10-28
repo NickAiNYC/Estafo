@@ -206,8 +206,8 @@ export default function ProfitEngineLedger({ ledgerItems, onOpenWeaponizer }: Pr
             className="bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono text-secondary focus:outline-none focus:border-amber"
           >
             <option value="ALL">All Tracks</option>
-            <option value="TRACK_5_DUMPING">Track 5: DSNY Dumping ($9k)</option>
-            <option value="TRACK_1_IDLING">Track 1: CAC Idling (50%)</option>
+            <option value="TRACK_5_DUMPING">Track 5: DSNY Dumping (Admin § 16-119)</option>
+            <option value="TRACK_1_IDLING">Track 1: DEP Idling 25% (Admin § 24-182)</option>
             <option value="TRACK_6_NYFCA_QUI_TAM">Track 6: NYFCA Qui Tam (25%)</option>
             <option value="TRACK_11_DOB">Track 11: DOB Unpermitted</option>
           </select>

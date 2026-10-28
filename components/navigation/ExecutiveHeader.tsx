@@ -73,7 +73,7 @@ export default function ExecutiveHeader({
 
   const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon; shortcut: string }[] = [
     { id: "WAR_ROOM", label: "3D WAR ROOM", icon: MapIcon, shortcut: "0" },
-    { id: "NEXUS_GRAPH", label: "PALANTIR NEXUS", icon: Network, shortcut: "G" },
+    { id: "NEXUS_GRAPH", label: "ENTITY NEXUS", icon: Network, shortcut: "G" },
     { id: "MEDICAID_RADAR", label: "MEDICAID QUI TAM", icon: Activity, shortcut: "M" },
     { id: "PROFIT_LEDGER", label: "PROFIT LEDGER", icon: DollarSign, shortcut: "L" },
     { id: "LEGAL_WEAPONIZER", label: "FILING STUDIO", icon: Scale, shortcut: "W" },
@@ -90,14 +90,14 @@ export default function ExecutiveHeader({
           <div>
             <div className="flex items-center gap-8">
               <span className="text-15 font-bold tracking-tight font-sans text-primary">
-                VANGUARD
+                ESTAFO
               </span>
-              <span className="text-10 font-mono px-6 py-1 rounded-sm bg-surface border border-border-highlight text-secondary">
-                PALANTIR FOR NYC
+              <span className="text-10 font-mono px-6 py-1 rounded-sm bg-surface border border-border-highlight text-emerald font-semibold">
+                TACTICAL CONSOLE
               </span>
             </div>
             <div className="text-10 font-mono text-muted tracking-tight">
-              ESTAFO INTELLIGENCE & PROFIT TERMINAL
+              MUNICIPAL COMPLIANCE & EV DISPATCH TERMINAL
             </div>
           </div>
         </div>

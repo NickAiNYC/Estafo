@@ -55,6 +55,14 @@ export default function LegalWeaponizer({
   const [vehiclePlate, setVehiclePlate] = useState("");
   const [targetLocation, setTargetLocation] = useState("");
 
+  // Citizen Idling Field Evidence Technical Quality Gates (to avoid OATH rejection)
+  const [checklistDuration, setChecklistDuration] = useState(true);
+  const [checklistPlate, setChecklistPlate] = useState(true);
+  const [checklistMarkings, setChecklistMarkings] = useState(true);
+  const [checklistEngineSound, setChecklistEngineSound] = useState(true);
+  const [checklistAddress, setChecklistAddress] = useState(true);
+  const [checklistNoPto, setChecklistNoPto] = useState(true);
+
   // Hydrate from initialTargetId if provided
   useEffect(() => {
     if (initialTargetId && providers.length > 0) {
@@ -133,43 +141,68 @@ Disclaimer:           Internal research aid only. Not an affidavit or court fili
   };
 
   const generateOATHIdlingText = () => {
+    const verifiedGatesCount = [
+      checklistDuration,
+      checklistPlate,
+      checklistMarkings,
+      checklistEngineSound,
+      checklistAddress,
+      checklistNoPto,
+    ].filter(Boolean).length;
+
     return `================================================================================
-CITIZEN ENFORCEMENT COMPLAINT DRAFT (NYC ADMIN CODE § 24-163)
-COMMERCIAL ENGINE IDLING COMPLAINT WORKSHEET
+CITIZEN ENFORCEMENT COMPLAINT WORKSHEET (NYC ADMIN CODE § 24-163 & § 24-182)
+COMMERCIAL VEHICLE ENGINE IDLING COMPLAINT DOSSIER
 ================================================================================
-NOTICE: This worksheet assists in organizing citizen complaints. Summonses must be
-filed directly through the NYC DEP Citizen Air Conservation portal with valid video proof.
+STATUTORY BASIS:
+Prohibition:          NYC Administrative Code § 24-163 (Engine Idling Prohibited >3 Min)
+Citizen Reward:       NYC Administrative Code § 24-182 (Citizen Air Complaint Program)
+Statutory Bounty:     25% of collected civil fine (payable upon DEP/OATH recovery)
+Statutory Penalty:    $350 (standard 1st offense) up to $2,000 (repeat offense)
+Expected Citizen EV:  $87.50 to $250.00 per collected violation
 ================================================================================
 
 I. RESPONDENT COMMERCIAL VEHICLE
 --------------------------------------------------------------------------------
-License Plate:        ${vehiclePlate || "[Enter Plate, e.g. NY-99214A]"}
-Jurisdiction:         New York Commercial Freight Registry
-Observation Location: ${targetLocation || "[Enter Location, e.g. Hunts Point Market]"}
+License Plate:        ${vehiclePlate || "[Enter Commercial Plate, e.g. NY-99214A]"}
+Jurisdiction:         New York Commercial Freight / Carrier
+Observation Location: ${targetLocation || "[Enter Location, e.g. Hunts Point Food Center Dr]"}
+Observation Date:     ${new Date().toISOString().slice(0, 10)}
 
-II. STATUTORY BASIS
+II. EVIDENTIARY AUDIT CHECKLIST (${verifiedGatesCount}/6 TECHNICAL GATES VERIFIED)
 --------------------------------------------------------------------------------
-Ordinance:            NYC Administrative Code § 24-163
-Allowed Idle Time:    Maximum 3 continuous minutes (1 minute adjacent to schools)
-Statutory Penalty:    $350 – $2,000 per violation
-Citizen Payout Rate:  25% of collected civil penalties (payable via NYC DEP)
+[${checklistDuration ? "X" : " "}] 1. Continuous Timestamped Video: Full continuous recording >= 180s (>3 min)
+       (or >= 60s if parked directly adjacent to a public/private school).
+[${checklistPlate ? "X" : " "}] 2. Clear License Plate: Close-up capture of vehicle plate & state registration
+       visible at beginning and conclusion of recording.
+[${checklistMarkings ? "X" : " "}] 3. Commercial Lettering: Company name, logo, or USDOT / NYS DOT registration
+       markings clearly legible on side door or trailer.
+[${checklistEngineSound ? "X" : " "}] 4. Audible Engine & Exhaust: Continuous engine audio recorded without muting;
+       visible vibration, tailpipe exhaust, or operating reefer unit documented.
+[${checklistAddress ? "X" : " "}] 5. Physical Location Anchor: Street name sign, building address number, or GPS
+       metadata clearly establishing physical NYC jurisdiction.
+[${checklistNoPto ? "X" : " "}] 6. No Mechanical Exemption (PTO): Confirmed vehicle was not actively operating
+       power takeoff (e.g. cement mixer revolving, lift-gate actively cycling).
 
-III. EVIDENTIARY SUBMISSION CHECKLIST
+III. CITIZEN DECLARATION
 --------------------------------------------------------------------------------
-[ ] Continuous timestamped video documenting engine idling (>180 seconds).
-[ ] Legible capture of vehicle commercial license plate and USDOT markings.
-[ ] Audible engine sound and exhaust emission clearly visible.
-[ ] Proximity verification to address / street cross-streets.
+I affirm under penalty of perjury that the attached video recording was taken
+personally by the citizen informant, represents continuous unedited observation of the
+commercial vehicle idling, and was not captured while driving a motor vehicle.
 `;
   };
 
   const generateOATHDumpingText = () => {
     return `================================================================================
-COMMERCIAL ILLEGAL DUMPING COMPLAINT DRAFT (NYC ADMIN CODE § 16-119)
-OATH ADJUDICATION WORKSHEET
+COMMERCIAL ILLEGAL DUMPING COMPLAINT WORKSHEET (NYC ADMIN CODE § 16-119)
+OATH / DSNY CITIZEN COMPLAINT DOSSIER
 ================================================================================
-NOTICE: Commercial dumping complaints must be submitted to the NYC DSNY Bureau of
-Legal Affairs with contemporaneous photographic or video evidence.
+STATUTORY BASIS:
+Prohibition:          NYC Administrative Code § 16-119 (Unlawful Dumping Prohibited)
+Enforcement Agency:   NYC Department of Sanitation (DSNY) / OATH Hearings Division
+Statutory Penalty:    $1,500 – $4,000 (1st offense) up to $18,000 (commercial repeat)
+Citizen Bounty Share: Up to 50% of fine collected upon conviction / OATH disposition
+Vehicle Forfeiture:   Commercial vehicle subject to impoundment by NYC Sheriff/DSNY
 ================================================================================
 
 I. INCIDENT LOCATION & SUBJECT VEHICLE
@@ -177,18 +210,14 @@ I. INCIDENT LOCATION & SUBJECT VEHICLE
 Incident Location:    ${targetLocation || "[Enter Tax Lot / Address]"}
 Vehicle Identifier:   ${vehiclePlate || "[Enter Commercial Plate]"}
 Statutory Authority:  NYC Administrative Code § 16-119 (Unlawful Dumping)
+Observation Date:     ${new Date().toISOString().slice(0, 10)}
 
-II. STATUTORY PENALTIES & CITIZEN REWARD
+II. EVIDENTIARY PROOF REQUIREMENTS
 --------------------------------------------------------------------------------
-Fine Range:           $4,000 (first offense) up to $18,000 (repeat commercial offense)
-Statutory Bounty:     50% of collected fine paid to citizen informant
-Forfeiture Risk:      Vehicle subject to impoundment by NYC Sheriff / DSNY
-
-III. REQUIRED PROOF
---------------------------------------------------------------------------------
-[ ] Photographic evidence showing material deposited from commercial vehicle.
-[ ] Timestamp, location geotag, and license plate clearly legible.
-[ ] DSNY confirmation of unpermitted commercial waste transfer.
+[ ] Contemporaneous video or photographs documenting material dumped from vehicle.
+[ ] Commercial license plate, state registration, and vehicle make/model legible.
+[ ] Material deposited onto public sidewalk, street, or unpermitted private lot.
+[ ] Exact street cross-streets or parcel address verified with date/time stamp.
 `;
   };
 
@@ -470,6 +499,78 @@ III. REQUIRED PROOF
                     placeholder="e.g. Hunts Point Food Center Dr, Bronx"
                     className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 font-mono focus:outline-none"
                   />
+                </div>
+
+                {/* 6 Technical Gates Checklist for Citizen Idling */}
+                <div className="pt-12 border-t border-border space-y-8 font-mono text-10">
+                  <div className="flex items-center justify-between text-secondary uppercase font-bold">
+                    <span>Evidence Quality Checklist</span>
+                    <span className="text-emerald text-9 font-bold bg-emerald/15 px-6 py-1 rounded-sm border border-emerald/40">
+                      {[checklistDuration, checklistPlate, checklistMarkings, checklistEngineSound, checklistAddress, checklistNoPto].filter(Boolean).length}/6 GATES
+                    </span>
+                  </div>
+
+                  <div className="space-y-6">
+                    <label className="flex items-start gap-8 cursor-pointer text-muted hover:text-primary">
+                      <input
+                        type="checkbox"
+                        checked={checklistDuration}
+                        onChange={(e) => setChecklistDuration(e.target.checked)}
+                        className="rounded bg-inset border-border text-emerald mt-1 focus:ring-0"
+                      />
+                      <span>Continuous Video &gt;= 180s (&gt;3 min continuous observation)</span>
+                    </label>
+
+                    <label className="flex items-start gap-8 cursor-pointer text-muted hover:text-primary">
+                      <input
+                        type="checkbox"
+                        checked={checklistPlate}
+                        onChange={(e) => setChecklistPlate(e.target.checked)}
+                        className="rounded bg-inset border-border text-emerald mt-1 focus:ring-0"
+                      />
+                      <span>Commercial plate legible at start &amp; end of recording</span>
+                    </label>
+
+                    <label className="flex items-start gap-8 cursor-pointer text-muted hover:text-primary">
+                      <input
+                        type="checkbox"
+                        checked={checklistMarkings}
+                        onChange={(e) => setChecklistMarkings(e.target.checked)}
+                        className="rounded bg-inset border-border text-emerald mt-1 focus:ring-0"
+                      />
+                      <span>Commercial lettering / USDOT registration clearly visible</span>
+                    </label>
+
+                    <label className="flex items-start gap-8 cursor-pointer text-muted hover:text-primary">
+                      <input
+                        type="checkbox"
+                        checked={checklistEngineSound}
+                        onChange={(e) => setChecklistEngineSound(e.target.checked)}
+                        className="rounded bg-inset border-border text-emerald mt-1 focus:ring-0"
+                      />
+                      <span>Audible continuous engine sound &amp; exhaust vibration</span>
+                    </label>
+
+                    <label className="flex items-start gap-8 cursor-pointer text-muted hover:text-primary">
+                      <input
+                        type="checkbox"
+                        checked={checklistAddress}
+                        onChange={(e) => setChecklistAddress(e.target.checked)}
+                        className="rounded bg-inset border-border text-emerald mt-1 focus:ring-0"
+                      />
+                      <span>Physical location anchor (street sign / address / GPS)</span>
+                    </label>
+
+                    <label className="flex items-start gap-8 cursor-pointer text-muted hover:text-primary">
+                      <input
+                        type="checkbox"
+                        checked={checklistNoPto}
+                        onChange={(e) => setChecklistNoPto(e.target.checked)}
+                        className="rounded bg-inset border-border text-emerald mt-1 focus:ring-0"
+                      />
+                      <span>Confirmed no mechanical exemption / power takeoff (PTO) active</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             )}

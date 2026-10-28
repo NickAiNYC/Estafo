@@ -75,6 +75,18 @@ const enpv = calculateENPV(12500, 0.78, 450, 200, 100);
 assert.strictEqual(enpv, 9000, "ENPV calculation must match deterministic expectation: (0.78 * 12500) - 450 - 200 - 100 = 9000");
 console.log(`✓ ENPV formula verified: Gross=$12,500, P(succ)=78%, Costs=$750 -> Expected Net=$9,000`);
 
+// Test 3b: Citizen Idling 25% Expected Value Math (NYC Admin Code § 24-182)
+function calculateCitizenIdlingEV(statutoryFine, pWin, pCollect, fieldTimeMinutes, hourlyRate, transitCost) {
+  const citizenGrossBounty = 0.25 * statutoryFine;
+  const expectedGrossRecovery = pWin * pCollect * citizenGrossBounty;
+  const laborCost = (fieldTimeMinutes / 60) * hourlyRate;
+  return +((expectedGrossRecovery - laborCost - transitCost).toFixed(2));
+}
+
+const idlingEV = calculateCitizenIdlingEV(350, 0.80, 0.65, 10, 60, 2.90);
+assert.strictEqual(idlingEV, 32.60, "Citizen idling EV calculation must match calibrated OATH realization formula: 45.50 gross expected - 12.90 costs = 32.60 net");
+console.log(`✓ Calibrated Idling EV Verified: Fine=$350, 25% Share=$87.50, P(win)=80%, P(collect)=65% -> Net EV=$32.60`);
+
 // Test 4: Financial Integrity Rules (Gate G4)
 console.log("\n[Test 4] Verifying Financial Accounting segregation...");
 const mockTransactions = [

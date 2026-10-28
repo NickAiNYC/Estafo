@@ -350,10 +350,9 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
         </div>
       )}
 
-      {/* Footer Status Bar */}
       <div className="px-16 py-8 border-t border-border bg-inset text-10 font-mono text-muted flex items-center justify-between">
         <span>{mode === "HOT_ZONES" ? "Click row to camera fly-to" : "Click ADVANCE to progress workflow"}</span>
-        <span className="text-emerald font-bold">STATE: PERSISTED</span>
+        <span className="text-muted font-mono text-9">STORAGE: EPHEMERAL SERVERLESS (LOCAL /tmp)</span>
       </div>
     </div>
   );
