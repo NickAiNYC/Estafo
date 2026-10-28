@@ -12,7 +12,7 @@ import MedicaidQuiTamRadar from "@/components/MedicaidQuiTamRadar";
 import CaseTimelineWorkflow from "@/components/CaseTimelineWorkflow";
 import Overview from "@/components/Overview";
 import ProfitEngineLedger from "@/components/ProfitEngineLedger";
-import LegalWeaponizer from "@/components/LegalWeaponizer";
+import ComplianceStudio from "@/components/ComplianceStudio";
 import { useTacticalAudio } from "@/hooks/useTacticalAudio";
 import { 
   DumpingRecord, 
@@ -47,8 +47,8 @@ export default function Home() {
   const [bountyLedger, setBountyLedger] = useState<BountyLedgerItem[]>([]);
   const [palantirGraph, setPalantirGraph] = useState<PalantirGraphData>({ nodes: [], edges: [] });
 
-  // Legal Weaponizer selection bridge & Graph deep link target
-  const [weaponizerTarget, setWeaponizerTarget] = useState<{ id?: string; track?: string }>({});
+  // Diligence Studio selection bridge & Graph deep link target
+  const [diligenceTarget, setDiligenceTarget] = useState<{ id?: string; track?: string }>({});
   const [selectedRadarNpi, setSelectedRadarNpi] = useState<string | undefined>(undefined);
 
   // Truthful Source & Telemetry State
@@ -488,10 +488,10 @@ export default function Home() {
     }));
   }, [playChirp]);
 
-  const handleOpenWeaponizer = useCallback((targetId: string, track: string) => {
+  const handleOpenDiligenceStudio = useCallback((targetId: string, track: string) => {
     playClick();
-    setWeaponizerTarget({ id: targetId, track });
-    setCurrentView("LEGAL_WEAPONIZER");
+    setDiligenceTarget({ id: targetId, track });
+    setCurrentView("DILIGENCE_STUDIO");
   }, [playClick]);
 
   const handleMedicaidAuth = useCallback(async (token: string): Promise<boolean> => {
@@ -587,7 +587,7 @@ export default function Home() {
           <MedicaidQuiTamRadar 
             providers={medicaid}
             fraudRings={fraudRings}
-            onOpenWeaponizer={handleOpenWeaponizer}
+            onOpenDiligenceStudio={handleOpenDiligenceStudio}
             initialSelectedNpi={selectedRadarNpi}
             sourceError={medicaidError}
             onAuthenticate={handleMedicaidAuth}
@@ -602,14 +602,14 @@ export default function Home() {
         {currentView === "PROFIT_LEDGER" && (
           <ProfitEngineLedger 
             ledgerItems={bountyLedger}
-            onOpenWeaponizer={handleOpenWeaponizer}
+            onOpenDiligenceStudio={handleOpenDiligenceStudio}
           />
         )}
 
-        {currentView === "LEGAL_WEAPONIZER" && (
-          <LegalWeaponizer 
-            initialTargetId={weaponizerTarget.id}
-            initialTrack={weaponizerTarget.track}
+        {currentView === "DILIGENCE_STUDIO" && (
+          <ComplianceStudio 
+            initialSubjectId={diligenceTarget.id}
+            initialTrack={diligenceTarget.track}
             providers={medicaid}
             onBackToRadar={() => {
               playClick();

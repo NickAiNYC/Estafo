@@ -17,7 +17,7 @@ const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
   { id: "WAR_ROOM", label: "Map", icon: MapIcon },
   { id: "MEDICAID_RADAR", label: "Healthcare", icon: Activity },
   { id: "CASE_TIMELINE", label: "Case Timeline", icon: Calendar },
-  { id: "LEGAL_WEAPONIZER", label: "Diligence Dossiers", icon: FileText },
+  { id: "DILIGENCE_STUDIO", label: "Diligence Dossiers", icon: FileText },
   { id: "PROFIT_LEDGER", label: "Financial examples", icon: DollarSign },
   { id: "NEXUS_GRAPH", label: "Entity graph", icon: Network },
 ];

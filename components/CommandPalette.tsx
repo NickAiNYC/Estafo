@@ -73,7 +73,7 @@ export default function CommandPalette({
           handleClose();
         } else if (e.key === "5" && onSelectView) {
           e.preventDefault();
-          onSelectView("LEGAL_WEAPONIZER");
+          onSelectView("DILIGENCE_STUDIO");
           handleClose();
         } else if (e.key === "6" && onSelectView) {
           e.preventDefault();
@@ -119,7 +119,7 @@ export default function CommandPalette({
     { label: "Municipal Map (150 Records)", view: "WAR_ROOM", shortcut: "⌘2" },
     { label: "Healthcare Research Leads", view: "MEDICAID_RADAR", shortcut: "⌘3" },
     { label: "Case Timeline Audit Trail", view: "CASE_TIMELINE", shortcut: "⌘4" },
-    { label: "Dossier & Filing Drafts", view: "LEGAL_WEAPONIZER", shortcut: "⌘5" },
+    { label: "Dossier & Filing Drafts", view: "DILIGENCE_STUDIO", shortcut: "⌘5" },
     { label: "Entity Network Graph", view: "NEXUS_GRAPH", shortcut: "⌘6" },
   ];
 

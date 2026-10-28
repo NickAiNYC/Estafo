@@ -28,7 +28,7 @@ Version 5.0.0 directly resolves five strategic and numerical gaps:
 +--------------------------------------------------------------------------------------------------------------------------------------------------+
 | Charter Requirement         | Current Product State         | Verification Evidence (Commit / File)      | Gap / Action Required    | Owner   | Due Date |
 +=============================+===============================+============================================+==========================+=========+==========+
-| 1. FCA Public Disclosure    | Implemented in Studio UI.     | `components/LegalWeaponizer.tsx`           | Complete. Ongoing audit  | General | Complete |
+| 1. FCA Public Disclosure    | Implemented in Studio UI.     | `components/ComplianceStudio.tsx`           | Complete. Ongoing audit  | General | Complete |
 |    Bar Diligence Audit      | Prominent 3rd Cir. warning.   | Commit `43b6358` (Pre-Filing Audit Gate)   | of marketing copy.       | Counsel |          |
 +-----------------------------+-------------------------------+--------------------------------------------+--------------------------+---------+----------+
 | 2. S9088 Centralized        | Active API Route Deployed.    | `app/api/v1/compliance/deletion-request/`  | Connect DB purge daemon; | CTO /   | Month 2  |

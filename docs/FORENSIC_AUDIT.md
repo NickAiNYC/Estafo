@@ -29,7 +29,7 @@ This forensic audit evaluates the codebase, runtime data layer, security perimet
 | **Palantir Nexus** | `components/PalantirNexusGraph.tsx` | SVG link analysis graph connecting corporate shells and providers | ⚠️ **Partial** (Fixed Layout) | Graph renders; edges are static fixtures rather than dynamically resolved entity clusters. |
 | **Medicaid Radar** | `components/MedicaidQuiTamRadar.tsx` | Provider table, anomaly filters, Qui Tam Relator Calculator | ⚠️ **Partial** (Research Only) | Calculator works; must be explicitly labeled as unvalidated research screening per Gate G2. |
 | **Profit Ledger** | `components/ProfitEngineLedger.tsx` | Multi-track ledger, status badges, CSV export | ⚠️ **Partial** (Simulated Cases) | Table and CSV download work; cases are pre-seeded; must track real commercial pilot revenue. |
-| **Legal Weaponizer** | `components/LegalWeaponizer.tsx` | OATH Citizen Affidavits & DOJ Qui Tam Memoranda generator | ✅ **Functional** (Verified) | Text generation, clipboard copy, and file download work; requires live target prefill. |
+| **Compliance Studio** | `components/ComplianceStudio.tsx` | OATH Citizen Affidavits & DOJ Qui Tam Memoranda generator | ✅ **Functional** (Verified) | Text generation, clipboard copy, and file download work; requires live target prefill. |
 
 ---
 

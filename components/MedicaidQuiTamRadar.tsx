@@ -27,7 +27,7 @@ import { EvidenceDossier } from "@/components/EvidenceDossier";
 interface MedicaidQuiTamRadarProps {
   providers: MedicaidProviderRecord[];
   fraudRings?: FraudRingRecord[];
-  onOpenWeaponizer?: (targetId: string, track: string) => void;
+  onOpenDiligenceStudio?: (targetId: string, track: string) => void;
   initialSelectedNpi?: string;
   sourceError?: string | null;
   onAuthenticate?: (token: string) => Promise<boolean>;
@@ -36,7 +36,7 @@ interface MedicaidQuiTamRadarProps {
 
 export default function MedicaidQuiTamRadar({
   providers,
-  onOpenWeaponizer,
+  onOpenDiligenceStudio,
   initialSelectedNpi,
   sourceError,
   onAuthenticate,
@@ -666,9 +666,9 @@ Street observations and open data cannot prove a false claim. Official investiga
                       </div>
                     </div>
 
-                    {onOpenWeaponizer && (
+                    {onOpenDiligenceStudio && (
                       <button
-                        onClick={() => onOpenWeaponizer(selectedProvider.id, "RESEARCH_PILOT")}
+                        onClick={() => onOpenDiligenceStudio(selectedProvider.id, "RESEARCH_PILOT")}
                         className="flex items-center gap-6 px-12 py-6 rounded-sm bg-steel-blue/20 border border-steel-blue text-steel-blue hover:bg-steel-blue/30 text-11 font-mono font-bold transition-colors cursor-pointer"
                       >
                         <FileText className="w-3.5 h-3.5" />

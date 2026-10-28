@@ -1,62 +1,62 @@
 ================================================================================
-INSTITUTIONAL COMPLIANCE MEMORANDUM // PRIVILEGED & CONFIDENTIAL WORK PRODUCT
-PRE-LITIGATION DILIGENCE & PUBLIC DISCLOSURE BAR AUDIT // ZERO-PHI SPECIFICATION
+SYNTHETIC BENCHMARK SAMPLE // NOT A REAL ENTITY // NOT AN ALLEGATION
+SCREENING METHODOLOGY MEMORANDUM // ZERO-PHI
 ================================================================================
-REF IDENTIFIER:          VANGUARD-DILIGENCE-1003215732-2026-10-28
-EVIDENTIARY HASH:        4bc9572cb6e2039a7c073547655dabd505cc1f58e9baf86e2e33354dddcd6328
-STATUTORY CITATION:      31 U.S.C. § 3730(e)(4) // N.Y. STATE FINANCE LAW § 190(9)
-REGULATORY CLEARANCE:    NYC SHIELD (MED DEBT) // NYC LL144 NON-AEDT // NY S9088 DATA BROKER
+REF IDENTIFIER:          VANGUARD-SAMPLE-SYNTHETIC-BENCHMARK-NPI-01-2026-10-28
+PAYLOAD DIGEST:          6e6f626d01dd231c6bef8f856656008d17fd3e84e2ad24c2ff2bd45ee399843c
+SOURCE FILE SHA-256:     e787ffd049a2adf3f0ad65ce7b249480f18d6bcbc3916d9b6e914809c27cfa5b
 
-I. SUBJECT ENTITY & ADMINISTRATIVE PROVENANCE
+I. SUBJECT (SYNTHETIC)
 --------------------------------------------------------------------------------
-Entity Legal Name:       Regional Adult Day Care Alpha
-National Provider ID:    1003215732 (10-Digit CMS NPPES Validated)
-Taxonomy Scope:          HCPCS T2024 (Adult Day Health Care Waiver)
-Administrative Source:   CMS Medicaid Provider Spending Public Use Files (PUF)
-Licensing Authority:     Federal Open Data Policy (OMB Memo M-13-13) // Public Domain
+Identifier:              SYNTHETIC-BENCHMARK-NPI-01 (illustrative; fails NPI format by design)
+Taxonomy Scope:          HCPCS T2024 (illustrative)
+Subject Monthly Rate:    $1,080,000 (illustrative value)
 
-II. STATISTICAL VARIANCE & PEER GROUP STRATIFICATION
+II. PEER COHORT & STATISTICAL METHODOLOGY
 --------------------------------------------------------------------------------
-Normalized Monthly Rate: $472,500 / active month
-Cohort Peer Mean:        $235,167 / active month
-Observed Peer Deviation: +1.67σ vs. Regional Adult Day Health Care Peer Cohort
-Annual Claim Volume:     78,500 claims
-Annual Beneficiary Count: 1,620 beneficiaries
-Spend Per Beneficiary:   $3,500
+Peer Definition:         HCPCS T2024, NYC 5-borough ZIPs; acuity/facility-type NOT adjusted
+Cohort Size:             n = 446 (minimum n = 30 enforced)
+Cohort Mean:             $317,107 / active month
+Cohort StdDev:           $230,886 (CV = 72.8%: heterogeneous)
+Subject Deviation:       +3.30σ (screening signal only)
+Limitation:              Recommend OMIG re-run against the full MMIS cohort.
 
-DATASET PRIVACY & SUPPRESSION ADVISORY:
-All records reflect aggregate CMS metadata where small cells (<11 beneficiaries)
-were suppressed upstream by CMS. Zero patient-level records are accessed or stored.
-Statistical variance is a descriptive screening signal, NOT proof of overbilling.
-
-III. DOCUMENTED EXCULPATORY HYPOTHESES (INNOCENT EXPLANATIONS)
+III. NEGATIVE SPACE
 --------------------------------------------------------------------------------
-Alternative Explanations Requiring Investigation:
-1. High clinical acuity cohort (e.g., specialized dementia or traumatic brain injury waiver).
-2. Extended weekend and evening operating schedule expanding operating capacity.
-3. Consolidating patient volume following the closure of a neighboring clinic.
-Primary attendance sign-in rosters must be reviewed to confirm census validity.
+Screened:                446 providers
+Within ±1.5σ:            417 (93.5%)
+Above +3σ:               14 (3.1%)
+Co-location screen:      NOT computed; any co-location observation is unverified.
 
-IV. ORIGINAL SOURCE & PUBLIC DISCLOSURE BAR AUDIT
+IV. SCHEME HYPOTHESIS (HYPOTHESIS ONLY)
 --------------------------------------------------------------------------------
-Under 31 U.S.C. § 3730(e)(4) and Third Circuit precedent (Dec. 2024), compiling
-publicly accessible databases does NOT satisfy original-source standing.
-[VERIFIED] 1. Independent Non-Public Attendance Records Possessed: YES
-[VERIFIED] 2. Direct, First-Hand Eyewitness Knowledge: YES
-[VERIFIED] 3. Prior Internal Compliance Escalation Documented: YES
-[VERIFIED] 4. Clear of Public Disclosure Bar (Non-Derivative Allegations): YES
+Mechanism:               A common operator may bill facility per-diem and transport for the same beneficiaries.
+Beneficiary:             Common principals, if common control exists (not shown by public data).
+Program exposure:        Aggregate paid amount only; no overbilling quantified.
+Confirm/Exonerate:       Attendance sign-ins, trip tickets/EVV, lease and billing-agent records.
 
-V. FOUR-TIER EVIDENTIARY CLASSIFICATION
+V. INNOCENT EXPLANATIONS CONSIDERED
 --------------------------------------------------------------------------------
-1. VERIFIED FACTS: Active NPPES registration; aggregate HHS billing total ($5.67M).
-2. STATISTICAL INFERENCES: Upper-decile billing intensity (+1.67σ vs regional peers).
-3. ALLEGATIONS: [NONE ASSERTED BY SOFTWARE] — Subject to human review.
-4. UNKNOWNS & GAPS: Electronic Visit Verification (EVV) driver logs unexamined.
+1. Shared registered agent / mail drop — not tested.
+2. Multi-tenant medical building / landlord-tenant — not tested.
+3. Shared third-party billing agent — not testable from public data.
+4. High-acuity population / extended hours — not testable from public data.
 
-VI. HUMAN INVESTIGATOR ATTESTATION & COMPLIANCE SIGN-OFF
+VI. FACT / INFERENCE / GAP
 --------------------------------------------------------------------------------
-Review Status:           COMPLETED HUMAN REVIEW // VERIFIED DEFICIENT OF PHI
-Reviewing Officer:       Authorized Lead Compliance Officer
-Attestation Timestamp:   2026-10-28T07:19:32.769Z
-Compliance Warranty:     MSA Entity-Only Use-Restriction Standard Satisfied
+[FACT]      Cohort statistics above, computed from the hashed source file.
+[INFERENCE] Subject's billing intensity is high relative to an unadjusted cohort.
+[GAP]       Ownership, attendance, transport records, clinical necessity.
+
+VII. DATA QUALITY CONTROLS (NOT EVIDENCE)
+--------------------------------------------------------------------------------
+Luhn check:              446/446 cohort NPIs pass
+Suppression:             all cohort entities >= 11 beneficiaries
+PHI:                     none ingested
+
+VIII. PROVENANCE
+--------------------------------------------------------------------------------
+Release:                 HHS Medicaid Provider Spending, 2026-02-09 (aggregated into public/data/medicaid_providers.json)
+Reproduce:               node tests/clean_room_diligence_audit.mjs
+Generated:               2026-10-28T07:32:55.895Z
 ================================================================================

@@ -15,10 +15,10 @@ import {
 
 interface ProfitEngineLedgerProps {
   ledgerItems: BountyLedgerItem[];
-  onOpenWeaponizer?: (targetId: string, track: string) => void;
+  onOpenDiligenceStudio?: (targetId: string, track: string) => void;
 }
 
-export default function ProfitEngineLedger({ ledgerItems, onOpenWeaponizer }: ProfitEngineLedgerProps) {
+export default function ProfitEngineLedger({ ledgerItems, onOpenDiligenceStudio }: ProfitEngineLedgerProps) {
   const [filterTrack, setFilterTrack] = useState<string>("ALL");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -277,8 +277,8 @@ export default function ProfitEngineLedger({ ledgerItems, onOpenWeaponizer }: Pr
                 <td className="py-10 px-14 text-right">
                   <button
                     onClick={() => {
-                      if (onOpenWeaponizer) {
-                        onOpenWeaponizer(item.id, item.track);
+                      if (onOpenDiligenceStudio) {
+                        onOpenDiligenceStudio(item.id, item.track);
                       }
                     }}
                     className="px-8 py-4 bg-surface hover:bg-surface-hover border border-border rounded-sm text-11 text-primary transition-colors inline-flex items-center gap-4"

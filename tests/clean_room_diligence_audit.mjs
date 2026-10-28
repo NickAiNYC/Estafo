@@ -4,163 +4,135 @@ import path from "node:path";
 
 /**
  * CLEAN-ROOM DILIGENCE AUDIT & PROVENANCE VALIDATOR
- * Executes the Agent's First Directive:
- * 1. Validates upstream-suppressed licensed CMS/HHS Public Use File slice.
- * 2. Executes normalization & peer z-score mathematics.
- * 3. Asserts Luhn check digits & zero-PHI compliance.
- * 4. Generates an immutable, cryptographically hashed Institutional Diligence Packet.
- * 5. Pre-clears against GC, DCWP (Non-AEDT), and Enterprise Procurement gates.
+ * - Computes cohort statistics live from public/data/medicaid_providers.json (T2024 cohort, n >= 30 enforced).
+ * - Runs Luhn / suppression checks as DATA-QUALITY controls (not evidence).
+ * - Emits a SYNTHETIC benchmark packet: no real NPI or provider name is ever written.
  */
 
-// 1. Synthetic / Vetted Baseline Cohort Data (HCPCS T2024: Adult Day Health Care)
-const SAMPLE_COHORT = [
-  { npi: "1003215732", name: "Regional Adult Day Care Alpha", claims: 78500, beneficiaries: 1620, spend: 5670000, active_months: 12 },
-  { npi: "1003248386", name: "Metro Senior Wellness Beta", claims: 42100, beneficiaries: 910, spend: 3040000, active_months: 12 },
-  { npi: "1003254921", name: "Queens Geriatric Center Gamma", claims: 31200, beneficiaries: 680, spend: 2250000, active_months: 12 },
-  { npi: "1003285743", name: "Brooklyn Adult Health Delta", claims: 24800, beneficiaries: 520, spend: 1790000, active_months: 12 },
-  { npi: "1003299124", name: "Bronx Senior Care Epsilon", claims: 18900, beneficiaries: 410, spend: 1360000, active_months: 12 },
-];
+const MIN_COHORT = 30;
+const SYNTHETIC_ID = "SYNTHETIC-BENCHMARK-NPI-01";
 
-// Luhn check digit verification (NPI CMS standard)
 function verifyNpiLuhn(npi) {
   if (!/^\d{10}$/.test(npi)) return false;
   const full = "80840" + npi;
   let sum = 0;
   for (let i = full.length - 1, alt = false; i >= 0; i--, alt = !alt) {
-    let digit = parseInt(full[i], 10);
-    if (alt) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-    sum += digit;
+    let d = parseInt(full[i], 10);
+    if (alt) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
   }
   return sum % 10 === 0;
 }
 
-// Statistical calculation
-function calculateCohortStats(cohort) {
-  const monthlyRates = cohort.map(c => c.spend / c.active_months);
-  const mean = monthlyRates.reduce((a, b) => a + b, 0) / monthlyRates.length;
-  const variance = monthlyRates.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (monthlyRates.length - 1);
-  const stdDev = Math.sqrt(variance);
-  return { mean, stdDev, count: cohort.length };
+function stats(values) {
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const sd = Math.sqrt(values.reduce((a, b) => a + (b - mean) ** 2, 0) / (values.length - 1));
+  return { mean, sd, cv: sd / mean };
 }
 
-function runCleanRoomExercise() {
-  console.log("=== VANGUARD CLEAN-ROOM DILIGENCE AUDIT (FIRST DIRECTIVE) ===");
-  console.log("[Step 1] Ingesting licensed, upstream-suppressed CMS Public Use File slice...");
+function run() {
+  console.log("=== VANGUARD CLEAN-ROOM DILIGENCE AUDIT ===");
+  const dataPath = path.join(process.cwd(), "public", "data", "medicaid_providers.json");
+  const rawFile = fs.readFileSync(dataPath);
+  const sourceHash = crypto.createHash("sha256").update(rawFile).digest("hex");
+  const all = JSON.parse(rawFile.toString("utf8"));
+  const cohort = all.filter(p => p.service_code && p.service_code.includes("T2024") && !p.is_synthetic);
 
-  // Validate Zero-PHI Cell Suppression (<11 beneficiaries omitted upstream)
-  const allSuppressed = SAMPLE_COHORT.every(item => item.beneficiaries >= 11);
-  if (!allSuppressed) {
-    throw new Error("PERIMETER SECURITY VIOLATION: Unsuppressed cell detected (<11 beneficiaries).");
-  }
-  console.log(`✓ Upstream Cell Suppression Verified: All ${SAMPLE_COHORT.length} cohort entities exceed privacy threshold.`);
+  if (cohort.length < MIN_COHORT) throw new Error(`Peer cohort n=${cohort.length} < ${MIN_COHORT}`);
+  console.log(`✓ Cohort: n=${cohort.length} (HCPCS T2024, NYC); minimum n=${MIN_COHORT} satisfied`);
 
-  // Validate Luhn Check Digits
-  const luhnValid = SAMPLE_COHORT.every(item => verifyNpiLuhn(item.npi));
-  if (!luhnValid) {
-    throw new Error("DATA INTEGRITY VIOLATION: Invalid NPI check digit detected.");
-  }
-  console.log("✓ Luhn Check Digit Verification: 100% of cohort NPIs pass CMS Checksum.");
+  if (!cohort.every(p => p.total_beneficiaries >= 11)) throw new Error("Unsuppressed cell (<11 beneficiaries)");
+  console.log("✓ Upstream cell suppression: all cohort entities >= 11 beneficiaries");
 
-  // Step 2: Compute Peer Normalization & Statistical Variances
-  console.log("[Step 2] Computing Peer Normalization & Statistical Variance Distributions...");
-  const stats = calculateCohortStats(SAMPLE_COHORT);
-  console.log(`✓ Cohort Baseline: Mean Monthly Spend = $${Math.round(stats.mean).toLocaleString()} | StdDev = $${Math.round(stats.stdDev).toLocaleString()}`);
+  const luhnPass = cohort.filter(p => verifyNpiLuhn(p.npi)).length;
+  console.log(`✓ Data-quality control (not evidence): Luhn pass ${luhnPass}/${cohort.length}`);
 
-  const target = SAMPLE_COHORT[0];
-  const targetMonthlyRate = target.spend / target.active_months;
-  const zScore = ((targetMonthlyRate - stats.mean) / stats.stdDev).toFixed(2);
-  console.log(`✓ Target Entity (${target.npi}): Monthly Rate = $${Math.round(targetMonthlyRate).toLocaleString()} | Z-Score = +${zScore}σ`);
+  const vals = cohort.map(p => p.monthly_intensity);
+  const { mean, sd, cv } = stats(vals);
+  const within = vals.filter(v => Math.abs(v - mean) / sd <= 1.5).length;
+  const outliers = vals.filter(v => (v - mean) / sd > 3).length;
+  console.log(`✓ Mean $${Math.round(mean).toLocaleString()} | SD $${Math.round(sd).toLocaleString()} | CV ${(cv * 100).toFixed(1)}%`);
+  console.log(`✓ Within ±1.5σ: ${within}/${cohort.length} | > +3σ: ${outliers}`);
 
-  // Step 3: Generate Cryptographic Payload & SHA-256 Digest
-  console.log("[Step 3] Generating Immutable Evidentiary Digest & Provenance Hash...");
-  const rawPayload = JSON.stringify({
-    provenance_source: "CMS_MEDICAID_PROVIDER_SPENDING_PUF_2026",
-    license: "FEDERAL_OPEN_DATA_POLICY_M-13-13",
-    timestamp: "2026-10-28T07:15:00.000Z",
-    target_entity: target,
-    cohort_statistics: stats,
-    peer_deviation_zscore: zScore
-  }, null, 2);
+  // Synthetic subject: fixed illustrative values, clearly watermarked.
+  const subjectMonthly = 1080000;
+  const z = ((subjectMonthly - mean) / sd).toFixed(2);
 
-  const payloadHash = crypto.createHash("sha256").update(rawPayload).digest("hex");
-  console.log(`✓ Cryptographic Digest (SHA-256): ${payloadHash}`);
+  const payload = JSON.stringify({
+    source_file: "public/data/medicaid_providers.json",
+    source_sha256: sourceHash,
+    cohort_n: cohort.length,
+    mean, sd, within_1_5_sigma: within, over_3_sigma: outliers,
+    subject: SYNTHETIC_ID, subject_monthly: subjectMonthly, z
+  });
+  const payloadHash = crypto.createHash("sha256").update(payload).digest("hex");
+  const today = new Date().toISOString();
 
-  // Step 4: Assemble Sample Institutional Diligence Dossier
-  console.log("[Step 4] Assembling GC & Procurement-Ready Institutional Diligence Packet...");
   const dossier = `================================================================================
-INSTITUTIONAL COMPLIANCE MEMORANDUM // PRIVILEGED & CONFIDENTIAL WORK PRODUCT
-PRE-LITIGATION DILIGENCE & PUBLIC DISCLOSURE BAR AUDIT // ZERO-PHI SPECIFICATION
+SYNTHETIC BENCHMARK SAMPLE // NOT A REAL ENTITY // NOT AN ALLEGATION
+SCREENING METHODOLOGY MEMORANDUM // ZERO-PHI
 ================================================================================
-REF IDENTIFIER:          VANGUARD-DILIGENCE-${target.npi}-${new Date().toISOString().slice(0, 10)}
-EVIDENTIARY HASH:        ${payloadHash}
-STATUTORY CITATION:      31 U.S.C. § 3730(e)(4) // N.Y. STATE FINANCE LAW § 190(9)
-REGULATORY CLEARANCE:    NYC SHIELD (MED DEBT) // NYC LL144 NON-AEDT // NY S9088 DATA BROKER
+REF IDENTIFIER:          VANGUARD-SAMPLE-${SYNTHETIC_ID}-${today.slice(0, 10)}
+PAYLOAD DIGEST:          ${payloadHash}
+SOURCE FILE SHA-256:     ${sourceHash}
 
-I. SUBJECT ENTITY & ADMINISTRATIVE PROVENANCE
+I. SUBJECT (SYNTHETIC)
 --------------------------------------------------------------------------------
-Entity Legal Name:       ${target.name}
-National Provider ID:    ${target.npi} (10-Digit CMS NPPES Validated)
-Taxonomy Scope:          HCPCS T2024 (Adult Day Health Care Waiver)
-Administrative Source:   CMS Medicaid Provider Spending Public Use Files (PUF)
-Licensing Authority:     Federal Open Data Policy (OMB Memo M-13-13) // Public Domain
+Identifier:              ${SYNTHETIC_ID} (illustrative; fails NPI format by design)
+Taxonomy Scope:          HCPCS T2024 (illustrative)
+Subject Monthly Rate:    $${subjectMonthly.toLocaleString()} (illustrative value)
 
-II. STATISTICAL VARIANCE & PEER GROUP STRATIFICATION
+II. PEER COHORT & STATISTICAL METHODOLOGY
 --------------------------------------------------------------------------------
-Normalized Monthly Rate: $${Math.round(targetMonthlyRate).toLocaleString()} / active month
-Cohort Peer Mean:        $${Math.round(stats.mean).toLocaleString()} / active month
-Observed Peer Deviation: +${zScore}σ vs. Regional Adult Day Health Care Peer Cohort
-Annual Claim Volume:     ${target.claims.toLocaleString()} claims
-Annual Beneficiary Count: ${target.beneficiaries.toLocaleString()} beneficiaries
-Spend Per Beneficiary:   $${Math.round(target.spend / target.beneficiaries).toLocaleString()}
+Peer Definition:         HCPCS T2024, NYC 5-borough ZIPs; acuity/facility-type NOT adjusted
+Cohort Size:             n = ${cohort.length} (minimum n = ${MIN_COHORT} enforced)
+Cohort Mean:             $${Math.round(mean).toLocaleString()} / active month
+Cohort StdDev:           $${Math.round(sd).toLocaleString()} (CV = ${(cv * 100).toFixed(1)}%: heterogeneous)
+Subject Deviation:       +${z}σ (screening signal only)
+Limitation:              Recommend OMIG re-run against the full MMIS cohort.
 
-DATASET PRIVACY & SUPPRESSION ADVISORY:
-All records reflect aggregate CMS metadata where small cells (<11 beneficiaries)
-were suppressed upstream by CMS. Zero patient-level records are accessed or stored.
-Statistical variance is a descriptive screening signal, NOT proof of overbilling.
-
-III. DOCUMENTED EXCULPATORY HYPOTHESES (INNOCENT EXPLANATIONS)
+III. NEGATIVE SPACE
 --------------------------------------------------------------------------------
-Alternative Explanations Requiring Investigation:
-1. High clinical acuity cohort (e.g., specialized dementia or traumatic brain injury waiver).
-2. Extended weekend and evening operating schedule expanding operating capacity.
-3. Consolidating patient volume following the closure of a neighboring clinic.
-Primary attendance sign-in rosters must be reviewed to confirm census validity.
+Screened:                ${cohort.length} providers
+Within ±1.5σ:            ${within} (${(within / cohort.length * 100).toFixed(1)}%)
+Above +3σ:               ${outliers} (${(outliers / cohort.length * 100).toFixed(1)}%)
+Co-location screen:      NOT computed; any co-location observation is unverified.
 
-IV. ORIGINAL SOURCE & PUBLIC DISCLOSURE BAR AUDIT
+IV. SCHEME HYPOTHESIS (HYPOTHESIS ONLY)
 --------------------------------------------------------------------------------
-Under 31 U.S.C. § 3730(e)(4) and Third Circuit precedent (Dec. 2024), compiling
-publicly accessible databases does NOT satisfy original-source standing.
-[VERIFIED] 1. Independent Non-Public Attendance Records Possessed: YES
-[VERIFIED] 2. Direct, First-Hand Eyewitness Knowledge: YES
-[VERIFIED] 3. Prior Internal Compliance Escalation Documented: YES
-[VERIFIED] 4. Clear of Public Disclosure Bar (Non-Derivative Allegations): YES
+Mechanism:               A common operator may bill facility per-diem and transport for the same beneficiaries.
+Beneficiary:             Common principals, if common control exists (not shown by public data).
+Program exposure:        Aggregate paid amount only; no overbilling quantified.
+Confirm/Exonerate:       Attendance sign-ins, trip tickets/EVV, lease and billing-agent records.
 
-V. FOUR-TIER EVIDENTIARY CLASSIFICATION
+V. INNOCENT EXPLANATIONS CONSIDERED
 --------------------------------------------------------------------------------
-1. VERIFIED FACTS: Active NPPES registration; aggregate HHS billing total ($${(target.spend/1000000).toFixed(2)}M).
-2. STATISTICAL INFERENCES: Upper-decile billing intensity (+${zScore}σ vs regional peers).
-3. ALLEGATIONS: [NONE ASSERTED BY SOFTWARE] — Subject to human review.
-4. UNKNOWNS & GAPS: Electronic Visit Verification (EVV) driver logs unexamined.
+1. Shared registered agent / mail drop — not tested.
+2. Multi-tenant medical building / landlord-tenant — not tested.
+3. Shared third-party billing agent — not testable from public data.
+4. High-acuity population / extended hours — not testable from public data.
 
-VI. HUMAN INVESTIGATOR ATTESTATION & COMPLIANCE SIGN-OFF
+VI. FACT / INFERENCE / GAP
 --------------------------------------------------------------------------------
-Review Status:           COMPLETED HUMAN REVIEW // VERIFIED DEFICIENT OF PHI
-Reviewing Officer:       Authorized Lead Compliance Officer
-Attestation Timestamp:   ${new Date().toISOString()}
-Compliance Warranty:     MSA Entity-Only Use-Restriction Standard Satisfied
+[FACT]      Cohort statistics above, computed from the hashed source file.
+[INFERENCE] Subject's billing intensity is high relative to an unadjusted cohort.
+[GAP]       Ownership, attendance, transport records, clinical necessity.
+
+VII. DATA QUALITY CONTROLS (NOT EVIDENCE)
+--------------------------------------------------------------------------------
+Luhn check:              ${luhnPass}/${cohort.length} cohort NPIs pass
+Suppression:             all cohort entities >= 11 beneficiaries
+PHI:                     none ingested
+
+VIII. PROVENANCE
+--------------------------------------------------------------------------------
+Release:                 HHS Medicaid Provider Spending, 2026-02-09 (aggregated into public/data/medicaid_providers.json)
+Reproduce:               node tests/clean_room_diligence_audit.mjs
+Generated:               ${today}
 ================================================================================
 `;
-
-  // Write out artifact
-  const exportPath = path.join(process.cwd(), "docs", "SAMPLE_INSTITUTIONAL_DILIGENCE_PACKET.txt");
-  fs.writeFileSync(exportPath, dossier, "utf-8");
-  console.log(`✓ Sample Institutional Packet Exported to: ${exportPath}`);
-
-  console.log("\n>>> CLEAN-ROOM DILIGENCE AUDIT COMPLETED: 100% PASS <<<");
-  console.log("Diligence packet passes General Counsel, DCWP (Non-AEDT), and Enterprise Procurement gates.");
+  fs.writeFileSync(path.join(process.cwd(), "docs", "SAMPLE_INSTITUTIONAL_DILIGENCE_PACKET.txt"), dossier);
+  console.log("✓ Synthetic sample packet written");
+  console.log(">>> CLEAN-ROOM AUDIT COMPLETED <<<");
 }
-
-runCleanRoomExercise();
+run();
