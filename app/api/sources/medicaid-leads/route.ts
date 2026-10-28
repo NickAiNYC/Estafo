@@ -226,14 +226,32 @@ const SYNTHETIC_NYC_COHORT: SyntheticCohortItem[] = [
 
 export async function GET(request: Request) {
   // 1. Mandatory Institutional Authentication Check
+  const expectedToken = process.env.MEDICAID_PILOT_KEY?.trim();
+
+  // Fail closed: If server has no secret configured, refuse all requests
+  if (!expectedToken) {
+    return NextResponse.json(
+      {
+        error: "AUTH_NOT_CONFIGURED",
+        status: 503,
+        message: "Institutional screening authentication secret is not configured on server. Access is failed closed.",
+        disclaimer: "Contact platform administrator to configure MEDICAID_PILOT_KEY in the execution environment."
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control": "no-store, max-age=0"
+        }
+      }
+    );
+  }
+
+  // Strict header inspection: Authorization: Bearer <token> or x-api-key: <token>
+  // Query parameter tokens are intentionally rejected to prevent credential leakage in logs
   const authHeader = request.headers.get("authorization") || request.headers.get("x-api-key");
-  const { searchParams } = new URL(request.url);
-  const tokenParam = searchParams.get("token") || searchParams.get("key");
+  const providedToken = authHeader?.replace(/^Bearer\s+/i, "").trim();
 
-  const expectedToken = process.env.MEDICAID_PILOT_KEY || "estafo-pilot-token-2026";
-  const providedToken = authHeader?.replace(/^Bearer\s+/i, "").trim() || tokenParam;
-
-  if (!providedToken || providedToken !== expectedToken) {
+  if (!providedToken) {
     return NextResponse.json(
       {
         error: "AUTHENTICATION_REQUIRED",
@@ -244,13 +262,37 @@ export async function GET(request: Request) {
       {
         status: 401,
         headers: {
-          "WWW-Authenticate": 'Bearer realm="Estafo Institutional Screening"',
+          "WWW-Authenticate": 'Bearer realm="Estafotir Institutional Screening"',
           "Cache-Control": "no-store, max-age=0"
         }
       }
     );
   }
 
+  // Constant-time timing-safe comparison to prevent timing attacks
+  const expectedBuf = Buffer.from(expectedToken);
+  const providedBuf = Buffer.from(providedToken);
+  const isValid = expectedBuf.length === providedBuf.length && crypto.timingSafeEqual(expectedBuf, providedBuf);
+
+  if (!isValid) {
+    return NextResponse.json(
+      {
+        error: "INVALID_CREDENTIALS",
+        status: 401,
+        message: "Provided investigator credential is invalid or has been revoked.",
+        disclaimer: "Ensure your institutional pilot authorization token is active."
+      },
+      {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Bearer realm="Estafotir Institutional Screening"',
+          "Cache-Control": "no-store, max-age=0"
+        }
+      }
+    );
+  }
+
+  const { searchParams } = new URL(request.url);
   const sortBy = searchParams.get("sort_by") || "normalized_rate";
   const startTime = Date.now();
 

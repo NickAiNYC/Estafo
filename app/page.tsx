@@ -169,10 +169,14 @@ export default function Home() {
 
       const tMedStart = performance.now();
       try {
+        const sessionToken = typeof window !== "undefined" ? sessionStorage.getItem("estafotir_investigator_token") : null;
+        const medHeaders: Record<string, string> = {};
+        if (sessionToken) {
+          medHeaders["Authorization"] = `Bearer ${sessionToken}`;
+        }
+
         const medRes = await fetch("/api/sources/medicaid-leads", {
-          headers: {
-            "Authorization": "Bearer estafo-pilot-token-2026",
-          },
+          headers: medHeaders,
         }).catch(() => null);
         const tMedLatency = Math.round(performance.now() - tMedStart);
 
@@ -194,21 +198,48 @@ export default function Home() {
             error: null,
           });
         } else {
-          const errDetail = `Medicaid API unreachable (HTTP ${medRes?.status || 500})`;
           setMedicaid([]);
-          setMedicaidError(errDetail);
-
-          telemetryItems.push({
-            id: "medicaid_leads",
-            name: "Medicaid Sourced Leads (NPPES Vetted)",
-            source: "/api/sources/medicaid-leads (HCPCS T2024)",
-            tier: "LIVE_SOURCED",
-            status: "OFFLINE",
-            count: 0,
-            latencyMs: tMedLatency,
-            lastSync: nowIso,
-            error: errDetail,
-          });
+          if (medRes?.status === 401) {
+            setMedicaidError("RESTRICTED: Institutional Medicaid screening records require verified investigator credentials.");
+            telemetryItems.push({
+              id: "medicaid_leads",
+              name: "Medicaid Sourced Leads (NPPES Vetted)",
+              source: "/api/sources/medicaid-leads (HCPCS T2024)",
+              tier: "LIVE_SOURCED",
+              status: "RESTRICTED",
+              count: 0,
+              latencyMs: tMedLatency,
+              lastSync: nowIso,
+              error: "HTTP 401: Authentication Required",
+            });
+          } else if (medRes?.status === 503) {
+            setMedicaidError("FAIL_CLOSED: Server authentication secret is unconfigured. Institutional data access refused.");
+            telemetryItems.push({
+              id: "medicaid_leads",
+              name: "Medicaid Sourced Leads (NPPES Vetted)",
+              source: "/api/sources/medicaid-leads (HCPCS T2024)",
+              tier: "LIVE_SOURCED",
+              status: "OFFLINE",
+              count: 0,
+              latencyMs: tMedLatency,
+              lastSync: nowIso,
+              error: "HTTP 503: Service Unconfigured (Fail Closed)",
+            });
+          } else {
+            const errDetail = `Medicaid API unreachable (HTTP ${medRes?.status || 500})`;
+            setMedicaidError(errDetail);
+            telemetryItems.push({
+              id: "medicaid_leads",
+              name: "Medicaid Sourced Leads (NPPES Vetted)",
+              source: "/api/sources/medicaid-leads (HCPCS T2024)",
+              tier: "LIVE_SOURCED",
+              status: "OFFLINE",
+              count: 0,
+              latencyMs: tMedLatency,
+              lastSync: nowIso,
+              error: errDetail,
+            });
+          }
         }
       } catch (err) {
         const errDetail = `Connection error: ${String(err)}`;
@@ -460,6 +491,31 @@ export default function Home() {
     setCurrentView("LEGAL_WEAPONIZER");
   }, [playClick]);
 
+  const handleMedicaidAuth = useCallback(async (token: string): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/sources/medicaid-leads", {
+        headers: { "Authorization": `Bearer ${token.trim()}` }
+      });
+      if (res.ok) {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("estafotir_investigator_token", token.trim());
+        }
+        await loadData();
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }, [loadData]);
+
+  const handleMedicaidLogout = useCallback(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("estafotir_investigator_token");
+    }
+    loadData();
+  }, [loadData]);
+
   const counts: Record<LayerId, number> = useMemo(() => ({
     dumping: dumping.length,
     noise: noise.length,
@@ -529,6 +585,8 @@ export default function Home() {
             onOpenWeaponizer={handleOpenWeaponizer}
             initialSelectedNpi={selectedRadarNpi}
             sourceError={medicaidError}
+            onAuthenticate={handleMedicaidAuth}
+            onLogout={handleMedicaidLogout}
           />
         )}
 

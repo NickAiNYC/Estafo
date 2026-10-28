@@ -23,14 +23,36 @@ interface MedicaidQuiTamRadarProps {
   onOpenWeaponizer?: (targetId: string, track: string) => void;
   initialSelectedNpi?: string;
   sourceError?: string | null;
+  onAuthenticate?: (token: string) => Promise<boolean>;
+  onLogout?: () => void;
 }
 
 export default function MedicaidQuiTamRadar({
   providers,
   onOpenWeaponizer,
   initialSelectedNpi,
-  sourceError
+  sourceError,
+  onAuthenticate,
+  onLogout
 }: MedicaidQuiTamRadarProps) {
+  const [tokenInput, setTokenInput] = useState("");
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tokenInput.trim() || !onAuthenticate) return;
+    setAuthSubmitting(true);
+    setAuthError(null);
+    const success = await onAuthenticate(tokenInput.trim());
+    setAuthSubmitting(false);
+    if (!success) {
+      setAuthError("Authentication failed: Invalid credential or server authentication unavailable.");
+    } else {
+      setTokenInput("");
+    }
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBorough, setSelectedBorough] = useState("ALL");
   const [selectedFacilityType, setSelectedFacilityType] = useState("ALL");
@@ -174,12 +196,23 @@ export default function MedicaidQuiTamRadar({
             <div className="text-9 text-muted">Vetted NYC Cohort (T2024)</div>
           </div>
 
-          <div className="bg-inset border border-border px-14 py-8 rounded-sm">
-            <div className="text-10 text-muted uppercase">Workflow Status</div>
-            <div className="text-16 font-bold text-emerald">
-              CMS Vetted
+          <div className="bg-inset border border-border px-14 py-8 rounded-sm flex items-center justify-between gap-12">
+            <div>
+              <div className="text-10 text-muted uppercase">Workflow Status</div>
+              <div className="text-16 font-bold text-emerald">
+                {providers.length > 0 ? "CMS Vetted" : "Locked"}
+              </div>
+              <div className="text-9 text-muted">{providers.length} Verified Records</div>
             </div>
-            <div className="text-9 text-muted">{providers.length} Verified Records</div>
+            {providers.length > 0 && onLogout && (
+              <button
+                onClick={onLogout}
+                className="px-8 py-4 bg-canvas hover:bg-red-950/40 border border-border hover:border-red-500/40 text-muted hover:text-red-300 text-9 font-mono rounded-sm transition-colors cursor-pointer"
+                title="Lock session and clear investigator credential from browser storage"
+              >
+                Lock Session
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -190,13 +223,13 @@ export default function MedicaidQuiTamRadar({
           <div className="flex items-center gap-8">
             <XCircle className="w-4 h-4 shrink-0 text-red-400" />
             <div>
-              <span className="font-bold text-red-300 mr-8">SOURCE FEED OFFLINE:</span>
+              <span className="font-bold text-red-300 mr-8">SOURCE FEED STATUS:</span>
               <span>{sourceError}</span>
               <span className="text-red-400/80 ml-8">(Silent fixture fallback disabled by data integrity policy)</span>
             </div>
           </div>
           <span className="text-red-400 font-bold px-6 py-1 bg-red-900/40 border border-red-500/40 rounded-sm uppercase text-9">
-            Feed Error
+            Feed Notice
           </span>
         </div>
       )}
@@ -210,10 +243,63 @@ export default function MedicaidQuiTamRadar({
         <span className="text-emerald font-bold ml-8 shrink-0 uppercase text-10">NPPES Proxy Rule</span>
       </div>
 
-      {/* Main Dual-Pane Matrix */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Left Pane: Provider Priority Lead Queue */}
-        <div className="w-full lg:w-[480px] border-r border-border bg-surface flex flex-col h-full overflow-hidden">
+      {/* Main Dual-Pane Matrix or Access Gate */}
+      {providers.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-24 bg-canvas text-center">
+          <div className="max-w-md w-full p-24 bg-surface border border-border rounded-sm shadow-xl text-left space-y-16 font-mono">
+            <div className="flex items-center gap-10">
+              <div className="p-8 bg-amber-500/10 border border-amber-500/30 rounded-sm">
+                <ShieldCheck className="w-5 h-5 text-amber-400" />
+              </div>
+              <div>
+                <div className="text-10 text-muted uppercase">Institutional Access Gate</div>
+                <div className="text-14 font-bold text-primary">Investigator Credential Required</div>
+              </div>
+            </div>
+
+            <p className="text-11 font-sans text-secondary leading-relaxed">
+              Medicaid provider screening records are restricted to authorized compliance personnel and legal investigators. Public or unauthenticated access is prohibited.
+            </p>
+
+            {onAuthenticate && (
+              <form onSubmit={handleLoginSubmit} className="space-y-12">
+                <div>
+                  <label className="text-10 text-muted uppercase block mb-4">Investigator Pilot Token</label>
+                  <input
+                    type="password"
+                    value={tokenInput}
+                    onChange={(e) => setTokenInput(e.target.value)}
+                    placeholder="Enter pilot access token..."
+                    className="w-full bg-inset border border-border rounded-sm px-10 py-6 text-11 focus:outline-none focus:border-border-highlight"
+                    autoFocus
+                  />
+                </div>
+
+                {authError && (
+                  <div className="text-10 text-red-400 bg-red-950/40 p-8 border border-red-500/40 rounded-sm">
+                    {authError}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={authSubmitting || !tokenInput.trim()}
+                  className="w-full py-8 bg-emerald/20 hover:bg-emerald/30 border border-emerald text-emerald font-bold text-11 rounded-sm transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {authSubmitting ? "Verifying..." : "Unlock Screening Cohort"}
+                </button>
+              </form>
+            )}
+
+            <div className="text-9 text-muted pt-8 border-t border-border">
+              Note: Credentials are held strictly in browser session memory and are never committed to disk, source repositories, or client code bundles.
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          {/* Left Pane: Provider Priority Lead Queue */}
+          <div className="w-full lg:w-[480px] border-r border-border bg-surface flex flex-col h-full overflow-hidden">
           {/* Filter Bar */}
           <div className="p-10 border-b border-border bg-canvas/40 space-y-8">
             <div className="relative">
@@ -605,6 +691,7 @@ export default function MedicaidQuiTamRadar({
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

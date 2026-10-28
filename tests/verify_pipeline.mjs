@@ -239,25 +239,53 @@ console.log(`✓ Vetted NPI Cohort Verified: All ${cohortNpis.length} NPIs pass 
 
 // Test 10: Institutional Authentication Security Gate (Gate G10)
 console.log("\n[Test 10] Verifying Institutional Authentication Security Gate for Medicaid Leads...");
-function simulateAuthCheck(headers = {}, queryToken = null) {
+
+function simulateAuthCheck(headers = {}, queryToken = null, envSecret = process.env.MEDICAID_PILOT_KEY) {
+  // Fail closed if server has no secret configured
+  if (!envSecret || !envSecret.trim()) {
+    return { status: 503, error: "AUTH_NOT_CONFIGURED" };
+  }
+  // Query tokens are strictly rejected
   const authHeader = headers["authorization"] || headers["Authorization"] || headers["x-api-key"];
-  const expectedToken = "estafo-pilot-token-2026";
-  const providedToken = authHeader ? authHeader.replace(/^Bearer\s+/i, "").trim() : queryToken;
-  if (!providedToken || providedToken !== expectedToken) {
+  const providedToken = authHeader ? authHeader.replace(/^Bearer\s+/i, "").trim() : null;
+  if (!providedToken) {
     return { status: 401, error: "AUTHENTICATION_REQUIRED" };
+  }
+  const expBuf = Buffer.from(envSecret.trim());
+  const provBuf = Buffer.from(providedToken);
+  const isValid = expBuf.length === provBuf.length && crypto.timingSafeEqual(expBuf, provBuf);
+  if (!isValid) {
+    return { status: 401, error: "INVALID_CREDENTIALS" };
   }
   return { status: 200, authenticated: true };
 }
 
-const unauthenticatedAttempt = simulateAuthCheck();
-assert.strictEqual(unauthenticatedAttempt.status, 401, "Unauthenticated request to medicaid-leads must return HTTP 401");
+// 1. Fail closed when server secret unset
+const failClosedAttempt = simulateAuthCheck({}, null, "");
+assert.strictEqual(failClosedAttempt.status, 503, "API must fail closed (503) if server secret is unconfigured");
 
-const bearerAuthAttempt = simulateAuthCheck({ "Authorization": "Bearer estafo-pilot-token-2026" });
+const TEST_SECRET = "estafotir-pilot-sec-vault-789";
+
+// 2. Unauthenticated request rejected
+const unauthenticatedAttempt = simulateAuthCheck({}, null, TEST_SECRET);
+assert.strictEqual(unauthenticatedAttempt.status, 401, "Unauthenticated request must return HTTP 401");
+
+// 3. Query parameter tokens are rejected (prevent URL log leakage)
+const queryTokenAttempt = simulateAuthCheck({}, TEST_SECRET, TEST_SECRET);
+assert.strictEqual(queryTokenAttempt.status, 401, "Query parameter token must be rejected (only headers allowed)");
+
+// 4. Revoked legacy token rejected
+const legacyTokenAttempt = simulateAuthCheck({ "Authorization": "Bearer estafo-pilot-token-2026" }, null, TEST_SECRET);
+assert.strictEqual(legacyTokenAttempt.status, 401, "Revoked legacy token must be rejected");
+
+// 5. Valid Authorization header succeeds
+const bearerAuthAttempt = simulateAuthCheck({ "Authorization": `Bearer ${TEST_SECRET}` }, null, TEST_SECRET);
 assert.strictEqual(bearerAuthAttempt.status, 200, "Authenticated request with valid Bearer token must succeed");
 
-const apiKeyAuthAttempt = simulateAuthCheck({ "x-api-key": "estafo-pilot-token-2026" });
+// 6. Valid x-api-key header succeeds
+const apiKeyAuthAttempt = simulateAuthCheck({ "x-api-key": TEST_SECRET }, null, TEST_SECRET);
 assert.strictEqual(apiKeyAuthAttempt.status, 200, "Authenticated request with valid x-api-key header must succeed");
 
-console.log("✓ Institutional Auth Gate Verified: Public unauthenticated requests rejected with 401; authorized investigator credentials accepted.");
+console.log("✓ Institutional Auth Gate Verified: Fail-closed on missing config, query tokens blocked, timing-safe header credentials enforced.");
 
 console.log("\n>>> ALL PIPELINE TESTS (Gates G1 - G10) PASSED WITH 100% SUCCESS <<<");

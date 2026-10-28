@@ -10,7 +10,7 @@ export interface FeedTelemetryItem {
   name: string;
   source: string;
   tier: FeedTier;
-  status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING";
+  status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING" | "RESTRICTED";
   count: number;
   latencyMs: number;
   lastSync: string | null;
@@ -21,7 +21,7 @@ interface FooterProps {
   liveCount?: number;
   liveSource?: string;
   latencyMs?: number;
-  feedStatus?: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING";
+  feedStatus?: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING" | "RESTRICTED";
   feeds?: FeedTelemetryItem[];
   onRefreshFeeds?: () => void;
   isRefreshing?: boolean;
@@ -59,12 +59,18 @@ export default function Footer({
   const liveSourcedCount = liveSourcedFeeds.reduce((acc, f) => acc + (f.count || 0), 0);
   const demoCount = demoFeeds.reduce((acc, f) => acc + (f.count || 0), 0);
 
-  const getStatusBadge = (status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING") => {
+  const getStatusBadge = (status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING" | "RESTRICTED") => {
     switch (status) {
       case "ONLINE":
         return (
           <span className="flex items-center gap-4 text-emerald font-bold">
             <CheckCircle2 className="w-3 h-3" /> ONLINE
+          </span>
+        );
+      case "RESTRICTED":
+        return (
+          <span className="flex items-center gap-4 text-amber-400 font-bold">
+            <ShieldCheck className="w-3 h-3" /> RESTRICTED
           </span>
         );
       case "DEGRADED":
