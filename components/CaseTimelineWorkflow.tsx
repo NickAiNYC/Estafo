@@ -79,7 +79,7 @@ const DEFAULT_INITIAL_EVENTS: InvestigativeTimelineEvent[] = [
 
 export default function CaseTimelineWorkflow() {
   const [events, setEvents] = useState<InvestigativeTimelineEvent[]>(DEFAULT_INITIAL_EVENTS);
-  const [activeTab, setActiveTab] = useState<"TIMELINE" | "DOSSIER" | "LEGAL_ROUTES">("TIMELINE");
+  const [activeTab, setActiveTab] = useState<"TIMELINE" | "DOSSIER" | "THREE_WAY_MATCH" | "LEGAL_ROUTES">("TIMELINE");
   const [showAddModal, setShowAddModal] = useState(false);
 
   // New Event Form State
@@ -342,6 +342,17 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
           >
             <FileText className="w-4 h-4" />
             <span>4-QUADRANT ANALYSIS (FACTS / INFERENCES / ALLEGATIONS / UNKNOWNS)</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("THREE_WAY_MATCH")}
+            className={`py-12 border-b-2 font-bold transition-colors flex items-center gap-6 ${
+              activeTab === "THREE_WAY_MATCH"
+                ? "border-emerald text-emerald"
+                : "border-transparent text-secondary hover:text-primary"
+            }`}
+          >
+            <Car className="w-4 h-4" />
+            <span>3-WAY MATCH PROTOCOL (OMIG / OASAS)</span>
           </button>
           <button
             onClick={() => setActiveTab("LEGAL_ROUTES")}
@@ -669,6 +680,190 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
                     <div className="text-muted mt-1">Official allegation portal for fraud, waste, and program abuse</div>
                   </div>
                   <ExternalLink className="w-4 h-4 shrink-0 text-muted" />
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 4: Three-Way Match Forensic Audit Protocol */}
+        {activeTab === "THREE_WAY_MATCH" && (
+          <div className="space-y-20 font-mono text-11">
+            <div className="border border-border bg-surface p-20 rounded-lg space-y-12">
+              <div className="flex items-center gap-8 text-emerald font-bold text-12">
+                <Car className="w-5 h-5 text-emerald" />
+                <span className="uppercase">Three-Way Match Audit Architecture: The Core Forensic Test</span>
+              </div>
+              <p className="text-secondary text-12 leading-relaxed">
+                Parked ambulettes outside a clinic alone do not establish fraud. A legally viable Medicaid False Claims Act or OMIG audit case tests a specific three-way match: <strong className="text-primary">Authorized Transportation → Documented Clinic Visit → Corroborated Billed Counseling</strong>. If any leg fails to corroborate the others on the exact same service date, the resulting Medicaid claims constitute false claims.
+              </p>
+            </div>
+
+            {/* Three Pillar Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+              {/* Leg 1: Transportation */}
+              <div className="border border-border bg-surface p-16 rounded-lg space-y-12">
+                <div className="flex items-center justify-between border-b border-border pb-8">
+                  <span className="text-11 font-bold text-steel-blue uppercase flex items-center gap-6">
+                    <Car className="w-4 h-4 text-steel-blue" />
+                    <span>Leg 1: Authorized Ride</span>
+                  </span>
+                  <span className="text-9 px-6 py-1 bg-steel-blue/15 border border-steel-blue/30 text-steel-blue rounded-sm">
+                    NEMT / MAS
+                  </span>
+                </div>
+                <div className="space-y-6 text-11">
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Applicable Billing Codes</span>
+                    <span className="text-primary font-bold">T2003 (Encounter), A0130 (Van), A0425 (Mileage)</span>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Mandatory OMIG Documentation</span>
+                    <ul className="text-secondary list-disc list-inside space-y-3 mt-2 text-10">
+                      <li>Prior Authorization # via MAS (Medical Answering Services)</li>
+                      <li>Pickup & drop-off exact timestamps</li>
+                      <li>Vehicle license plate & driver signature</li>
+                      <li>Recipient pickup attestation / signature</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Forensic Discrepancy Tested</span>
+                    <p className="text-amber text-10 leading-relaxed mt-1">
+                      Did the vehicle physically arrive? Does GPS telematics corroborate drop-off? Were trips billed for riders who took public transit or walked?
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Leg 2: Clinic Attendance */}
+              <div className="border border-border bg-surface p-16 rounded-lg space-y-12">
+                <div className="flex items-center justify-between border-b border-border pb-8">
+                  <span className="text-11 font-bold text-emerald uppercase flex items-center gap-6">
+                    <CheckCircle2 className="w-4 h-4 text-emerald" />
+                    <span>Leg 2: Clinic Attendance</span>
+                  </span>
+                  <span className="text-9 px-6 py-1 bg-emerald/15 border border-emerald/30 text-emerald rounded-sm">
+                    OASAS Part 822
+                  </span>
+                </div>
+                <div className="space-y-6 text-11">
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Operating Certificate</span>
+                    <span className="text-primary font-bold">Certified OASAS Outpatient Facility (e.g. #51310)</span>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Mandatory Facility Records</span>
+                    <ul className="text-secondary list-disc list-inside space-y-3 mt-2 text-10">
+                      <li>Dated facility visitor / sign-in roster</li>
+                      <li>Intake desk arrival timestamp</li>
+                      <li>Certified location verification (e.g. 63-36 99th St)</li>
+                      <li>Staff duty schedule matching operating hours</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Forensic Discrepancy Tested</span>
+                    <p className="text-amber text-10 leading-relaxed mt-1">
+                      Was the clinic open? Did arriving passengers enter the counseling rooms or linger outside? Did attendees leave immediately after receiving cash?
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Leg 3: Billed Clinical Session */}
+              <div className="border border-border bg-surface p-16 rounded-lg space-y-12">
+                <div className="flex items-center justify-between border-b border-border pb-8">
+                  <span className="text-11 font-bold text-gold uppercase flex items-center gap-6">
+                    <Scale className="w-4 h-4 text-gold" />
+                    <span>Leg 3: Billed Session</span>
+                  </span>
+                  <span className="text-9 px-6 py-1 bg-gold/15 border border-gold/30 text-gold rounded-sm">
+                    APG / CMS Manual
+                  </span>
+                </div>
+                <div className="space-y-6 text-11">
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Applicable Billing Codes</span>
+                    <span className="text-primary font-bold">H0005 (Group Session) & 90853 (Group Psychotherapy)</span>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Mandatory Clinical Standard</span>
+                    <ul className="text-secondary list-disc list-inside space-y-3 mt-2 text-10">
+                      <li>Minimum 60 minutes clinical duration (OASAS rule)</li>
+                      <li>Maximum 15 participants per group encounter</li>
+                      <li>Signed clinician progress note in EHR</li>
+                      <li>Documented SUD diagnosis & medical necessity</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <span className="text-muted block text-9 uppercase">Forensic Discrepancy Tested</span>
+                    <p className="text-amber text-10 leading-relaxed mt-1">
+                      Were 10–15 minute check-ins billed as full 60-minute H0005 sessions? Were sessions billed without licensed clinician notes? Was attendance induced with $20–$30 cash?
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Field Observation Protocol for 9 A.M. Scan */}
+            <div className="border border-border bg-surface p-20 rounded-lg space-y-14">
+              <div className="flex items-center gap-8 text-primary font-bold text-12">
+                <AlertCircle className="w-5 h-5 text-steel-blue" />
+                <span className="uppercase">Field Observation Protocol: Next 9 A.M. Sweep Checklist</span>
+              </div>
+              <p className="text-secondary text-11 leading-relaxed">
+                When conducting lawful observations from a publicly accessible street location, log only objective, verifiable facts. Do not photograph patient faces, record conversations without consent, or approach attendees.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8 border-t border-border">
+                <div className="space-y-8">
+                  <div className="font-bold text-emerald uppercase text-10">What to Log Lawfully:</div>
+                  <ul className="text-secondary space-y-4 list-disc list-inside text-11">
+                    <li><strong className="text-primary">Exact Date & Timestamp:</strong> Arrival and departure windows (e.g., 08:52 – 09:18).</li>
+                    <li><strong className="text-primary">Vehicle Identifier:</strong> License plate number, TLC/USDOT registration, and company name on door.</li>
+                    <li><strong className="text-primary">Passenger Movement:</strong> Number of passengers dropped off; whether they entered the building or remained outside.</li>
+                    <li><strong className="text-primary">Contemporaneous Notes:</strong> Save notes with original device timestamps (do not reconstruct later).</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-8">
+                  <div className="font-bold text-amber uppercase text-10">What Cannot Be Established From the Street:</div>
+                  <ul className="text-secondary space-y-4 list-disc list-inside text-11">
+                    <li><strong className="text-primary">Medicaid Billing:</strong> Parked vans do not prove Medicaid was billed for those specific individuals.</li>
+                    <li><strong className="text-primary">Patient Diagnoses:</strong> Cannot assume SUD diagnosis or medical necessity from physical appearance.</li>
+                    <li><strong className="text-primary">Cash Transactions:</strong> Unless directly witnessed, attendee payment remains unverified report/hearsay.</li>
+                    <li><strong className="text-primary">Strict Zero-PHI:</strong> Never record patient names or identifiable clinical attributes.</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Official Citations */}
+              <div className="pt-12 border-t border-border flex flex-wrap gap-12 font-mono text-10">
+                <a
+                  href="https://www.health.ny.gov/health_care/medicaid/members/faqs.htm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-steel-blue hover:text-primary flex items-center gap-4 underline"
+                >
+                  <span>NY DOH Transportation FAQ</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href="https://omig.ny.gov/media/92261/download?attachment="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-steel-blue hover:text-primary flex items-center gap-4 underline"
+                >
+                  <span>OMIG Ambulette Audit Protocol</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href="https://oasas.ny.gov/node/28196"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-steel-blue hover:text-primary flex items-center gap-4 underline"
+                >
+                  <span>OASAS APG Billing Guidance (H0005 & 90853)</span>
+                  <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
             </div>
