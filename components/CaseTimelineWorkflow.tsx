@@ -20,62 +20,7 @@ import {
 import { InvestigativeTimelineEvent, FourQuadrantDossier } from "@/types";
 
 // Pre-seeded initial case template based on Queens Outpatient / Ambulette Kickback Pattern
-const DEFAULT_INITIAL_EVENTS: InvestigativeTimelineEvent[] = [
-  {
-    id: "EVT-2026-001",
-    case_id: "CASE-QUEENS-OASAS-01",
-    event_date: "2026-10-14",
-    facility_name: "Queens Recovery & Wellness Center (OASAS Outpatient)",
-    facility_npi: "1487629085",
-    transport_company: "Metro Ambulette & Livery Services Inc.",
-    transport_npi: "1821094328",
-    cash_amount_offered: 25,
-    cash_purpose_alleged: "Cash envelope handed to participant upon arrival in exchange for signing group counseling roster",
-    observer_role: "FIRSTHAND_WORKER",
-    observation_notes: "Observed facility intake worker handing white envelopes containing $25 cash to 8 individuals arriving via Metro Ambulette. Sign-in sheet titled 'Part 822 Group Counseling Roster' was signed prior to any clinical session.",
-    claimed_service_code: "H0005 (OASAS Group Counseling, 60-Min Minimum)",
-    evidence_level: "DIRECT_WITNESS",
-    innocent_explanation: "Facility staff may claim cash was an authorized transportation assistance subsidy or OASAS grant stipend for peer support.",
-    verification_status: "UNVERIFIED",
-    created_at: "2026-10-27T14:30:00Z"
-  },
-  {
-    id: "EVT-2026-002",
-    case_id: "CASE-QUEENS-OASAS-01",
-    event_date: "2026-10-16",
-    facility_name: "Queens Recovery & Wellness Center (OASAS Outpatient)",
-    facility_npi: "1487629085",
-    transport_company: "Metro Ambulette & Livery Services Inc.",
-    transport_npi: "1821094328",
-    cash_amount_offered: 30,
-    cash_purpose_alleged: "Ambulette driver distributed $30 cash bonus to passengers during morning pickup route",
-    observer_role: "SECONDHAND_HEARSAY",
-    observation_notes: "Worker was told by a regular attendee that the ambulette driver gives passengers $30 per completed round trip if they attend 3 sessions in a week.",
-    claimed_service_code: "T2003 (NEMT Round Trip Encounter) + A0425 (Billed Mileage)",
-    evidence_level: "INFERENCE",
-    innocent_explanation: "Driver may have been providing personal tips or cash assistance unrelated to Medicaid billing authorization.",
-    verification_status: "UNVERIFIED",
-    created_at: "2026-10-27T15:00:00Z"
-  },
-  {
-    id: "EVT-2026-003",
-    case_id: "CASE-QUEENS-OASAS-01",
-    event_date: "2026-10-21",
-    facility_name: "Queens Recovery & Wellness Center (OASAS Outpatient)",
-    facility_npi: "1487629085",
-    transport_company: "Metro Ambulette & Livery Services Inc.",
-    transport_npi: "1821094328",
-    cash_amount_offered: 25,
-    cash_purpose_alleged: "Attendance roster signed, but group session lasted only 15 minutes before attendees were dismissed",
-    observer_role: "FIRSTHAND_WORKER",
-    observation_notes: "Participant group gathered at 10:15 AM, dismissed at 10:30 AM (15 minutes duration). OASAS Part 822 mandates a 60-minute clinical minimum for H0005 group billing. Roster logged as full session.",
-    claimed_service_code: "H0005 (OASAS Group Counseling, 60-Min Minimum)",
-    evidence_level: "DIRECT_WITNESS",
-    innocent_explanation: "Clinician may have documented an abbreviated crisis session or rescheduled individual sessions under separate codes.",
-    verification_status: "UNVERIFIED",
-    created_at: "2026-10-27T16:15:00Z"
-  }
-];
+const DEFAULT_INITIAL_EVENTS: InvestigativeTimelineEvent[] = [];
 
 export default function CaseTimelineWorkflow() {
   const [events, setEvents] = useState<InvestigativeTimelineEvent[]>(DEFAULT_INITIAL_EVENTS);
@@ -85,16 +30,16 @@ export default function CaseTimelineWorkflow() {
   // New Event Form State
   const [newEvent, setNewEvent] = useState({
     event_date: new Date().toISOString().slice(0, 10),
-    facility_name: "Queens Recovery & Wellness Center",
-    facility_npi: "1487629085",
-    transport_company: "Metro Ambulette & Livery Services Inc.",
+    facility_name: "",
+    facility_npi: "",
+    transport_company: "",
     transport_npi: "",
-    cash_amount_offered: 25,
+    cash_amount_offered: 0,
     cash_purpose_alleged: "",
-    observer_role: "FIRSTHAND_WORKER" as InvestigativeTimelineEvent["observer_role"],
+    observer_role: "SECONDHAND_HEARSAY" as InvestigativeTimelineEvent["observer_role"],
     observation_notes: "",
-    claimed_service_code: "H0005 (OASAS Outpatient Group)",
-    evidence_level: "DIRECT_WITNESS" as InvestigativeTimelineEvent["evidence_level"],
+    claimed_service_code: "",
+    evidence_level: "UNVERIFIED" as InvestigativeTimelineEvent["evidence_level"],
     innocent_explanation: ""
   });
 
@@ -125,83 +70,46 @@ export default function CaseTimelineWorkflow() {
     setShowAddModal(false);
     setNewEvent({
       event_date: new Date().toISOString().slice(0, 10),
-      facility_name: "Queens Recovery & Wellness Center",
-      facility_npi: "1487629085",
-      transport_company: "Metro Ambulette & Livery Services Inc.",
+      facility_name: "",
+      facility_npi: "",
+      transport_company: "",
       transport_npi: "",
-      cash_amount_offered: 25,
+      cash_amount_offered: 0,
       cash_purpose_alleged: "",
-      observer_role: "FIRSTHAND_WORKER",
+      observer_role: "SECONDHAND_HEARSAY",
       observation_notes: "",
-      claimed_service_code: "H0005 (OASAS Outpatient Group)",
-      evidence_level: "DIRECT_WITNESS",
+      claimed_service_code: "",
+      evidence_level: "UNVERIFIED",
       innocent_explanation: ""
     });
   };
 
   // Generate 4-Quadrant Dossier
   const dossier: FourQuadrantDossier = {
-    case_title: "Queens OASAS Chemical Dependence Outpatient & Ambulette Kickback Investigation",
+    case_title: "ESTAFOTIR research draft — unverified",
     target_entities: {
-      facility: "Queens Recovery & Wellness Center",
-      facility_npi: "1487629085",
-      transport: "Metro Ambulette & Livery Services Inc.",
-      transport_npi: "1821094328"
+      facility: events[0]?.facility_name || "Unidentified",
+      facility_npi: events[0]?.facility_npi,
+      transport: events[0]?.transport_company,
+      transport_npi: events[0]?.transport_npi
     },
-    facts: [
-      "Observed facility staff distributing $25 cash envelopes to arriving individuals on 2026-10-14 and 2026-10-21.",
-      "Individuals signed 'Part 822 Group Counseling Roster' prior to participating in clinical services.",
-      "Group session on 2026-10-21 terminated after 15 minutes, whereas NYS OASAS Part 822 requires a 60-minute clinical minimum for H0005 reimbursement.",
-      "Metro Ambulette vehicles regularly transport passengers directly to the facility on scheduled counseling days."
-    ],
-    inferences: [
-      "Cash payments of $20–$30 serve as an illegal inducement/kickback to recruit Medicaid recipients and secure attendance signatures.",
-      "Ambulette company and outpatient facility operate in coordinated referral synergy, billing both round-trip NEMT (T2003/A0425) and clinical counseling (H0005) for the same encounter.",
-      "Abbreviated 15-minute group sessions suggest phantom or truncated clinical services billed as full group counseling encounters."
-    ],
-    allegations: [
-      "Violation of New York False Claims Act (NYS Finance Law § 189) by submitting claims for services rendered pursuant to unlawful remuneration.",
-      "Violation of Federal Anti-Kickback Statute (42 U.S.C. § 1320a-7b(b)) for offering and paying remuneration to induce Medicaid beneficiary patronage.",
-      "Submitting claims for services not rendered as described under NYS OASAS Part 822 regulations (billing H0005 for 15-minute sessions)."
-    ],
-    unknowns: [
-      "Were Medicaid claims actually submitted for the specific dates (2026-10-14, 2026-10-16, 2026-10-21), and what specific HCPCS/CPT codes were billed?",
-      "Does the facility maintain documented clinical progress notes signed by a licensed clinician for each attendee on those dates?",
-      "Did cash payments originate from facility operational funds, clinician discretionary funds, or an authorized grant stipending program?",
-      "Did ambulette drivers receive dispatch payment authorization through the NYS Medicaid transportation broker (e.g. Modivcare / Medical Answering Services)?"
-    ],
-    innocent_explanations: [
-      "Transportation Stipend: Cash payments may be accounted for as lawful travel assistance subsidies under an approved pilot program.",
-      "Crisis Intervention: Abbreviated meeting may have been billed under an individual crisis psychotherapy code rather than a full group session.",
-      "Independent Driver Misconduct: Ambulette driver actions may be unauthorized independent misconduct not coordinated with the treatment center."
-    ],
-    next_lawful_verification_steps: [
-      "1. Lawful Member EOB Review: Have a willing Medicaid beneficiary request their own official Explanation of Benefits (EOB) from NY DOH for the dates in question.",
-      "2. OASAS Directory Verification: Inspect public OASAS provider registry to verify licensed capacity, certified operating certificates, and clinical director of record.",
-      "3. Retention of Legal Counsel: Present factual timeline and witness statements to an experienced New York False Claims Act qui tam attorney.",
-      "4. Confidential Filing Assessment: Counsel evaluates filing a sealed qui tam complaint under NYS Finance Law § 190 vs. submitting an original tip to the DOJ Criminal Tip Rewards Pilot Program."
-    ],
+    facts: [],
+    inferences: events.filter(e => e.observer_role === "SECONDHAND_HEARSAY").map(e => `${e.event_date}: Secondhand account — ${e.observation_notes}`),
+    allegations: [],
+    unknowns: ["Were claims submitted for the dates and services described?", "Can these accounts be corroborated with lawfully obtained records?"],
+    innocent_explanations: events.map(e => e.innocent_explanation).filter((v): v is string => Boolean(v)),
+    next_lawful_verification_steps: ["Verify dates, identity, and source of each account.", "Seek counsel review before any legal filing or formal allegation."],
     legal_framework: {
-      nys_fca: {
-        citation: "NY State Finance Law § 190",
-        relator_share_intervened: "15% – 25%",
-        relator_share_declined: "25% – 30%",
-        sealed_filing_required: true
-      },
-      doj_criminal_tip_pilot: {
-        program: "DOJ Criminal Tip Rewards Pilot Program",
-        reward_range: "$10,000 – $30,000 (Discretionary)",
-        trigger: "Unsealed federal criminal charges resulting from original tip",
-        intake_url: "https://www.america.gov/fraud"
-      }
+      nys_fca: { citation: "NY State Finance Law § 190", relator_share_intervened: "15% – 25%", relator_share_declined: "25% – 30%", sealed_filing_required: true },
+      doj_criminal_tip_pilot: { program: "DOJ Criminal Tip Rewards Pilot Program", reward_range: "$10,000 – $30,000 (Discretionary)", trigger: "Unsealed federal criminal charges resulting from original tip", intake_url: "https://www.america.gov/fraud" }
     },
-    confidentiality_notice: "STRICT ZERO-PHI NOTICE (42 CFR PART 2 & HIPAA): Substance use disorder patient records are subject to strict federal confidentiality protections. No patient names, medical charts, or Medicaid recipient IDs may be recorded or transmitted. This dossier contains purely operational observations and corporate billing assertions."
+    confidentiality_notice: "Do not include patient identifiers, treatment records, or other protected health information. Unverified notes are not legal findings."
   };
 
   const handleDownloadMarkdown = () => {
     const md = `# ${dossier.case_title}
 **Date Generated:** ${new Date().toLocaleDateString()}
-**Status:** CONFIDENTIAL INVESTIGATIVE DOSSIER // ATTORNEY-CLIENT PRIVILEGED WORK PRODUCT DRAFT
+**Status:** UNVERIFIED RESEARCH DRAFT // NOT A LEGAL FILING OR PRIVILEGED DOCUMENT
 
 ---
 
@@ -299,6 +207,7 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
             </button>
             <button
               onClick={handleDownloadMarkdown}
+              disabled={events.length === 0}
               className="flex items-center gap-6 px-14 py-8 rounded-lg bg-surface-elevated border border-border-highlight text-primary font-mono text-11 font-bold hover:bg-surface-hover transition-colors"
             >
               <Download className="w-4 h-4 text-steel-blue" />
@@ -385,6 +294,12 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
             </div>
 
             <div className="space-y-12">
+              {events.length === 0 && (
+                <div className="rounded-lg border border-dashed border-border-highlight bg-surface p-16 text-center">
+                  <h3 className="font-semibold text-primary">No events recorded</h3>
+                  <p className="mt-2 text-sm text-secondary">Start with a dated account you can clearly attribute. No sample allegations are preloaded.</p>
+                </div>
+              )}
               {events.map((evt, idx) => (
                 <div 
                   key={evt.id} 
@@ -695,7 +610,7 @@ ${dossier.next_lawful_verification_steps.map(s => `${s}`).join("\n")}
                 <span className="uppercase">Three-Way Match Audit Architecture: The Core Forensic Test</span>
               </div>
               <p className="text-secondary text-12 leading-relaxed">
-                Parked ambulettes outside a clinic alone do not establish fraud. A legally viable Medicaid False Claims Act or OMIG audit case tests a specific three-way match: <strong className="text-primary">Authorized Transportation → Documented Clinic Visit → Corroborated Billed Counseling</strong>. If any leg fails to corroborate the others on the exact same service date, the resulting Medicaid claims constitute false claims.
+                Parked ambulettes outside a clinic alone do not establish fraud. A legally viable Medicaid False Claims Act or OMIG audit case tests a specific three-way match: <strong className="text-primary">Authorized Transportation → Documented Clinic Visit → Corroborated Billed Counseling</strong>. If the records conflict on the same service date, investigate the discrepancy. A mismatch alone does not establish that a claim was false.
               </p>
             </div>
 

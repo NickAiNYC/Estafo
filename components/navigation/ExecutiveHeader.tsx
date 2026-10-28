@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Calendar, DollarSign, FileText, Map as MapIcon, Network, Search } from "lucide-react";
+import { Activity, Calendar, DollarSign, FileText, LayoutDashboard, Map as MapIcon, Network, Search } from "lucide-react";
 import { ConsoleView } from "@/components/Header";
 
 interface ExecutiveHeaderProps {
@@ -12,6 +12,7 @@ interface ExecutiveHeaderProps {
 }
 
 const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
+  { id: "OVERVIEW", label: "Overview", icon: LayoutDashboard },
   { id: "WAR_ROOM", label: "Map", icon: MapIcon },
   { id: "MEDICAID_RADAR", label: "Healthcare", icon: Activity },
   { id: "CASE_TIMELINE", label: "Case Timeline", icon: Calendar },

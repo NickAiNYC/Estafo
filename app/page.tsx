@@ -10,6 +10,7 @@ import CommandPalette from "@/components/CommandPalette";
 import PalantirNexusGraph from "@/components/PalantirNexusGraph";
 import MedicaidQuiTamRadar from "@/components/MedicaidQuiTamRadar";
 import CaseTimelineWorkflow from "@/components/CaseTimelineWorkflow";
+import Overview from "@/components/Overview";
 import ProfitEngineLedger from "@/components/ProfitEngineLedger";
 import LegalWeaponizer from "@/components/LegalWeaponizer";
 import { useTacticalAudio } from "@/hooks/useTacticalAudio";
@@ -27,7 +28,7 @@ import {
 import { FlyToInterpolator } from "@deck.gl/core";
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<ConsoleView>("WAR_ROOM");
+  const [currentView, setCurrentView] = useState<ConsoleView>("OVERVIEW");
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   const { playClick, playChirp } = useTacticalAudio();
@@ -52,7 +53,7 @@ export default function Home() {
   // Truthful Source & Telemetry State
   const [medicaidError, setMedicaidError] = useState<string | null>(null);
   const [feedTelemetry, setFeedTelemetry] = useState<FeedTelemetryItem[]>([]);
-  const [feedStatus, setFeedStatus] = useState<"ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING">("ONLINE");
+  const [feedStatus, setFeedStatus] = useState<"ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING">("SYNCING");
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [liveRecordCount, setLiveRecordCount] = useState<number>(0);
   const [latencyMs, setLatencyMs] = useState<number>(45);
@@ -389,18 +390,10 @@ export default function Home() {
       setLiveRecordCount(live311Count);
       setLatencyMs(Math.round(performance.now() - overallStartTime));
 
-      // Calculate overall system ingestion status
-      const hasOffline = telemetryItems.some((t) => t.status === "OFFLINE");
-      const hasDegraded = telemetryItems.some((t) => t.status === "DEGRADED");
-      const allOffline = telemetryItems.every((t) => t.status === "OFFLINE");
-
-      if (allOffline) {
-        setFeedStatus("OFFLINE");
-      } else if (hasOffline || hasDegraded) {
-        setFeedStatus("DEGRADED");
-      } else {
-        setFeedStatus("ONLINE");
-      }
+      // Restricted data and demo fixtures do not determine live-feed health.
+      const publicLiveFeeds = telemetryItems.filter((item) => item.tier === "LIVE_SOURCED" && item.status !== "RESTRICTED");
+      const onlineLiveFeeds = publicLiveFeeds.filter((item) => item.status === "ONLINE");
+      setFeedStatus(onlineLiveFeeds.length === 0 ? "OFFLINE" : onlineLiveFeeds.length < publicLiveFeeds.length ? "DEGRADED" : "ONLINE");
 
       setFeedTelemetry(telemetryItems);
     } catch (err) {
@@ -534,16 +527,17 @@ export default function Home() {
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
       />
 
-      <KpiStrip 
+      {currentView === "WAR_ROOM" && <KpiStrip 
         counts={counts}
         hoveredLayer={hoveredKpiLayer}
         onHoverLayer={setHoveredKpiLayer}
         onSelectLayer={handleToggleLayer}
         activeLayers={activeLayers}
-      />
+      />}
 
       {/* Main View Switcher */}
       <main className="flex-1 flex overflow-hidden">
+        {currentView === "OVERVIEW" && <Overview feeds={feedTelemetry} refreshing={isRefreshing} onSelectView={setCurrentView} />}
         {currentView === "WAR_ROOM" && (
           <div className="min-h-0 flex-1 flex flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
             <MapPanel 

@@ -15,6 +15,8 @@ const jetbrains = localFont({
 export const metadata: Metadata = {
   title: "ESTAFOTIR — Municipal Enforcement & Healthcare Compliance",
   description: "Citizen municipal enforcement and institutional healthcare compliance platform at estafotir.vercel.app",
+  metadataBase: new URL("https://estafotir.vercel.app"),
+  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({
