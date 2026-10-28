@@ -1,0 +1,229 @@
+[
+  {
+    "clean_street": "4525 162ND ST",
+    "distinct_npis_count": 3,
+    "entity_names": [
+      "K PROJECT 1, INC.",
+      "EDEN ADULT DAY CARE, INC",
+      "C & K 1004 CORP"
+    ],
+    "npi_list": [
+      "1316664857",
+      "1407572852",
+      "1053049437"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "2039 BATH AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "APNA SOCIAL ADULT DAYCARE INC",
+      "APNA ADULT DAYCARE OF BRIGHTON LLC"
+    ],
+    "npi_list": [
+      "1841167855",
+      "1093631749"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "13610 BOOTH MEMORIAL AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "GOOD MORNING ADULT DAYCARE CENTER INC.",
+      "BRYAN CHAN"
+    ],
+    "npi_list": [
+      "1639822158",
+      "1245803592"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "213 E 117TH ST",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "117 SADC INC",
+      "HANNAH HONG"
+    ],
+    "npi_list": [
+      "1477127108",
+      "1871167262"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "110 HENDERSON AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "BAYWOOD LLC",
+      "SIAL ACQUISITION LLC"
+    ],
+    "npi_list": [
+      "1376164855",
+      "1003733064"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "801 CO OP CITY BLVD",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "BAYPARK ADC",
+      "HEBREW HOSPITAL HOME, INC. - ADULT DAY CARE BRONX"
+    ],
+    "npi_list": [
+      "1942297783",
+      "1568720035"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "1325 5TH AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "FIFTH AVENUE SADC INC.",
+      "WHEELING FORWARD INC."
+    ],
+    "npi_list": [
+      "1073851499",
+      "1851766539"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "13208 POPLE AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "AMERICAN ADULT DAY CARE CENTER, INC.",
+      "BIG APPLE ADULT DAY CARE, INC."
+    ],
+    "npi_list": [
+      "1053734277",
+      "1821506387"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "1500 PELHAM PKWY S",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "MORNINGSIDE HOUSE ADULT DAY CARE",
+      "AGING IN AMERICA COMMUNITY SERVICES SENIOR ADULT DAY SERVICES"
+    ],
+    "npi_list": [
+      "1902865645",
+      "1750530655"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "14489 38TH AVE STE CF1",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "KENT SENIOR CARE INC.",
+      "KENT SENIOR CARE"
+    ],
+    "npi_list": [
+      "1992665749",
+      "1578823670"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "90 LUDLOW ST",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "CHINATOWN SENIOR SERVICE INC",
+      "SWEET HOME SENIOR DAYCARE INC"
+    ],
+    "npi_list": [
+      "1447504311",
+      "1306102363"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "612 ALLERTON AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "KATHLEEN FALK",
+      "BETH ABRAHAM HEALTH SERVICES"
+    ],
+    "npi_list": [
+      "1104057090",
+      "1700972114"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "3525 BAYCHESTER AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "SPLIT ROCK ADULT DAY HEALTH CARE",
+      "SPLIT ROCK REHABILITATION AND HEALTH CARE CENTER, LLC"
+    ],
+    "npi_list": [
+      "1275733297",
+      "1194152546"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "14627 BEECH AVE",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "FLUSHING ADULT DAY CARE CENTER",
+      "EXCELLENCE AND LONGEVITY CENTER"
+    ],
+    "npi_list": [
+      "1871841635",
+      "1821543620"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  },
+  {
+    "clean_street": "9021 160TH ST FL 2",
+    "distinct_npis_count": 2,
+    "entity_names": [
+      "FRIENDS ADULT DAYCARE CORP",
+      "SHINING STARS ADULT DAYCARE CORP"
+    ],
+    "npi_list": [
+      "1407685753",
+      "1396581849"
+    ],
+    "cluster_spend": 0.0,
+    "primary_signal": "SHARED_ADDRESS_CLUSTER",
+    "risk_type": "MULTI_ENTITY_HUB"
+  }
+]
