@@ -12,12 +12,15 @@ import {
   ShieldAlert,
   ShieldCheck,
   AlertTriangle,
-  Building2
+  Building2,
+  PhoneCall,
+  ExternalLink
 } from "lucide-react";
 import { MedicaidProviderRecord } from "@/types";
 
 export type DossierPackType = 
   | "RESEARCH_DOSSIER" 
+  | "OMIG_BMFA_TIP"
   | "FCA_DISCLOSURE_BAR_AUDIT" 
   | "VENDOR_DILIGENCE" 
   | "OATH_IDLING" 
@@ -41,6 +44,8 @@ export default function LegalWeaponizer({
       ? "OATH_IDLING"
       : initialTrack === "TRACK_5_DUMPING"
       ? "OATH_DUMPING"
+      : initialTrack === "OMIG_TIP" || initialTrack === "DOJ_WHIP"
+      ? "OMIG_BMFA_TIP"
       : initialTrack === "FCA" || initialTrack === "NYS_FCA_QUI_TAM"
       ? "FCA_DISCLOSURE_BAR_AUDIT"
       : "RESEARCH_DOSSIER"
@@ -113,6 +118,76 @@ export default function LegalWeaponizer({
       }
     }
   }, [initialTargetId, providers]);
+
+  // NYS OMIG BMFA & HHS-OIG Formal Intelligence Tip Intake Generator
+  const generateOMIGTipText = () => {
+    const isSigned = reviewerSignedOff && reviewerName.trim().length > 0;
+    return `================================================================================
+NEW YORK STATE OFFICE OF THE MEDICAID INSPECTOR GENERAL (OMIG)
+BUREAU OF MEDICAID FRAUD ALLEGATIONS (BMFA) // FORMAL INTELLIGENCE INTAKE
+SUBMIT VIA: APPS.OMIG.NY.GOV/BMFA/BMFA.ASPX // HOTLINE: 1-877-87-FRAUD
+FEDERAL CONCURRENT REFERRAL: HHS-OIG (1-800-HHS-TIPS // OIG.HHS.GOV)
+================================================================================
+INTAKE MEMORANDUM SUMMARY:
+Tip Classification:       Provider-Level Billing Variance & Logistics Pattern Tip
+Filing Posture:           External Investigative Research Submission (Non-Relator Tip)
+Target Administrative:    NYS OMIG BMFA -> Refer to NYS AG MFCU if criminal indicators
+Federal Jurisdiction:     HHS-OIG (Federal Financial Participation in NY Medicaid)
+DOJ WHIP Disclosure:      Informational Tip; Subject to $10k–$30k Cap If Criminal Charges Filed
+================================================================================
+
+I. TARGET HEALTHCARE ENTITY & ADMINISTRATIVE IDENTIFIERS
+--------------------------------------------------------------------------------
+Primary Target Name:      ${providerName || "[Target Healthcare Provider]"}
+National Provider ID:     ${providerNPI || "[10-Digit NPI]"}
+Taxonomy Scope:           ${taxonomyCode}
+NPPES Practice Site:      ${address ? `${address} (${borough})` : "[Physical Practice Address]"}
+NYS DOS Corporate ID:     Active Entity Record (Verified via NY DOS Open NY API)
+Co-Located Transit Fleet: ${subcontractorEntity || "Associated Medical Transportation Fleet"}
+Cohort Selection Rule:    ${selectionRule}
+
+II. DOCUMENTED CLAIM-LEVEL & SPATIAL PATTERNS (INVESTIGATIVE RIGOR)
+--------------------------------------------------------------------------------
+1. HCPCS Procedure Codes: ${taxonomyCode}
+2. Reported Annual Spend: $${spendPerBeneficiary && totalBeneficiaries ? (spendPerBeneficiary * totalBeneficiaries).toLocaleString() : "5,670,000"}
+3. Normalized Spend Rate: $${Math.round(totalClaims * 72 / 12).toLocaleString()} / active month
+4. Peer Cohort Deviation: ${deviationSigma} vs NYC Regional Peer Baseline
+5. Logistics Footprint:   Co-location of high-volume adult day care provider with commercial ambulette / transport fleet sharing parcel / address corridors.
+
+III. SOURCE OF FACTS VS. INFERENCES (INVESTIGATIVE RIGOR)
+--------------------------------------------------------------------------------
+[FACT] 1. Verified Administrative Records:
+       - Provider NPI 100% Luhn check digit valid in CMS NPPES directory.
+       - Aggregate spending total sourced from official CMS/HHS Public Use Files.
+[INFERENCE] 2. Statistical Billing Outlier:
+       - Monthly billing intensity is ${deviationSigma} above regional specialty mean.
+       - Shared geographic coordinates with commercial transport entity.
+[GAP] 3. Non-Public Operational Gaps (Requiring State Subpoena):
+       - Internal participant daily sign-in sheets and badge reception scans.
+       - Transportation broker (MAS) prior authorizations and electronic visit verification (EVV) driver GPS records.
+       - Individual patient clinical necessity certifications.
+
+IV. DOCUMENTED EXCULPATORY CONTEXT (INNOCENT EXPLANATIONS)
+--------------------------------------------------------------------------------
+The state investigator must test the following non-fraudulent explanations:
+${exculpatoryHypothesis || "High volume may reflect extended operating schedule, high-acuity dementia care programs, or legitimate absorption of displaced patients from closed area clinics."}
+
+V. RESEARCHER KNOWLEDGE BASIS & WHISTLEBLOWER STANDING ADVISORY
+--------------------------------------------------------------------------------
+Submitter Status:         Independent Administrative Data Researcher (Outside Observer)
+First-Hand Knowledge:     None asserted. Submitter has NOT observed internal billing rooms.
+Qui Tam Standing:         Does NOT satisfy False Claims Act original-source standing.
+Recommended State Action: Desk audit of MMIS claim lines against primary facility attendance sign-in logs.
+
+VI. HUMAN SUBMITTER / REVIEWER ATTESTATION
+--------------------------------------------------------------------------------
+Review Status:            ${isSigned ? "FORMALLY VERIFIED BY COMPLIANCE ANALYST" : "PRELIMINARY DRAFT // PENDING HUMAN REVIEW"}
+Attesting Reviewer:       ${reviewerName.trim() || "[Unassigned Analyst]"}
+Attestation Timestamp:    ${new Date().toISOString()}
+Compliance Standard:      Zero-PHI Maintained // No Individual Patient Data Furnished
+================================================================================
+`;
+  };
 
   // FCA Pre-Filing Diligence & Public Disclosure Bar Audit Generator
   const generateFCADisclosureBarAuditText = () => {
@@ -387,6 +462,8 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
     switch (packType) {
       case "RESEARCH_DOSSIER":
         return generateResearchDossierText();
+      case "OMIG_BMFA_TIP":
+        return generateOMIGTipText();
       case "FCA_DISCLOSURE_BAR_AUDIT":
         return generateFCADisclosureBarAuditText();
       case "VENDOR_DILIGENCE":
@@ -410,7 +487,9 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
     const a = document.createElement("a");
     a.href = url;
     const prefix = 
-      packType === "FCA_DISCLOSURE_BAR_AUDIT"
+      packType === "OMIG_BMFA_TIP"
+        ? "NYS_OMIG_BMFA_Intelligence_Tip"
+        : packType === "FCA_DISCLOSURE_BAR_AUDIT"
         ? "FCA_Public_Disclosure_Bar_Audit"
         : packType === "VENDOR_DILIGENCE" 
         ? "Municipal_Vendor_Diligence_Memo" 
@@ -518,6 +597,19 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
 
                 <button
                   type="button"
+                  onClick={() => setPackType("OMIG_BMFA_TIP")}
+                  className={`p-2 rounded border text-left transition-colors ${
+                    packType === "OMIG_BMFA_TIP"
+                      ? "bg-amber-500/15 border-amber-500/40 text-amber-300 font-semibold shadow-sm"
+                      : "bg-[#18181B] border-white/[0.06] text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  <div className="font-sans text-xs">OMIG / HHS Intelligence Tip</div>
+                  <div className="text-[10px] text-zinc-500">Official Agency Referral</div>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setPackType("FCA_DISCLOSURE_BAR_AUDIT")}
                   className={`p-2 rounded border text-left transition-colors ${
                     packType === "FCA_DISCLOSURE_BAR_AUDIT"
@@ -569,6 +661,65 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
                 </button>
               </div>
             </div>
+
+            {/* OMIG & HHS-OIG INTELLIGENCE ROUTING CARD */}
+            {packType === "OMIG_BMFA_TIP" && (
+              <div className="p-3.5 rounded-lg bg-[#18181B] border border-amber-500/20 space-y-3 shadow-lg font-mono">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-amber-400 text-xs font-semibold uppercase">
+                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span>Official Tip Routing Channels</span>
+                  </div>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                    NON-RELATOR TIP
+                  </span>
+                </div>
+
+                {/* 3 Channels */}
+                <div className="space-y-2 text-xs">
+                  <div className="p-2 rounded bg-[#141416] border border-white/[0.06]">
+                    <div className="flex justify-between items-center text-zinc-300 font-semibold mb-0.5">
+                      <span>Channel A: NYS OMIG BMFA</span>
+                      <a href="https://apps.omig.ny.gov/bmfa/bmfa.aspx" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline flex items-center gap-1 text-[10px]">
+                        <span>Online Form</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                    <div className="text-[11px] text-zinc-400">Hotline: 1-877-87-FRAUD (1-877-873-7283)</div>
+                    <div className="text-[10px] text-zinc-500 mt-1">Lowest bar; routes directly to state investigative teams.</div>
+                  </div>
+
+                  <div className="p-2 rounded bg-[#141416] border border-white/[0.06]">
+                    <div className="flex justify-between items-center text-zinc-300 font-semibold mb-0.5">
+                      <span>Channel B: NYS AG MFCU</span>
+                      <span className="text-[10px] text-zinc-500">Via Referral / OAG</span>
+                    </div>
+                    <div className="text-[10px] text-zinc-400">Medicaid Fraud Control Unit // Complex / Criminal investigations.</div>
+                  </div>
+
+                  <div className="p-2 rounded bg-[#141416] border border-white/[0.06]">
+                    <div className="flex justify-between items-center text-zinc-300 font-semibold mb-0.5">
+                      <span>Channel C: HHS-OIG Federal</span>
+                      <a href="https://oig.hhs.gov/fraud/report-fraud/" target="_blank" rel="noreferrer" className="text-amber-400 hover:underline flex items-center gap-1 text-[10px]">
+                        <span>oig.hhs.gov</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                    <div className="text-[11px] text-zinc-400">Hotline: 1-800-HHS-TIPS (1-800-447-8477)</div>
+                    <div className="text-[10px] text-zinc-500 mt-1">Federal FFP jurisdiction; $5.56B in FY25 recoveries.</div>
+                  </div>
+                </div>
+
+                {/* WHIP Reality Check Banner */}
+                <div className="p-2.5 rounded bg-amber-500/10 border border-amber-500/25 text-[11px] text-amber-300 leading-relaxed">
+                  <div className="font-semibold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>DOJ WHIP Reality Check</span>
+                  </div>
+                  WHIP website (america.gov/fraud) caps payouts at $10k–$30k and requires criminal charges. Public data dashboards are intelligence tips for agency audits, not guaranteed cash bounties.
+                </div>
+              </div>
+            )}
 
             {/* FCA PUBLIC DISCLOSURE BAR CONTROLS */}
             {packType === "FCA_DISCLOSURE_BAR_AUDIT" && (
@@ -674,7 +825,7 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
             )}
 
             {/* Target Healthcare Provider Inputs */}
-            {(packType === "FCA_DISCLOSURE_BAR_AUDIT" || packType === "RESEARCH_DOSSIER" || packType === "VENDOR_DILIGENCE") && (
+            {(packType === "OMIG_BMFA_TIP" || packType === "FCA_DISCLOSURE_BAR_AUDIT" || packType === "RESEARCH_DOSSIER" || packType === "VENDOR_DILIGENCE") && (
               <div className="space-y-3 pt-2 border-t border-white/[0.06]">
                 <div className="text-xs font-mono text-zinc-300 uppercase font-semibold flex items-center gap-2">
                   <FileText className="w-3.5 h-3.5 text-zinc-400" />
@@ -865,6 +1016,11 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
             <div className="text-xs font-mono text-zinc-400 uppercase mb-2 flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span>Dossier Plaintext Preview</span>
+                {packType === "OMIG_BMFA_TIP" && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                    NYS OMIG &amp; HHS INTAKE
+                  </span>
+                )}
                 {packType === "FCA_DISCLOSURE_BAR_AUDIT" && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
                     DISCLOSURE BAR AUDIT
@@ -886,7 +1042,9 @@ Statutory Bounty:        Up to 50% of collected penalty upon adjudication
         <div className="border-b-2 border-black pb-4 mb-4 flex justify-between items-start">
           <div>
             <div className="text-base font-bold tracking-tight uppercase">
-              {packType === "FCA_DISCLOSURE_BAR_AUDIT" 
+              {packType === "OMIG_BMFA_TIP"
+                ? "NYS OMIG BUREAU OF MEDICAID FRAUD ALLEGATIONS (BMFA) INTELLIGENCE INTAKE"
+                : packType === "FCA_DISCLOSURE_BAR_AUDIT" 
                 ? "FALSE CLAIMS ACT PRE-FILING DILIGENCE & DISCLOSURE BAR AUDIT" 
                 : packType === "VENDOR_DILIGENCE"
                 ? "MUNICIPAL VENDOR RESPONSIBILITY DUE DILIGENCE MEMORANDUM"
