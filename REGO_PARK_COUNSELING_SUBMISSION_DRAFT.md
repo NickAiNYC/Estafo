@@ -4,12 +4,14 @@
 
 ## 1. Proposed subject and public identity
 
-- **Entity:** Rego Park Counseling LLC. New York OASAS lists provider **51310**, outpatient program **53489**, as a Part 822 outpatient program.
+- **Entity:** Rego Park Counseling LLC. New York OASAS lists provider **51310**, outpatient program **53489**, as a Part 822 outpatient chemical dependence program.
 - **OASAS listed locations:** 63-36 99th Street, Rego Park, NY 11374; 71-82 Parsons Boulevard, Fresh Meadows, NY 11365.
-- **Organization NPI requiring billing-identity check:** CMS NPPES lists **1932061611** for the Fresh Meadows address, enumerated 2025-12-01. A separate historical Rego Park NPI **1235760927** appears in secondary provider directories; verify it directly against NPPES and payer records before treating it as a billing identifier.
+- **Verified Organization NPIs (CMS NPPES API Verified):**
+  - **1235760927** (Primary Rego Park Clinic): Enumerated **2020-01-31** (active across the 2020–2024 HHS Medicaid spending period). Primary taxonomy **261QR0405X** (*Clinic/Center, Rehabilitation, Substance Use Disorder*). Address: 63-36 99th St, Rego Park, NY 11374. Authorized Official: Emanuil Kalendarev, CEO.
+  - **1932061611** (Secondary Fresh Meadows Clinic): Enumerated **2025-12-01**. Primary taxonomy *Clinic/Center, Multi-Specialty*. Address: 71-82 Parsons Blvd, Fresh Meadows, NY 11365. Authorized Official: Emanuil Kalendarev, CEO.
 - **Historical public record:** OMIG's final-audit index lists project **21-6442**, dated 2021-12-01, for this entity. The index alone does not establish the audit's findings or any current violation.
 
-Public sources: [OASAS program directory](https://webapps.oasas.ny.gov/providerDirectory/index.cfm?search_type=2); [CMS NPPES 1932061611](https://npiregistry.cms.hhs.gov/provider-view/1932061611); [OMIG final-audit index](https://omig.ny.gov/audit/final-audit-reports).
+Public sources: [OASAS program directory](https://webapps.oasas.ny.gov/providerDirectory/index.cfm?search_type=2); [CMS NPPES 1235760927](https://npiregistry.cms.hhs.gov/provider-view/1235760927); [CMS NPPES 1932061611](https://npiregistry.cms.hhs.gov/provider-view/1932061611); [OMIG final-audit index](https://omig.ny.gov/audit/final-audit-reports).
 
 ## 2. Draft submission narrative — edit every bracket before use
 
@@ -32,7 +34,7 @@ Public sources: [OASAS program directory](https://webapps.oasas.ny.gov/providerD
 | ID | Statement | Classification | Source/evidence | Verification status |
 | --- | --- | --- | --- | --- |
 | F1 | OASAS lists the two clinic locations and Part 822 outpatient program. | Public record | OASAS directory above | Verified from directory on 2026-10-27 |
-| F2 | NPPES lists NPI 1932061611 at the Fresh Meadows address, enumerated 2025-12-01. | Public record | CMS NPPES above | Verified from registry search result on 2026-10-27 |
+| F2 | NPPES lists NPI 1235760927 (Rego Park, enumerated 2020-01-31, taxonomy 261QR0405X) and NPI 1932061611 (Fresh Meadows, enumerated 2025-12-01), both with CEO Emanuil Kalendarev. | Public record | CMS NPPES API above | Verified live from registry API on 2026-10-27 |
 | F3 | Reporter says ambulettes are regularly present around 9 a.m. Monday–Friday at the two named locations and drop people off. | Reporter account | Observation entries O1–On below | Specific dates, vehicle identities, and whether passengers entered either clinic remain to be documented |
 | A1 | Some attendees are paid $20–$30 to attend. | Unverified report: patients reportedly told counselor, who told reporter | Witness entry W1 below | Counselor's actual words, patient firsthand account (if voluntarily available), dates, and corroboration needed |
 | A2 | Diagnoses, attendance, medical necessity, or claims are false. | Allegation/inference | None presently in this packet | Not established |
