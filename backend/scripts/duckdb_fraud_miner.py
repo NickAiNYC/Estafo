@@ -99,7 +99,25 @@ GROUP BY c.clean_street, c.distinct_npi_count, c.entity_names, c.npi_list
 ORDER BY c.distinct_npi_count DESC, c.clean_street ASC;
 """
 
-# SQL Pattern 3: OIG LEIE Excluded Provider Billing Intercept
+# SQL Pattern 3a: OIG LEIE Cohort Matches (Providers in screening cohort on LEIE)
+SQL_LEIE_COHORT_MATCHES = """
+SELECT 
+    p.npi,
+    p.name AS provider_name,
+    p.address,
+    p.borough,
+    p.taxonomy_code,
+    e.excltype,
+    e.excldate,
+    e.reindate,
+    COALESCE(e.lastname, '') AS lastname,
+    COALESCE(e.firstname, '') AS firstname
+FROM providers p
+JOIN leie_exclusions e ON p.npi = e.npi
+ORDER BY e.excldate DESC;
+"""
+
+# SQL Pattern 3b: OIG LEIE Excluded Provider Billing Intercept
 # LEIE dates are stored as YYYYMMDD strings. Spending dates are stored as YYYY-MM.
 # Compares service month start against exclusion date and reinstatement date.
 SQL_LEIE_INTERCEPT = """
@@ -184,7 +202,24 @@ JOIN providers p ON l.billing_npi = p.npi
 ORDER BY l.acceleration_multiple DESC;
 """
 
-def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
+def download_leie(target_path: Path = Path("backend/data/LEIE.csv")) -> bool:
+    """Download authoritative HHS OIG LEIE exclusion file directly from official endpoint."""
+    import urllib.request
+    url = "https://oig.hhs.gov/exclusions/downloadables/UPDATED.csv"
+    print(f"[*] Downloading authoritative HHS OIG LEIE database from: {url}")
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Estafotir-Miner/1.0"})
+        with urllib.request.urlopen(req) as resp, open(target_path, "wb") as f:
+            f.write(resp.read())
+        print(f"[✓] Downloaded LEIE database to {target_path} ({target_path.stat().st_size} bytes)")
+        return True
+    except Exception as e:
+        print(f"[-] Failed to download LEIE database: {e}")
+        return False
+
+
+def run_miner(db_path: str = "test.db", export_dir: str = "exports", auto_download_leie: bool = False):
     print("==========================================================================")
     print("  ESTAFOTIR NPPES CO-LOCATION & PUBLIC SPENDING SCREENER (2026)")
     print("  Status: Unverified Research Screening // Strict Evidentiary Standards")
@@ -250,22 +285,26 @@ def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
 
     # 3. Ingest OIG LEIE Exclusions (Explicit Status Handling)
     leie_csv = Path("backend/data/LEIE.csv")
+    if not leie_csv.exists() and auto_download_leie:
+        download_leie(leie_csv)
+
     has_leie = leie_csv.exists()
     if has_leie:
         print(f"[*] Ingesting HHS OIG LEIE exclusions from: {leie_csv}")
         con.execute(f"""
             CREATE TEMPORARY TABLE leie_exclusions AS 
             SELECT 
-                CAST(NPI AS VARCHAR) AS npi, 
+                lpad(CAST(NPI AS VARCHAR), 10, '0') AS npi, 
                 LASTNAME AS lastname, 
                 FIRSTNAME AS firstname, 
                 EXCLTYPE AS excltype, 
                 CAST(EXCLDATE AS VARCHAR) AS excldate, 
                 CAST(COALESCE(REINDATE, '00000000') AS VARCHAR) AS reindate
-            FROM read_csv_auto('{leie_csv}');
+            FROM read_csv_auto('{leie_csv}')
+            WHERE NPI IS NOT NULL AND CAST(NPI AS VARCHAR) != '0';
         """)
         leie_count = con.execute("SELECT COUNT(*) FROM leie_exclusions;").fetchone()[0]
-        print(f"    Ingested {leie_count} exclusion records.")
+        print(f"    Ingested {leie_count} exclusion records with valid 10-digit NPIs.")
     else:
         print("[!] NOTICE: backend/data/LEIE.csv is absent.")
         print("    Exclusion intercept screening marked as INCOMPLETE (data file not present).")
@@ -281,11 +320,14 @@ def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
     print(f"    Identified {len(cluster_results)} multi-tenant commercial addresses hosting 2+ NPIs.")
 
     print("\n[+] Screening 3: OIG LEIE Exclusion Cross-Reference...")
+    cohort_leie_matches = []
+    spending_leie_matches = []
     if has_leie:
-        leie_results = con.execute(SQL_LEIE_INTERCEPT).fetchall()
-        print(f"    Identified {len(leie_results)} potential post-exclusion billing matches.")
+        cohort_leie_matches = con.execute(SQL_LEIE_COHORT_MATCHES).fetchall()
+        spending_leie_matches = con.execute(SQL_LEIE_INTERCEPT).fetchall()
+        print(f"    Identified {len(cohort_leie_matches)} provider(s) in screening cohort matching LEIE exclusions.")
+        print(f"    Identified {len(spending_leie_matches)} post-exclusion billing rows in local database.")
     else:
-        leie_results = []
         print("    Status: SKIPPED (LEIE.csv missing).")
 
     print("\n[+] Screening 4: Calendar-Month Velocity Surge (HCPCS-Specific)...")
@@ -331,20 +373,34 @@ def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
             }
             for r in suite_results[:50]
         ],
-        "leie_exclusion_matches": [
+        "cohort_exclusion_matches": [
+            {
+                "npi": r[0],
+                "provider_name": r[1],
+                "address": r[2],
+                "borough": r[3],
+                "taxonomy_code": r[4],
+                "excltype": r[5],
+                "excldate": str(r[6]),
+                "reindate": str(r[7]),
+                "individual_name": f"{r[9]} {r[8]}".strip()
+            }
+            for r in cohort_leie_matches
+        ],
+        "spending_post_exclusion_intercepts": [
             {
                 "billing_npi": r[0],
                 "provider_name": r[1],
                 "address": r[2],
                 "leie_npi": r[3],
-                "name": f"{r[5]} {r[4]}",
+                "name": f"{r[5]} {r[4]}".strip(),
                 "excltype": r[6],
-                "excldate": r[7],
-                "reindate": r[8],
+                "excldate": str(r[7]),
+                "reindate": str(r[8]),
                 "post_exclusion_spend": float(r[9]),
                 "billing_months": int(r[10])
             }
-            for r in leie_results
+            for r in spending_leie_matches
         ],
         "calendar_velocity_surges": [
             {
@@ -375,9 +431,9 @@ def run_miner(db_path: str = "test.db", export_dir: str = "exports"):
     print(f"  - Ingested Providers: {provider_count}")
     print(f"  - Database Spending Rows: {db_spending_count} ({db_distinct_npis} NPI)")
     print(f"  - Co-Located Address Clusters: {len(cluster_results)}")
-    print(f"  - Suite Footprint Clues: {len(suite_results)}")
     print(f"  - LEIE File Present: {'YES' if has_leie else 'NO (INCOMPLETE)'}")
-    print(f"  - LEIE Exclusion Matches: {len(leie_results)}")
+    print(f"  - Cohort Exclusion Matches: {len(cohort_leie_matches)}")
+    print(f"  - Post-Exclusion Billing Rows in DB: {len(spending_leie_matches)}")
     print(f"  - Calendar Velocity Surges: {len(surge_results)}")
     print("  - Legal Finding: 0 (All items are exploratory screening leads)")
     print("--------------------------------------------------------------------------")
@@ -386,5 +442,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DuckDB Healthcare Lead Miner")
     parser.add_argument("--db", default="test.db", help="Path to SQLite database")
     parser.add_argument("--export-dir", default="exports", help="Directory for output leads")
+    parser.add_argument("--download-leie", action="store_true", help="Download latest HHS OIG LEIE exclusions from official endpoint if missing")
     args = parser.parse_args()
-    run_miner(args.db, args.export_dir)
+    run_miner(args.db, args.export_dir, auto_download_leie=args.download_leie)
+
