@@ -17,7 +17,7 @@ const navItems: { id: ConsoleView; label: string; icon: typeof MapIcon }[] = [
   { id: "WAR_ROOM", label: "Map", icon: MapIcon },
   { id: "MEDICAID_RADAR", label: "Healthcare", icon: Activity },
   { id: "CASE_TIMELINE", label: "Case Timeline", icon: Calendar },
-  { id: "LEGAL_WEAPONIZER", label: "Drafts", icon: FileText },
+  { id: "LEGAL_WEAPONIZER", label: "Diligence Dossiers", icon: FileText },
   { id: "PROFIT_LEDGER", label: "Financial examples", icon: DollarSign },
   { id: "NEXUS_GRAPH", label: "Entity graph", icon: Network },
 ];
@@ -42,10 +42,10 @@ export default function ExecutiveHeader({
           </div>
           <div className="hidden sm:block">
             <div className="text-[11px] font-mono text-[#EDECE9] tracking-wider uppercase font-semibold">
-              Enforcement Intelligence
+              Risk &amp; Compliance Intelligence
             </div>
             <div className="text-[10px] text-zinc-500 font-mono">
-              Municipal Compliance & Healthcare Lead Terminal
+              Municipal Compliance &amp; Healthcare Diligence Terminal
             </div>
           </div>
         </div>
