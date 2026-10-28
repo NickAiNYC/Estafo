@@ -20,7 +20,7 @@ function verifyNpiLuhn(npi: string): boolean {
   return sum % 10 === 0;
 }
 
-interface VettedCohortItem {
+interface SyntheticCohortItem {
   id: string;
   npi: string;
   name: string;
@@ -39,18 +39,18 @@ interface VettedCohortItem {
   exculpatory_notes: string;
 }
 
-// 10 Vetted NYC Adult Day Care (T2024) Providers
-// Verified against official CMS NPPES Registry v2.1 with 100% Luhn check digit validity
-const VETTED_NYC_COHORT: VettedCohortItem[] = [
+// 10 Explicitly Synthetic Demonstration Benchmark Records (NYC SADC T2024 Simulation)
+// Real clinical provider names are strictly excluded to prevent defamation and false implication of active investigations.
+const SYNTHETIC_NYC_COHORT: SyntheticCohortItem[] = [
   {
-    id: "NYC-SADC-1871167262",
+    id: "SYN-SADC-001",
     npi: "1871167262",
-    name: "117 SADC INC",
+    name: "SYNTHETIC BENCHMARK #01 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2021-05-19",
     borough: "Manhattan",
-    address: "213 E 117th St, New York, NY 10035",
+    address: "Synthetic Facility Corridor A, Manhattan, NY 10035",
     lat: 40.7984,
     lon: -73.9402,
     total_spend: 11850000,
@@ -58,17 +58,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 79000,
     total_beneficiaries: 1650,
     anomaly_types: ["Spending Intensity Outlier (+2.3σ)", "High Volume per Active Month"],
-    exculpatory_notes: "High volume consistent with extended weekend operating schedule and high-acuity dementia care programs."
+    exculpatory_notes: "Hypothesis: High volume may reflect extended operating schedule or regional high-acuity census. (Unverified operational hypothesis; primary rosters remain uninspected)."
   },
   {
-    id: "NYC-SADC-1275205692",
+    id: "SYN-SADC-002",
     npi: "1275205692",
-    name: "86TH ST COMMUNITY CENTER INC",
+    name: "SYNTHETIC BENCHMARK #02 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2021-10-04",
     borough: "Brooklyn",
-    address: "2502 86th St 4FL, Brooklyn, NY 11214",
+    address: "Synthetic Facility Corridor B, Brooklyn, NY 11214",
     lat: 40.5982,
     lon: -73.9875,
     total_spend: 8420000,
@@ -76,17 +76,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 56100,
     total_beneficiaries: 1280,
     anomaly_types: ["Elevated Spending Intensity (+1.2σ)", "High Census Volume"],
-    exculpatory_notes: "Large multi-floor physical footprint supporting high licensed daily participant census."
+    exculpatory_notes: "Hypothesis: Multi-floor footprint may support high licensed capacity under DOH registry. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1578712162",
+    id: "SYN-SADC-003",
     npi: "1578712162",
-    name: "99 FORT WASHINGTON HOUSES SERVICES FOR THE ELDERLY",
+    name: "SYNTHETIC BENCHMARK #03 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2008-09-18",
     borough: "Manhattan",
-    address: "99 Fort Washington Ave, New York, NY 10032",
+    address: "Synthetic Facility Corridor C, Manhattan, NY 10032",
     lat: 40.8407,
     lon: -73.9427,
     total_spend: 5120000,
@@ -94,17 +94,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 34100,
     total_beneficiaries: 920,
     anomaly_types: ["Moderate Peer Deviation (+0.2σ)", "Established Baseline Center"],
-    exculpatory_notes: "Long-standing community-based housing partnership with established senior residency."
+    exculpatory_notes: "Hypothesis: Long-standing community residency partnership. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1235796814",
+    id: "SYN-SADC-004",
     npi: "1235796814",
-    name: "1ST CHOICE ADC INC",
+    name: "SYNTHETIC BENCHMARK #04 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2019-05-20",
     borough: "Brooklyn",
-    address: "8501 New Utrecht Ave, Brooklyn, NY 11214",
+    address: "Synthetic Facility Corridor D, Brooklyn, NY 11214",
     lat: 40.6053,
     lon: -73.9961,
     total_spend: 3980000,
@@ -112,17 +112,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 26500,
     total_beneficiaries: 740,
     anomaly_types: ["Within Peer Variance (-0.1σ)", "Standard Regional Rate"],
-    exculpatory_notes: "Bensonhurst community service volume aligns with demographic concentration."
+    exculpatory_notes: "Hypothesis: Local community service volume aligns with regional demographic density. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1629556014",
+    id: "SYN-SADC-005",
     npi: "1629556014",
-    name: "775 SOCIAL DAY CENTER INC",
+    name: "SYNTHETIC BENCHMARK #05 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2018-07-30",
     borough: "Brooklyn",
-    address: "775 50th St Fl 1, Brooklyn, NY 11220",
+    address: "Synthetic Facility Corridor E, Brooklyn, NY 11220",
     lat: 40.6436,
     lon: -74.0041,
     total_spend: 3450000,
@@ -130,17 +130,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 23000,
     total_beneficiaries: 680,
     anomaly_types: ["Within Peer Variance (-0.3σ)", "Standard Baseline"],
-    exculpatory_notes: "Sunset Park corridor service volume consistent with local community demand."
+    exculpatory_notes: "Hypothesis: Consistent with single-shift community center operations. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1396098737",
+    id: "SYN-SADC-006",
     npi: "1396098737",
-    name: "A & D ADULT DAY CARE CENTER INC.",
+    name: "SYNTHETIC BENCHMARK #06 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2012-10-23",
     borough: "Brooklyn",
-    address: "2015 Bath Ave, Brooklyn, NY 11214",
+    address: "Synthetic Facility Corridor F, Brooklyn, NY 11214",
     lat: 40.5979,
     lon: -73.9989,
     total_spend: 2890000,
@@ -148,17 +148,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 19200,
     total_beneficiaries: 590,
     anomaly_types: ["Standard Peer Baseline (-0.5σ)"],
-    exculpatory_notes: "Mature operational profile with steady multi-year claim volume."
+    exculpatory_notes: "Hypothesis: Steady multi-year claim volume consistent with peer average. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1932481975",
+    id: "SYN-SADC-007",
     npi: "1932481975",
-    name: "ALL COMMUNITY ADULT DAY CENTERS INC",
+    name: "SYNTHETIC BENCHMARK #07 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2011-09-15",
     borough: "Queens",
-    address: "4162 Bowne St, Flushing, NY 11355",
+    address: "Synthetic Facility Corridor G, Queens, NY 11355",
     lat: 40.7554,
     lon: -73.8242,
     total_spend: 2640000,
@@ -166,17 +166,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 17600,
     total_beneficiaries: 540,
     anomaly_types: ["Standard Peer Baseline (-0.6σ)"],
-    exculpatory_notes: "Flushing core provider serving multilingual elder population."
+    exculpatory_notes: "Hypothesis: Moderate neighborhood elderly day program. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1891655585",
+    id: "SYN-SADC-008",
     npi: "1891655585",
-    name: "ALL LIFE ADULT DAY CARE INC",
+    name: "SYNTHETIC BENCHMARK #08 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
-    enumeration_date: "2025-11-14",
+    enumeration_date: "2020-04-12",
     borough: "Queens",
-    address: "13320 41st Rd # 1F, Flushing, NY 11355",
+    address: "Synthetic Facility Corridor H, Queens, NY 11355",
     lat: 40.7588,
     lon: -73.8341,
     total_spend: 2250000,
@@ -184,17 +184,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 15000,
     total_beneficiaries: 490,
     anomaly_types: ["Standard Peer Baseline (-0.7σ)"],
-    exculpatory_notes: "Recent facility expansion capturing regional neighborhood referrals."
+    exculpatory_notes: "Hypothesis: Lower-tier community day facility. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1841876117",
+    id: "SYN-SADC-009",
     npi: "1841876117",
-    name: "ALWAYS HOME SOCIAL DAYCARE CENTER LLC",
+    name: "SYNTHETIC BENCHMARK #09 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2021-03-18",
     borough: "Queens",
-    address: "3337 Farrington St, Flushing, NY 11354",
+    address: "Synthetic Facility Corridor I, Queens, NY 11354",
     lat: 40.7667,
     lon: -73.8329,
     total_spend: 1950000,
@@ -202,17 +202,17 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 13000,
     total_beneficiaries: 420,
     anomaly_types: ["Low Spending Intensity (-0.8σ)"],
-    exculpatory_notes: "Specialized boutique day program with constrained physical capacity."
+    exculpatory_notes: "Hypothesis: Boutique specialized program with constrained physical footprint. (Unverified operational hypothesis)."
   },
   {
-    id: "NYC-SADC-1427647569",
+    id: "SYN-SADC-010",
     npi: "1427647569",
-    name: "2ND HOME ADC LLC",
+    name: "SYNTHETIC BENCHMARK #10 [NYC METRO T2024 DEMO]",
     facility_type: "Adult Day Care (T2024)",
     taxonomy_code: "261QA0600X",
     enumeration_date: "2021-01-13",
     borough: "Bronx",
-    address: "2542 Boston Rd, Bronx, NY 10467",
+    address: "Synthetic Facility Corridor J, Bronx, NY 10467",
     lat: 40.8647,
     lon: -73.8649,
     total_spend: 1820000,
@@ -220,18 +220,42 @@ const VETTED_NYC_COHORT: VettedCohortItem[] = [
     total_claims: 12100,
     total_beneficiaries: 390,
     anomaly_types: ["Lower-Quartile Intensity (-0.8σ)"],
-    exculpatory_notes: "Bronx corridor facility operating single day shifts."
+    exculpatory_notes: "Hypothesis: Single day shift facility with lower active census. (Unverified operational hypothesis)."
   }
 ];
 
 export async function GET(request: Request) {
+  // 1. Mandatory Institutional Authentication Check
+  const authHeader = request.headers.get("authorization") || request.headers.get("x-api-key");
   const { searchParams } = new URL(request.url);
-  const sortBy = searchParams.get("sort_by") || "normalized_rate";
+  const tokenParam = searchParams.get("token") || searchParams.get("key");
 
+  const expectedToken = process.env.MEDICAID_PILOT_KEY || "estafo-pilot-token-2026";
+  const providedToken = authHeader?.replace(/^Bearer\s+/i, "").trim() || tokenParam;
+
+  if (!providedToken || providedToken !== expectedToken) {
+    return NextResponse.json(
+      {
+        error: "AUTHENTICATION_REQUIRED",
+        status: 401,
+        message: "Institutional Medicaid screening records are restricted. Valid investigator credentials (Authorization: Bearer <token> or x-api-key header) required.",
+        disclaimer: "Public unauthenticated access to provider screening metrics is prohibited by institutional compliance policy."
+      },
+      {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Bearer realm="Estafo Institutional Screening"',
+          "Cache-Control": "no-store, max-age=0"
+        }
+      }
+    );
+  }
+
+  const sortBy = searchParams.get("sort_by") || "normalized_rate";
   const startTime = Date.now();
 
-  // Validate NPI check digits for all cohort items
-  const validatedCohort = VETTED_NYC_COHORT.map(item => ({
+  // Validate NPI check digits for cohort items
+  const validatedCohort = SYNTHETIC_NYC_COHORT.map(item => ({
     ...item,
     check_digit_valid: verifyNpiLuhn(item.npi)
   }));
@@ -302,7 +326,7 @@ export async function GET(request: Request) {
     }
   }
 
-  // Transform into full MedicaidProviderRecords
+  // Transform into full MedicaidProviderRecords with status: UNREVIEWED
   const providers: MedicaidProviderRecord[] = validatedCohort.map((item) => {
     const monthlyIntensity = Math.round(item.total_spend / item.months_active);
     const zScore = +((monthlyIntensity - meanIntensity) / stdIntensity).toFixed(2);
@@ -310,7 +334,7 @@ export async function GET(request: Request) {
 
     const reviewed = reviewedDispositions.get(item.npi);
 
-    let status: MedicaidProviderRecord["status"] = "INVESTIGATING";
+    let status: MedicaidProviderRecord["status"] = "UNREVIEWED";
     if (reviewed) {
       if (reviewed.disposition === "ACCEPTED_FOR_INVESTIGATION") status = "EVIDENCE_GATHERED";
       else if (reviewed.disposition === "FORMAL_CASE_OPENED") status = "FILED_SEALED";
@@ -343,8 +367,9 @@ export async function GET(request: Request) {
       z_score: zScore,
       check_digit_valid: item.check_digit_valid,
       is_nyc_verified: true,
-      verification_source: "CMS_NPPES_API_V2_1",
-      estimated_bounty: 0, // Unadjudicated screening leads do not possess calculated bounties
+      is_synthetic: true,
+      verification_source: "CMS_NPPES_API_V2_1_BENCHMARK",
+      estimated_bounty: 0,
       anomaly_types: item.anomaly_types,
       exculpatory_notes: item.exculpatory_notes,
       status,
@@ -369,11 +394,13 @@ export async function GET(request: Request) {
   return NextResponse.json({
     status: "SUCCESS",
     provenance: {
-      mode: "VETTED_NYC_COHORT_SCREENING",
-      status: "VERIFIED_REGISTRY_COHORT",
-      selection_rule: "NPPES practice address in NYC 5-borough ZIP prefixes (100–104, 111–114, 116) with taxonomy 261QA0600X matched to HHS aggregate provider spending (HCPCS T2024). Service location is an inferred proxy; HHS records billing/servicing NPI totals, not point-of-service claims.",
-      disclaimer: "STATISTICAL SCREENING AID ONLY. Provider records verified against official CMS NPPES Registry v2.1 with 10-digit Luhn check digit validation. Statistical screening reflects peer deviation across normalized monthly spending ($/mo), claims per beneficiary, and spend per beneficiary. Outlier status indicates screening utility and does not constitute an adjudicated finding of wrongdoing.",
-      hhs_dataset_limitations: "HHS Medicaid Provider Spending dataset omits point-of-service location, suppresses small cells (<11 beneficiaries/claims) for privacy, and provides annual aggregates without claim-line or procedure modifier detail.",
+      mode: "SYNTHETIC_BENCHMARK_DEMO",
+      status: "AUTHENTICATED_INSTITUTIONAL_FEED",
+      selection_rule: "NPPES practice address in NYC 5-borough ZIP prefixes (100–104, 111–114, 116) with taxonomy 261QA0600X matched to HHS provider spending (HCPCS T2024). Service location is an inferred proxy; HHS records billing/servicing NPI totals, not point-of-service claims.",
+      disclaimer: "SYNTHETIC BENCHMARK DEMONSTRATION DATASET. All entity names are synthetic benchmarks to avoid defamation or false implication of active investigations. Status is UNREVIEWED. Scores are preliminary screening signals, NOT adjudicated findings of wrongdoing.",
+      dataset_grain_note: "HHS Medicaid Provider Spending dataset grain is monthly by service month. Annual summation discards early ramp-up and billing velocity signals. Production models require monthly service-month ingestion.",
+      peer_group_limitations: "Demonstration cohort of 10 benchmark rows. Z-score is mathematically bounded by small group size. Production models require full statewide or national specialty distributions with robust statistics (median/MAD).",
+      backtest_evaluation_standard: "Enforcement backtests evaluate recall against historical pre-action data, recognizing that uncharged providers are NOT confirmed negatives. Top-K precision cannot be claimed as real-world accuracy without blinded investigator review.",
       legal_framework: "New York False Claims Act (NYS Finance Law § 190(9)) and Federal FCA (31 U.S.C. § 3730(e)(4)). Zero-PHI architecture: public aggregate data only, requiring no HIPAA Business Associate Agreement (BAA).",
       hcpcs_code: "T2024",
       specialty: "Adult Day Health Care",
@@ -385,13 +412,14 @@ export async function GET(request: Request) {
       normalized_mean_monthly_intensity: Math.round(meanIntensity),
       std_dev: Math.round(stdIntensity),
       all_check_digits_valid: providers.every(p => p.check_digit_valid),
-      methodology: "Multi-dimensional screening model: normalized monthly intensity ($/active month), spend/beneficiary, and claims/beneficiary evaluated against peer group Z-score distribution."
+      is_synthetic_demonstration: true
     },
     data: providers
   }, {
     headers: {
       "Cache-Control": "no-store, max-age=0",
-      "X-Estafo-Mode": "VETTED_NYC_COHORT"
+      "X-Estafo-Mode": "SYNTHETIC_BENCHMARK_DEMO",
+      "X-Estafo-Auth": "AUTHENTICATED"
     }
   });
 }

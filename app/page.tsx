@@ -167,10 +167,13 @@ export default function Home() {
         });
       }
 
-      // 2. Medicaid Sourced Leads Feed (NO SILENT FALLBACK TO OLD JSON)
       const tMedStart = performance.now();
       try {
-        const medRes = await fetch("/api/sources/medicaid-leads").catch(() => null);
+        const medRes = await fetch("/api/sources/medicaid-leads", {
+          headers: {
+            "Authorization": "Bearer estafo-pilot-token-2026",
+          },
+        }).catch(() => null);
         const tMedLatency = Math.round(performance.now() - tMedStart);
 
         if (medRes?.ok) {

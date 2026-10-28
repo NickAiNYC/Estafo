@@ -68,9 +68,10 @@ export interface MedicaidProviderRecord {
   taxonomy_code?: string;
   check_digit_valid?: boolean;
   exculpatory_notes?: string;
+  is_synthetic?: boolean;
   estimated_bounty: number;
   anomaly_types: string[];
-  status: "INVESTIGATING" | "EVIDENCE_GATHERED" | "FILED_SEALED" | "DOJ_REVIEW" | "RECOVERY_PENDING" | "PAID";
+  status: "UNREVIEWED" | "INVESTIGATING" | "EVIDENCE_GATHERED" | "FILED_SEALED" | "DOJ_REVIEW" | "RECOVERY_PENDING" | "PAID";
   ring_id?: string;
   cross_vector_link?: string;
   lead_utility?: string;
