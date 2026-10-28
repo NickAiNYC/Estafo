@@ -348,7 +348,7 @@ export default function PalantirNexusGraph({ graphData, availableNpis = [], onSe
               </div>
             </div>
 
-            {/* Cross-Vector Palantir Insight with Strict Evidence Notice */}
+            {/* Cross-Vector Entity Insight with Strict Evidence Notice */}
             <div className="bg-canvas border border-border-highlight/40 rounded-sm p-12 space-y-6">
               <div className="flex items-center gap-6 text-gold text-11 font-mono font-bold uppercase">
                 <AlertTriangle className="w-3.5 h-3.5 text-gold" />
@@ -386,7 +386,7 @@ export default function PalantirNexusGraph({ graphData, availableNpis = [], onSe
             <Zap className="w-8 h-8 text-border mb-12" />
             <div className="text-14 font-mono text-secondary mb-4">No Entity Selected</div>
             <p className="text-12 font-outfit max-w-[220px]">
-              Click on any node in the Palantir knowledge graph to inspect corporate shell linkages and violation records.
+              Click on any node in the entity network graph to inspect corporate shell linkages and violation records.
             </p>
           </div>
         )}

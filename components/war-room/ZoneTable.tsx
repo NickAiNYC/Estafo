@@ -6,7 +6,6 @@ import {
   ArrowUp, 
   ArrowDown, 
   MapPin, 
-  Crosshair, 
   ListTodo, 
   CheckCircle2, 
   Clock, 
@@ -170,8 +169,8 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
                 : "text-muted hover:text-primary"
             }`}
           >
-            <Crosshair className="w-3.5 h-3.5" />
-            <span>HOT ZONES ({zones.length})</span>
+            <MapPin className="w-3.5 h-3.5" />
+            <span>CORRIDORS ({zones.length})</span>
           </button>
 
           <button
@@ -183,13 +182,13 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
             }`}
           >
             <ListTodo className="w-3.5 h-3.5" />
-            <span>ACTION QUEUE ({tasks.length})</span>
+            <span>TASKS ({tasks.length})</span>
           </button>
         </div>
 
         <button 
           onClick={fetchTasks} 
-          title="Refresh live task states"
+          title="Refresh task list"
           className="text-muted hover:text-primary transition-colors p-4"
         >
           <RefreshCw className="w-3 h-3" />
@@ -202,7 +201,7 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
           type="text"
           value={filterQuery}
           onChange={(e) => setFilterQuery(e.target.value)}
-          placeholder={mode === "HOT_ZONES" ? "Filter clusters by name, status..." : "Filter action tasks by assignee, title..."}
+          placeholder={mode === "HOT_ZONES" ? "Filter corridors by name, borough..." : "Filter action tasks by assignee, title..."}
           className="w-full bg-inset border border-border rounded-sm px-10 py-5 text-11 font-mono placeholder:text-muted focus:outline-none focus:border-border-highlight"
         />
       </div>
@@ -227,7 +226,7 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
                   onClick={() => handleSort("name")}
                 >
                   <div className="flex items-center gap-2">
-                    <span>Enforcement Corridor</span>
+                    <span>Corridor Location</span>
                     {sortCol === "name" && (sortAsc ? <ArrowUp className="w-2.5 h-2.5" /> : <ArrowDown className="w-2.5 h-2.5" />)}
                   </div>
                 </th>
@@ -236,7 +235,7 @@ export default function ZoneTable({ zones, onZoneClick, onPlayClick }: ZoneTable
                   onClick={() => handleSort("score")}
                 >
                   <div className="flex items-center justify-end gap-2">
-                    <span>Yield Index</span>
+                    <span>Priority Score</span>
                     {sortCol === "score" && (sortAsc ? <ArrowUp className="w-2.5 h-2.5" /> : <ArrowDown className="w-2.5 h-2.5" />)}
                   </div>
                 </th>

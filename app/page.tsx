@@ -308,7 +308,7 @@ export default function Home() {
           setPalantirGraph(gData);
           telemetryItems.push({
             id: "palantir_graph",
-            name: "Palantir Shell Knowledge Graph",
+            name: "Corporate Entity Network Graph",
             source: "/data/palantir_graph.json",
             tier: "SYNTHETIC_DEMO",
             status: "ONLINE",

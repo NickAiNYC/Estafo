@@ -296,7 +296,7 @@ II. EVIDENTIARY PROOF REQUIREMENTS
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Estafo_Research_Dossier_Draft_${providerNPI || "draft"}_${Date.now()}.txt`;
+    a.download = `Estafotir_Research_Dossier_Draft_${providerNPI || "draft"}_${Date.now()}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

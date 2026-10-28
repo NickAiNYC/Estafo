@@ -50,6 +50,7 @@ export default function MedicaidQuiTamRadar({
   }, [initialSelectedNpi, providers]);
 
   // Active Review Timer & Decision State
+  const [isBlinded, setIsBlinded] = useState(true);
   const [reviewSeconds, setReviewSeconds] = useState(0);
   const [leadUtility, setLeadUtility] = useState<string>("STATISTICAL_OUTLIER");
   const [documentHash, setDocumentHash] = useState<string>("");
@@ -310,17 +311,30 @@ export default function MedicaidQuiTamRadar({
                       </span>
                     </div>
                     <h2 className="text-18 font-bold font-jakarta text-primary mt-2">
-                      {selectedProvider.name}
+                      {isBlinded ? `BLINDED COHORT PROFILE #${selectedProvider.id.replace("SYN-SADC-", "")}` : selectedProvider.name}
                     </h2>
                     <div className="text-12 text-secondary mt-2">
                       {selectedProvider.address} ({selectedProvider.borough}) · Taxonomy: {selectedProvider.taxonomy_code || "261QA0600X"} · Enum: {selectedProvider.enumeration_date || "Verified"} · {selectedProvider.months_active || 12} Active Months
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-12">
+                  <div className="flex items-center gap-10">
+                    {/* Blinded Mode Switch */}
+                    <button
+                      onClick={() => setIsBlinded(prev => !prev)}
+                      className={`px-10 py-5 rounded-sm border font-mono text-10 transition-colors ${
+                        isBlinded 
+                          ? "bg-emerald/15 border-emerald/40 text-emerald font-bold" 
+                          : "bg-amber/15 border-amber/40 text-amber font-bold"
+                      }`}
+                      title="Toggle blinded mode to evaluate raw numbers without cognitive priming"
+                    >
+                      {isBlinded ? "BLINDED EVALUATION: ON" : "UNBLINDED: SCORES REVEALED"}
+                    </button>
+
                     {/* Active Screen Review Timer */}
                     <div className="flex items-center gap-6 px-10 py-6 bg-inset border border-border rounded-sm font-mono text-11">
-                      <Timer className="w-4 h-4 text-emerald animate-pulse" />
+                      <Timer className="w-4 h-4 text-emerald" />
                       <div>
                         <div className="text-8 text-muted uppercase">Session Screen Time</div>
                         <div className="text-emerald font-bold">{formatMinutes(reviewSeconds)}</div>
@@ -367,10 +381,14 @@ export default function MedicaidQuiTamRadar({
 
                   <div className="p-10 bg-inset rounded-sm border border-border">
                     <div className="text-muted uppercase">Descriptive Z-Score</div>
-                    <div className="text-13 font-bold text-amber mt-2">
-                      +{selectedProvider.z_score?.toFixed(1) || "1.0"}σ
+                    <div className="text-13 font-bold mt-2">
+                      {isBlinded ? (
+                        <span className="text-muted text-10 font-normal">[MASKED IN BLINDED MODE]</span>
+                      ) : (
+                        <span className="text-amber">+{selectedProvider.z_score?.toFixed(1) || "1.0"}σ</span>
+                      )}
                     </div>
-                    <div className="text-9 text-muted mt-1">Peer Group Outlier Metric</div>
+                    <div className="text-9 text-muted mt-1">{isBlinded ? "Unblind to reveal score" : "Peer group outlier metric"}</div>
                   </div>
 
                   <div className="p-10 bg-inset rounded-sm border border-border">
@@ -390,12 +408,18 @@ export default function MedicaidQuiTamRadar({
 
                 {/* Exculpatory Hypothesis Card */}
                 {selectedProvider.exculpatory_notes && (
-                  <div className="mt-14 p-12 border border-emerald/30 bg-emerald/5 rounded-sm flex items-start gap-10 font-mono text-11">
-                    <ShieldCheck className="w-4 h-4 text-emerald shrink-0 mt-2" />
+                  <div className="mt-14 p-12 border border-border bg-inset/60 rounded-sm flex items-start gap-10 font-mono text-11">
+                    <ShieldCheck className="w-4 h-4 text-muted shrink-0 mt-2" />
                     <div>
-                      <div className="text-emerald font-bold uppercase text-10">Compliance Exculpatory Hypothesis</div>
-                      <div className="text-primary mt-2">{selectedProvider.exculpatory_notes}</div>
-                      <div className="text-9 text-muted mt-4">Screening Rule: Statistical deviations require affirmative exclusion of innocent operational causes prior to relator referral.</div>
+                      <div className="text-muted font-bold uppercase text-10">Speculative Operational Hypothesis</div>
+                      <div className="text-primary mt-2">
+                        {isBlinded ? (
+                          <span className="text-muted italic">[MASKED TO PREVENT COGNITIVE ANCHORING] Unblind above to view narrative hypothesis.</span>
+                        ) : (
+                          selectedProvider.exculpatory_notes
+                        )}
+                      </div>
+                      <div className="text-9 text-muted mt-4">Independent blinded review evaluates raw patient encounters and census before inspecting hypotheses.</div>
                     </div>
                   </div>
                 )}

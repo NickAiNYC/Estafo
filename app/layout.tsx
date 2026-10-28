@@ -18,8 +18,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ESTAFO — Tactical Intelligence & Enforcement Console",
-  description: "Municipal Enforcement Intelligence & Expected Value Dispatch Console",
+  title: "ESTAFOTIR — Municipal Enforcement & Healthcare Compliance",
+  description: "Citizen municipal enforcement and institutional healthcare compliance platform at estafotir.vercel.app",
 };
 
 export default function RootLayout({

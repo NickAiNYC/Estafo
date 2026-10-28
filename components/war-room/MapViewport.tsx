@@ -504,7 +504,7 @@ export default function MapViewport({
 
             {typeof hoveredHud.yieldScore === "number" && (
               <div className="bg-inset border border-border p-6 rounded-sm flex items-center justify-between">
-                <span className="text-10 text-muted uppercase">Tactical Yield Index</span>
+                <span className="text-10 text-muted uppercase">Corridor Priority Score</span>
                 <span className="text-14 font-bold text-amber">{hoveredHud.yieldScore}/100</span>
               </div>
             )}
@@ -527,31 +527,31 @@ export default function MapViewport({
         </div>
       )}
 
-      {/* Camera Flight Control Orbital Overlay (Top Right) */}
+      {/* Camera Flight Control (Top Right) */}
       <div className="absolute top-16 right-16 flex flex-col gap-6 z-20 pointer-events-auto">
         <div className="bg-surface/90 backdrop-blur-md border border-border p-6 rounded-sm shadow-panel flex items-center gap-6">
           <div className="text-10 font-mono text-muted flex items-center gap-4 px-6 border-r border-border">
             <Compass className="w-3.5 h-3.5 text-emerald" />
-            <span>ORBITAL FLY</span>
+            <span>CAMERA</span>
           </div>
           <div className="flex gap-4">
             <button
               onClick={() => handleCameraPreset("OVERVIEW")}
               className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
             >
-              Omni NYC
+              Overview
             </button>
             <button
               onClick={() => handleCameraPreset("MIDTOWN")}
               className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
             >
-              Midtown Choke
+              Midtown
             </button>
             <button
               onClick={() => handleCameraPreset("MASPETH")}
               className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
             >
-              Maspeth (T5)
+              Maspeth
             </button>
             <button
               onClick={() => handleCameraPreset("HUNTS")}
@@ -563,7 +563,7 @@ export default function MapViewport({
               onClick={() => handleCameraPreset("SUNSET")}
               className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
             >
-              Sunset Park (T6)
+              Sunset Park
             </button>
             <button
               onClick={() => handleCameraPreset("FLAT")}
@@ -576,7 +576,7 @@ export default function MapViewport({
           </div>
         </div>
 
-        {/* Viewport Rendering Mode & Vector Switches */}
+        {/* Viewport Rendering Mode & Corridor Switches */}
         <div className="bg-surface/90 backdrop-blur-md border border-border p-6 rounded-sm shadow-panel flex items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <button
@@ -588,7 +588,7 @@ export default function MapViewport({
               }`}
             >
               <Box className="w-3 h-3" />
-              <span>3D HEX</span>
+              <span>3D Density</span>
             </button>
             <button
               onClick={() => setRenderMode("HEATMAP")}
@@ -599,7 +599,7 @@ export default function MapViewport({
               }`}
             >
               <Flame className="w-3 h-3" />
-              <span>HEATMAP</span>
+              <span>Heatmap</span>
             </button>
           </div>
 
@@ -610,10 +610,10 @@ export default function MapViewport({
                 ? "bg-emerald/20 border-emerald text-emerald font-bold"
                 : "bg-canvas/60 border-border text-muted hover:text-primary"
             }`}
-            title="Toggle logistics supply & enforcement vectors"
+            title="Toggle freight and enforcement transit corridors"
           >
             <GitBranch className="w-3 h-3" />
-            <span>ARCS: {showVectors ? "ON" : "OFF"}</span>
+            <span>Corridors: {showVectors ? "ON" : "OFF"}</span>
           </button>
         </div>
       </div>
@@ -622,6 +622,14 @@ export default function MapViewport({
       <div className="absolute bottom-20 left-20 flex flex-wrap gap-6 z-10 max-w-xl pointer-events-auto">
         {(["dumping", "noise", "medicaid", "permits", "evidence", "zones"] as LayerId[]).map((layerId, idx) => {
           const isActive = activeLayers.has(layerId);
+          const layerLabels: Record<LayerId, string> = {
+            dumping: "DSNY Dumping (50%)",
+            noise: "DEP Idling (25%)",
+            medicaid: "Healthcare (T2024)",
+            permits: "DOB Complaints",
+            evidence: "Evidence Packs",
+            zones: "Active Corridors"
+          };
           return (
             <button
               key={layerId}
@@ -639,7 +647,7 @@ export default function MapViewport({
               }}
             >
               <span className="text-9 opacity-50 font-mono">{idx + 1}</span>
-              <span>{layerId === "medicaid" ? "Medicaid ($38M)" : layerId === "noise" ? "CAC Idling" : layerId}</span>
+              <span>{layerLabels[layerId]}</span>
             </button>
           );
         })}
