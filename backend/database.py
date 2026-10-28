@@ -73,12 +73,32 @@ def get_sync_db():
 get_db = get_sync_db
 
 # Health check for database
+def check_db_connection() -> bool:
+    """Verify synchronous database connectivity"""
+    try:
+        with sync_engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+            return True
+    except Exception as e:
+        logger.error(f"Database connection check failed: {e}")
+        return False
+
+def get_db_stats() -> dict:
+    """Return connection pool statistics"""
+    pool = sync_engine.pool
+    return {
+        "size": pool.size() if hasattr(pool, "size") else 0,
+        "checked_in_connections": pool.checkedin() if hasattr(pool, "checkedin") else 0,
+        "overflow": pool.overflow() if hasattr(pool, "overflow") else 0,
+    }
+
 async def check_database_health():
     """Verify database connectivity and performance"""
     try:
         async with AsyncSessionLocal() as session:
-            result = await session.execute("SELECT 1")
+            result = await session.execute(text("SELECT 1"))
             return {"status": "healthy", "latency_ms": "<10"}
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
         return {"status": "unhealthy", "error": str(e)}
+
