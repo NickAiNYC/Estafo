@@ -144,7 +144,6 @@ export default function MapViewport({
   hoveredKpiLayer,
   viewState,
   onViewStateChange,
-  onToggleLayer,
 }: MapViewportProps) {
   // Enhanced visualization toggles
   const [renderMode, setRenderMode] = useState<"HEX_3D" | "HEATMAP">("HEX_3D");
@@ -527,130 +526,34 @@ export default function MapViewport({
         </div>
       )}
 
-      {/* Camera Flight Control (Top Right) */}
-      <div className="absolute top-16 right-16 flex flex-col gap-6 z-20 pointer-events-auto">
-        <div className="bg-surface/90 backdrop-blur-md border border-border p-6 rounded-sm shadow-panel flex items-center gap-6">
-          <div className="text-10 font-mono text-muted flex items-center gap-4 px-6 border-r border-border">
-            <Compass className="w-3.5 h-3.5 text-emerald" />
-            <span>CAMERA</span>
-          </div>
-          <div className="flex gap-4">
-            <button
-              onClick={() => handleCameraPreset("OVERVIEW")}
-              className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => handleCameraPreset("MIDTOWN")}
-              className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
-            >
-              Midtown
-            </button>
-            <button
-              onClick={() => handleCameraPreset("MASPETH")}
-              className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
-            >
-              Maspeth
-            </button>
-            <button
-              onClick={() => handleCameraPreset("HUNTS")}
-              className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
-            >
-              Hunts Point
-            </button>
-            <button
-              onClick={() => handleCameraPreset("SUNSET")}
-              className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-secondary hover:text-white rounded-sm text-10 font-mono border border-border transition-colors cursor-pointer"
-            >
-              Sunset Park
-            </button>
-            <button
-              onClick={() => handleCameraPreset("FLAT")}
-              className="px-8 py-4 bg-canvas/80 hover:bg-canvas text-muted hover:text-white rounded-sm text-10 font-mono border border-border flex items-center gap-4 transition-colors cursor-pointer"
-              title="Reset to Top-Down 2D"
-            >
-              <RotateCw className="w-3 h-3" />
-              <span>2D</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Viewport Rendering Mode & Corridor Switches */}
-        <div className="bg-surface/90 backdrop-blur-md border border-border p-6 rounded-sm shadow-panel flex items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setRenderMode("HEX_3D")}
-              className={`flex items-center gap-4 px-8 py-4 rounded-sm text-10 font-mono border transition-colors cursor-pointer ${
-                renderMode === "HEX_3D"
-                  ? "bg-steel-blue/20 border-steel-blue text-steel-blue font-bold"
-                  : "bg-canvas/60 border-border text-muted hover:text-primary"
-              }`}
-            >
-              <Box className="w-3 h-3" />
-              <span>3D Density</span>
-            </button>
-            <button
-              onClick={() => setRenderMode("HEATMAP")}
-              className={`flex items-center gap-4 px-8 py-4 rounded-sm text-10 font-mono border transition-colors cursor-pointer ${
-                renderMode === "HEATMAP"
-                  ? "bg-amber-500/20 border-amber-500 text-amber-400 font-bold"
-                  : "bg-canvas/60 border-border text-muted hover:text-primary"
-              }`}
-            >
-              <Flame className="w-3 h-3" />
-              <span>Heatmap</span>
-            </button>
-          </div>
-
-          <button
-            onClick={() => setShowVectors(prev => !prev)}
-            className={`flex items-center gap-4 px-8 py-4 rounded-sm text-10 font-mono border transition-colors cursor-pointer ${
-              showVectors
-                ? "bg-emerald/20 border-emerald text-emerald font-bold"
-                : "bg-canvas/60 border-border text-muted hover:text-primary"
-            }`}
-            title="Toggle freight and enforcement transit corridors"
+      {/* Compact map controls. Layer switches are in the summary row above the map. */}
+      <div className="absolute left-3 right-3 top-3 z-20 flex flex-wrap items-center gap-2 pointer-events-auto">
+        <label className="flex items-center gap-2 rounded-lg border border-border-highlight bg-surface/95 px-3 py-2 text-sm text-secondary shadow-panel">
+          <Compass className="h-4 w-4" />
+          <span className="sr-only">Map area</span>
+          <select
+            aria-label="Map area"
+            defaultValue="OVERVIEW"
+            onChange={(event) => handleCameraPreset(event.target.value as "MIDTOWN" | "MASPETH" | "SUNSET" | "HUNTS" | "OVERVIEW")}
+            className="max-w-[140px] bg-transparent text-primary focus:outline-none"
           >
-            <GitBranch className="w-3 h-3" />
-            <span>Corridors: {showVectors ? "ON" : "OFF"}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Layer Toggles (Bottom Left) */}
-      <div className="absolute bottom-20 left-20 flex flex-wrap gap-6 z-10 max-w-xl pointer-events-auto">
-        {(["dumping", "noise", "medicaid", "permits", "evidence", "zones"] as LayerId[]).map((layerId, idx) => {
-          const isActive = activeLayers.has(layerId);
-          const layerLabels: Record<LayerId, string> = {
-            dumping: "DSNY Dumping (50%)",
-            noise: "DEP Idling (25%)",
-            medicaid: "Healthcare (T2024)",
-            permits: "DOB Complaints",
-            evidence: "Evidence Packs",
-            zones: "Active Corridors"
-          };
-          return (
-            <button
-              key={layerId}
-              onClick={() => onToggleLayer(layerId)}
-              className={`
-                px-10 py-5 rounded-sm text-11 font-mono uppercase tracking-tight
-                transition-all duration-150 border backdrop-blur-md flex items-center gap-6 cursor-pointer
-                ${isActive 
-                  ? 'bg-surface/95 border-border-highlight text-primary shadow-tactical font-bold' 
-                  : 'bg-canvas/80 border-border text-muted hover:text-secondary'}
-              `}
-              style={{
-                borderBottomColor: isActive ? `rgb(${THEME_COLORS[layerId === 'noise' ? 'noise' : layerId === 'permits' ? 'permits' : layerId === 'medicaid' ? 'medicaid' : layerId === 'evidence' ? 'evidence' : layerId === 'zones' ? 'zones' : 'dumping'].join(',')})` : 'transparent',
-                borderBottomWidth: isActive ? '2px' : '1px'
-              }}
-            >
-              <span className="text-9 opacity-50 font-mono">{idx + 1}</span>
-              <span>{layerLabels[layerId]}</span>
-            </button>
-          );
-        })}
+            <option value="OVERVIEW">NYC overview</option>
+            <option value="MIDTOWN">Midtown</option>
+            <option value="MASPETH">Maspeth</option>
+            <option value="HUNTS">Hunts Point</option>
+            <option value="SUNSET">Sunset Park</option>
+          </select>
+        </label>
+        <button type="button" onClick={() => handleCameraPreset("FLAT")} className="flex items-center gap-2 rounded-lg border border-border-highlight bg-surface/95 px-3 py-2 text-sm text-secondary hover:text-primary shadow-panel">
+          <RotateCw className="h-4 w-4" /> 2D view
+        </button>
+        <button type="button" onClick={() => setRenderMode(renderMode === "HEX_3D" ? "HEATMAP" : "HEX_3D")} className="flex items-center gap-2 rounded-lg border border-border-highlight bg-surface/95 px-3 py-2 text-sm text-secondary hover:text-primary shadow-panel">
+          {renderMode === "HEX_3D" ? <Flame className="h-4 w-4" /> : <Box className="h-4 w-4" />}
+          {renderMode === "HEX_3D" ? "Show heatmap" : "Show 3D"}
+        </button>
+        <button type="button" onClick={() => setShowVectors((value) => !value)} aria-pressed={showVectors} className="flex items-center gap-2 rounded-lg border border-border-highlight bg-surface/95 px-3 py-2 text-sm text-secondary hover:text-primary shadow-panel">
+          <GitBranch className="h-4 w-4" /> Corridors {showVectors ? "on" : "off"}
+        </button>
       </div>
     </div>
   );

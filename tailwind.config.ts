@@ -68,7 +68,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "monospace"],
-        outfit: ["var(--font-outfit)", "sans-serif"],
+        outfit: ["var(--font-jakarta)", "sans-serif"],
       },
       animation: {
         pingSlow: "ping 3s cubic-bezier(0, 0, 0.2, 1) infinite",

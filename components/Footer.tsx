@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Activity, ShieldCheck, Database, RefreshCw, AlertTriangle, XCircle, CheckCircle2, ChevronUp, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 
 export type FeedTier = "LIVE_SOURCED" | "SYNTHETIC_DEMO";
 
@@ -27,257 +27,60 @@ interface FooterProps {
   isRefreshing?: boolean;
 }
 
-export default function Footer({
-  latencyMs = 42,
-  feedStatus = "ONLINE",
-  feeds = [],
-  onRefreshFeeds,
-  isRefreshing = false,
-}: FooterProps) {
-  const [time, setTime] = useState("...");
-  const [showTelemetryDrawer, setShowTelemetryDrawer] = useState(false);
-
-  useEffect(() => {
-    const update = () => {
-      setTime(
-        new Intl.DateTimeFormat("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: "UTC",
-        }).format(new Date())
-      );
-    };
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const liveSourcedFeeds = feeds.filter(f => f.tier === "LIVE_SOURCED");
-  const demoFeeds = feeds.filter(f => f.tier === "SYNTHETIC_DEMO");
-  const liveSourcedCount = liveSourcedFeeds.reduce((acc, f) => acc + (f.count || 0), 0);
-  const demoCount = demoFeeds.reduce((acc, f) => acc + (f.count || 0), 0);
-
-  const getStatusBadge = (status: "ONLINE" | "DEGRADED" | "OFFLINE" | "SYNCING" | "RESTRICTED") => {
-    switch (status) {
-      case "ONLINE":
-        return (
-          <span className="flex items-center gap-4 text-emerald font-bold">
-            <CheckCircle2 className="w-3 h-3" /> ONLINE
-          </span>
-        );
-      case "RESTRICTED":
-        return (
-          <span className="flex items-center gap-4 text-amber-400 font-bold">
-            <ShieldCheck className="w-3 h-3" /> RESTRICTED
-          </span>
-        );
-      case "DEGRADED":
-        return (
-          <span className="flex items-center gap-4 text-gold font-bold">
-            <AlertTriangle className="w-3 h-3" /> DEGRADED
-          </span>
-        );
-      case "OFFLINE":
-        return (
-          <span className="flex items-center gap-4 text-red-400 font-bold">
-            <XCircle className="w-3 h-3" /> OFFLINE
-          </span>
-        );
-      case "SYNCING":
-        return (
-          <span className="flex items-center gap-4 text-cyan-400 font-bold">
-            <RefreshCw className="w-3 h-3 animate-spin" /> SYNCING
-          </span>
-        );
-    }
-  };
-
-  const getTierBadge = (tier: FeedTier) => {
-    if (tier === "LIVE_SOURCED") {
-      return (
-        <span className="px-6 py-1 rounded bg-emerald/15 text-emerald border border-emerald/40 text-9 font-bold tracking-wider uppercase">
-          LIVE SOURCED
-        </span>
-      );
-    }
-    return (
-      <span className="px-6 py-1 rounded bg-amber-500/15 text-amber-300 border border-amber-500/40 text-9 font-bold tracking-wider uppercase">
-        SYNTHETIC DEMO
-      </span>
-    );
-  };
+export default function Footer({ feedStatus = "SYNCING", feeds = [], onRefreshFeeds, isRefreshing = false }: FooterProps) {
+  const [showDetails, setShowDetails] = useState(false);
+  const liveCount = feeds.filter((feed) => feed.tier === "LIVE_SOURCED" && feed.status === "ONLINE").reduce((sum, feed) => sum + feed.count, 0);
+  const demoCount = feeds.filter((feed) => feed.tier === "SYNTHETIC_DEMO").reduce((sum, feed) => sum + feed.count, 0);
+  const status = isRefreshing ? "SYNCING" : feedStatus;
+  const statusColor = status === "ONLINE" ? "text-emerald" : status === "OFFLINE" ? "text-red-400" : "text-amber-300";
 
   return (
-    <div className="relative shrink-0 z-30 select-none font-mono">
-      {/* Expandable Feed Telemetry Drawer */}
-      {showTelemetryDrawer && (
-        <div className="bg-canvas/95 backdrop-blur-md border-t border-border-highlight p-16 shadow-tactical max-h-[340px] overflow-y-auto">
-          <div className="max-w-7xl mx-auto space-y-12">
-            <div className="flex items-center justify-between pb-8 border-b border-border">
-              <div className="flex items-center gap-8">
-                <Activity className="w-4 h-4 text-emerald" />
-                <span className="text-12 font-bold uppercase tracking-wider text-primary">
-                  Data Feed Telemetry & Source Verification
-                </span>
-                <span className="text-10 text-emerald px-6 py-1 bg-emerald/10 rounded-sm border border-emerald/30 font-bold">
-                  {liveSourcedFeeds.length} LIVE SOURCED
-                </span>
-                <span className="text-10 text-amber-300 px-6 py-1 bg-amber-500/10 rounded-sm border border-amber-500/30 font-bold">
-                  {demoFeeds.length} SYNTHETIC DEMO
-                </span>
-              </div>
-              <div className="flex items-center gap-8">
-                {onRefreshFeeds && (
-                  <button
-                    onClick={onRefreshFeeds}
-                    disabled={isRefreshing}
-                    className="flex items-center gap-6 px-10 py-4 bg-emerald/20 hover:bg-emerald/30 border border-emerald/60 text-emerald text-10 font-bold rounded-sm transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
-                    <span>{isRefreshing ? "SYNCING..." : "SYNC ALL FEEDS NOW"}</span>
-                  </button>
-                )}
-                <button
-                  onClick={() => setShowTelemetryDrawer(false)}
-                  className="px-8 py-4 bg-surface hover:bg-surface-hover border border-border text-muted hover:text-primary text-10 rounded-sm cursor-pointer"
-                >
-                  ✕ Close
-                </button>
-              </div>
+    <div className="relative z-30 shrink-0 border-t border-border bg-canvas text-sm">
+      {showDetails && (
+        <div className="max-h-[35vh] overflow-auto border-b border-border bg-surface p-4 md:p-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-semibold text-primary">Data sources</h2>
+              <p className="text-xs text-secondary">Live records and sample data are counted separately.</p>
             </div>
-
-            {/* Feeds Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-11">
-                <thead>
-                  <tr className="text-muted border-b border-border/60 text-9 uppercase tracking-wider">
-                    <th className="py-6 px-8">Feed Name</th>
-                    <th className="py-6 px-8">Data Tier</th>
-                    <th className="py-6 px-8">Source Endpoint</th>
-                    <th className="py-6 px-8">Endpoint Status</th>
-                    <th className="py-6 px-8 text-right">Records</th>
-                    <th className="py-6 px-8 text-right">Latency</th>
-                    <th className="py-6 px-8">Last Sync (UTC)</th>
-                    <th className="py-6 px-8">Diagnostic Note</th>
+            <button type="button" onClick={() => setShowDetails(false)} className="rounded-lg border border-border-highlight px-3 py-2 text-xs text-secondary hover:text-primary">Close</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[650px] text-left text-xs">
+              <thead className="border-b border-border text-secondary">
+                <tr><th className="py-2 pr-4">Source</th><th className="py-2 pr-4">Type</th><th className="py-2 pr-4">Status</th><th className="py-2 pr-4 text-right">Records</th><th className="py-2 pr-4">Last checked</th><th className="py-2">Note</th></tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {feeds.map((feed) => (
+                  <tr key={feed.id}>
+                    <td className="py-3 pr-4 text-primary"><span className="font-medium">{feed.name}</span><span className="block text-muted">{feed.source}</span></td>
+                    <td className="py-3 pr-4 text-secondary">{feed.tier === "LIVE_SOURCED" ? "Live source" : "Sample"}</td>
+                    <td className="py-3 pr-4 text-secondary">{feed.status.toLowerCase()}</td>
+                    <td className="py-3 pr-4 text-right tabular-nums text-primary">{feed.count.toLocaleString()}</td>
+                    <td className="py-3 pr-4 text-secondary">{feed.lastSync || "—"}</td>
+                    <td className="py-3 text-secondary">{feed.error || (feed.tier === "SYNTHETIC_DEMO" ? "Illustrative data" : "—")}</td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {feeds.map((feed) => (
-                    <tr key={feed.id} className="hover:bg-surface/40 transition-colors">
-                      <td className="py-6 px-8 font-bold text-primary">{feed.name}</td>
-                      <td className="py-6 px-8">{getTierBadge(feed.tier)}</td>
-                      <td className="py-6 px-8 text-muted text-10">{feed.source}</td>
-                      <td className="py-6 px-8">{getStatusBadge(feed.status)}</td>
-                      <td className="py-6 px-8 text-right font-bold text-secondary">
-                        {feed.count.toLocaleString()}
-                      </td>
-                      <td className="py-6 px-8 text-right text-muted">{feed.latencyMs}ms</td>
-                      <td className="py-6 px-8 text-muted">{feed.lastSync || "—"}</td>
-                      <td className="py-6 px-8">
-                        {feed.error ? (
-                          <span className="text-red-400 font-bold bg-red-950/40 px-6 py-1 rounded-sm border border-red-500/30">
-                            {feed.error}
-                          </span>
-                        ) : feed.tier === "SYNTHETIC_DEMO" ? (
-                          <span className="text-amber-400/80 text-10">Unverified workflow demo</span>
-                        ) : (
-                          <span className="text-emerald/80 text-10">Verified live API</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  {feeds.length === 0 && (
-                    <tr>
-                      <td colSpan={8} className="py-16 text-center text-muted">
-                        No feeds configured or telemetry initializing...
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                ))}
+                {feeds.length === 0 && <tr><td colSpan={6} className="py-4 text-secondary">Sources have not loaded yet.</td></tr>}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
-
-      {/* Primary Footer Bar */}
-      <footer className="h-[36px] px-16 flex items-center justify-between border-t border-border bg-canvas text-10 text-muted shrink-0">
-        <div className="flex items-center gap-12">
-          {/* Live Ingestion Status */}
-          <span className="flex items-center gap-6">
-            {isRefreshing ? (
-              <span className="flex items-center gap-4 text-cyan-400">
-                <RefreshCw className="w-3 h-3 animate-spin" />
-                <span>INGESTION: SYNCING...</span>
-              </span>
-            ) : feedStatus === "ONLINE" ? (
-              <span className="flex items-center gap-4 text-emerald">
-                <Activity className="w-3 h-3 animate-pulse" />
-                <span>INGESTION: {liveSourcedFeeds.length} LIVE / {demoFeeds.length} DEMO ({latencyMs}ms)</span>
-              </span>
-            ) : feedStatus === "DEGRADED" ? (
-              <span className="flex items-center gap-4 text-gold">
-                <AlertTriangle className="w-3 h-3" />
-                <span>INGESTION: DEGRADED ({latencyMs}ms)</span>
-              </span>
-            ) : (
-              <span className="flex items-center gap-4 text-red-400">
-                <XCircle className="w-3 h-3" />
-                <span>INGESTION: OFFLINE ({latencyMs}ms)</span>
-              </span>
-            )}
-          </span>
-
-          <span className="text-border">|</span>
-
-          {/* Telemetry Drawer Toggle Button */}
-          <button
-            onClick={() => setShowTelemetryDrawer((prev) => !prev)}
-            className="flex items-center gap-4 text-secondary hover:text-primary transition-colors cursor-pointer bg-surface/60 hover:bg-surface border border-border px-6 py-2 rounded-sm"
-            title="Inspect feed-level diagnostics, tiers, and latencies"
-          >
-            <span>TELEMETRY ({feeds.length} FEEDS)</span>
-            {showTelemetryDrawer ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-          </button>
-
-          {/* Quick Refresh Button */}
+      <footer className="flex min-h-12 flex-wrap items-center justify-between gap-2 px-4 py-2 md:px-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className={`font-medium ${statusColor}`}>Sources: {status.toLowerCase()}</span>
+          <span className="text-secondary">{liveCount} live records · {demoCount} sample records</span>
+        </div>
+        <div className="flex items-center gap-2">
           {onRefreshFeeds && (
-            <button
-              onClick={onRefreshFeeds}
-              disabled={isRefreshing}
-              className="flex items-center gap-4 text-steel-blue hover:text-cyan-400 transition-colors cursor-pointer disabled:opacity-50"
-              title="Refresh all data feeds"
-            >
-              <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">SYNC</span>
+            <button type="button" onClick={onRefreshFeeds} disabled={isRefreshing} className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-secondary hover:bg-surface hover:text-primary disabled:opacity-50">
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />Refresh
             </button>
           )}
-
-          <span className="text-border hidden md:inline">|</span>
-
-          <span className="flex items-center gap-4 text-secondary hidden md:inline-flex">
-            <Database className="w-3 h-3 text-steel-blue" />
-            <span>LIVE SOURCE: NYC SODA (erm2-nwe9)</span>
-          </span>
-
-          <span className="text-border hidden md:inline">|</span>
-
-          <span className="hidden lg:inline">
-            RECORDS: <span className="text-emerald font-bold">{liveSourcedCount} LIVE</span> <span className="text-muted">/</span> <span className="text-amber-400 font-bold">{demoCount} DEMO</span>
-          </span>
-        </div>
-
-        <div className="flex items-center gap-12">
-          <span className="flex items-center gap-4 text-gold hidden sm:inline-flex">
-            <ShieldCheck className="w-3 h-3 text-gold" />
-            <span>AUDIT: CASH-SEGREGATION PROTOTYPE (GATE G4)</span>
-          </span>
-          <span className="text-border">|</span>
-          <span className="text-primary font-bold">
-            UTC {time}
-          </span>
+          <button type="button" onClick={() => setShowDetails((value) => !value)} aria-expanded={showDetails} className="flex items-center gap-1 rounded-lg border border-border-highlight px-3 py-1.5 text-secondary hover:text-primary">
+            Source details {showDetails ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+          </button>
         </div>
       </footer>
     </div>
