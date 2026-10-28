@@ -1,0 +1,4 @@
+# Vetted NYC OASAS Part 822 Outpatient Clinic NPI Allowlist (HCPCS H0005)
+# Sourced from NYS OASAS Provider 51310 / Program 53489 and CMS NPPES Registry
+1235760927
+1932061611

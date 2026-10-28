@@ -10,32 +10,33 @@
     "address": "63-36 99TH ST, Queens, NY 11374",
     "lat": 40.7275,
     "lon": -73.8596,
-    "risk_score": 82,
-    "exposure_amount": 0,
-    "monthly_intensity": 0,
-    "months_active": 0,
-    "total_claims": 0,
-    "total_beneficiaries": 0,
-    "spend_per_beneficiary": 0,
-    "claims_per_beneficiary": 0,
-    "source_release": "CMS_NPPES_API_2026 / NYS_OASAS_51310",
+    "risk_score": 85,
+    "exposure_amount": 2780731.31,
+    "monthly_intensity": 46345.52,
+    "months_active": 60,
+    "total_claims": 53213,
+    "total_beneficiaries": 3964,
+    "spend_per_beneficiary": 701.5,
+    "claims_per_beneficiary": 13.42,
+    "source_release": "HHS_HCPCS_2026-02-09_OFFICIAL",
     "source_sha256": "3387c48ea9600c15e8e6b43e68599b814cc66b24723e8d7aba2f556a8136f149",
     "service_code": "H0005: Outpatient Chemical Dependence Group Counseling",
     "selection_rule": "NYS OASAS Provider 51310 / Program 53489. Practice location at 63-36 99th St matched to CMS NPPES registry.",
-    "uncertainty": "Public registry record (NPPES 1235760927 / OASAS #51310). Aggregate spending baseline pending local HHS ingestion for HCPCS H0005. Co-located with CitiMedical Services P.C. (1275172280 / 1447597828).",
+    "uncertainty": "Verified official HHS Medicaid aggregate spending baseline ($2,780,731.31 across 53,213 group counseling claims from 2020-07 to 2024-12). Calendar velocity surges identified in 2020-10 (3.22x) and 2024-08 (3.08x). High volume alone does not establish fraud; attendance rosters, transport logs, and counseling records must be corroborated.",
     "z_score": 2.1,
     "check_digit_valid": true,
     "is_nyc_verified": true,
     "is_synthetic": false,
-    "verification_source": "CMS_NPPES_API_V2_1_OFFICIAL",
+    "verification_source": "HHS_MEDICAID_PROVIDER_SPENDING_OFFICIAL",
     "estimated_bounty": 0,
     "anomaly_types": [
       "Co-Located Multi-Practice Hub",
-      "Ambulette Destination / Transit Lead (+2.1\u03c3)"
+      "Ambulette Destination / Transit Lead (+2.1\u03c3)",
+      "Calendar Velocity Surge (3.22x in 2020-10, 3.08x in 2024-08)"
     ],
     "exculpatory_notes": "Co-located with CitiMedical Services P.C. (1275172280 / 1447597828). Shared medical hub explains ambulette activity. Brief visits permitted under OASAS brief treatment codes (H0004+U5, 8\u201314 min) and physical therapy (97110, 15-min units). Do not follow or surveil patients.",
     "status": "UNREVIEWED",
-    "lead_utility": "PENDING_HHS_INGESTION"
+    "lead_utility": "VERIFIED_HHS_SPENDING"
   },
   {
     "id": "NYC-OASAS-1932061611",
@@ -60,7 +61,7 @@
     "source_sha256": "3387c48ea9600c15e8e6b43e68599b814cc66b24723e8d7aba2f556a8136f149",
     "service_code": "H0005: Outpatient Chemical Dependence Group Counseling",
     "selection_rule": "NYS OASAS Provider 51310 / Program 53489 secondary location. Enumerated 2025-12-01 with CEO Emanuil Kalendarev.",
-    "uncertainty": "Public registry record (NPPES 1932061611). Shared leadership establishes organizational link, not proof of billing scheme.",
+    "uncertainty": "Enumerated 2025-12-01. Historical claims absent from official 2018–2024 HHS release because enumeration date post-dates the release window. Shared leadership establishes organizational link, not proof of billing scheme.",
     "z_score": 1.5,
     "check_digit_valid": true,
     "is_nyc_verified": true,
@@ -70,9 +71,9 @@
     "anomaly_types": [
       "Secondary Multi-Specialty Clinic Site"
     ],
-    "exculpatory_notes": "Shared leadership with Rego Park site is an organizational link. Spending unverified pending H0005 HHS ingestion.",
+    "exculpatory_notes": "Shared leadership with Rego Park site is an organizational link. Enumeration post-dates 2018–2024 HHS window.",
     "status": "UNREVIEWED",
-    "lead_utility": "PENDING_HHS_INGESTION"
+    "lead_utility": "POST_DATASET_ENUMERATION"
   },
   {
     "id": "NYC-ADHC-1073064267",

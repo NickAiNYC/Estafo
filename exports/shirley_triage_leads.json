@@ -2,8 +2,8 @@
   "metadata": {
     "title": "NPPES Co-Location & Public Spending Research Leads",
     "classification": "UNVERIFIED_PRELIMINARY_RESEARCH_LEADS",
-    "generated_at": "2026-10-28T04:36:09.220096Z",
-    "hhs_spending_status": "Local database holds 18 rows across 1 NPI(s). All other NPI spend is unimported ($0.00 matched).",
+    "generated_at": "2026-10-28T04:57:05.905184Z",
+    "hhs_spending_status": "Local database holds 96 rows across 2 NPI(s). All other NPI spend is unimported ($0.00 matched).",
     "leie_status": "VERIFIED_FILE_INGESTED",
     "disclaimer": "Co-location at a commercial address does NOT establish common ownership, shell companies, or shared billing. Suite notation indicates an address format clue, NOT a physical square footage or fire capacity measurement. Street observations alone do not establish billing fraud and do not guarantee whistleblower rewards under WHIP or FCA."
   },
@@ -1131,5 +1131,28 @@
     }
   ],
   "spending_post_exclusion_intercepts": [],
-  "calendar_velocity_surges": []
+  "calendar_velocity_surges": [
+    {
+      "billing_npi": "1235760927",
+      "name": "REGO PARK COUNSELING LLC",
+      "address": "63-36 99TH ST, Queens, NY 11374",
+      "hcpcs_code": "H0005",
+      "current_month": "2020-10-01",
+      "current_spend": 55373.55,
+      "prior_month": "2020-07-01",
+      "prior_spend": 17188.31,
+      "acceleration_multiple": 3.22
+    },
+    {
+      "billing_npi": "1235760927",
+      "name": "REGO PARK COUNSELING LLC",
+      "address": "63-36 99TH ST, Queens, NY 11374",
+      "hcpcs_code": "H0005",
+      "current_month": "2024-08-01",
+      "current_spend": 30108.49,
+      "prior_month": "2024-05-01",
+      "prior_spend": 9787.54,
+      "acceleration_multiple": 3.08
+    }
+  ]
 }
