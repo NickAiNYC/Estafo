@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import type { FeedTelemetryItem } from "@/components/Footer";
+import { useTelemetryHeartbeat, formatTimeAgo } from "@/hooks/useTelemetryHeartbeat";
 
 interface SourceDetailsDrawerProps {
   isOpen: boolean;
@@ -18,6 +19,9 @@ export default function SourceDetailsDrawer({
   onRefresh,
   isRefreshing = false,
 }: SourceDetailsDrawerProps) {
+  // Realtime SSE Heartbeat Hook active whenever drawer is visible
+  const { telemetry, isConnected } = useTelemetryHeartbeat(isOpen);
+
   // Listen for Escape key to close drawer
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,14 +35,21 @@ export default function SourceDetailsDrawer({
 
   if (!isOpen) return null;
 
-  // Extract feed counts or fallback to calibrated values
+  // Extract dynamic feed counts or fallback to live telemetry stream
   const sodaFeed = feeds.find((f) => f.id === "socrata_311");
   const medicaidFeed = feeds.find((f) => f.id === "medicaid_leads");
 
-  const sodaCount = sodaFeed ? sodaFeed.count : 150;
-  const sodaLatency = sodaFeed?.latencyMs ? `${sodaFeed.latencyMs}ms` : "142ms";
-  const medicaidCount = medicaidFeed ? medicaidFeed.count : 448;
-  const medicaidLatency = medicaidFeed?.latencyMs ? `${medicaidFeed.latencyMs}ms` : "210ms";
+  const sodaCount = sodaFeed ? sodaFeed.count : (telemetry.feeds.socrata_311.records ?? 150);
+  const medicaidCount = medicaidFeed ? medicaidFeed.count : (telemetry.feeds.medicaid_leads.records ?? 448);
+
+  const sodaLatency = `${telemetry.feeds.socrata_311.latencyMs}ms`;
+  const medicaidLatency = `${telemetry.feeds.medicaid_leads.latencyMs}ms`;
+  const ledgerLatency = `${telemetry.feeds.commercial_ledger.latencyMs}ms`;
+  const graphLatency = `${telemetry.feeds.nexus_graph.latencyMs}ms`;
+
+  const sodaSync = formatTimeAgo(telemetry.feeds.socrata_311.lastSyncAgoSeconds);
+  const medicaidSync = formatTimeAgo(telemetry.feeds.medicaid_leads.lastSyncAgoSeconds);
+  const ledgerSync = formatTimeAgo(telemetry.feeds.commercial_ledger.lastSyncAgoSeconds);
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 bg-[#141416]/95 backdrop-blur-md border-t border-white/[0.12] shadow-2xl transition-all duration-300 animate-in slide-in-from-bottom duration-200">
@@ -46,12 +57,20 @@ export default function SourceDetailsDrawer({
         {/* Drawer Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-400"
+              }`}
+              title={isConnected ? "Live SSE Stream Active" : "Connecting SSE stream..."}
+            ></span>
             <span className="font-mono text-xs uppercase tracking-wider text-[#EDECE9]">
               System Telemetry & Feed Diagnostics
             </span>
             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400 border border-white/[0.06]">
               4 Active
+            </span>
+            <span className="hidden sm:inline-flex text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              {isConnected ? "LIVE SSE HEARTBEAT" : "CONNECTING..."}
             </span>
           </div>
           <button
@@ -80,11 +99,11 @@ export default function SourceDetailsDrawer({
               </div>
               <div className="flex justify-between">
                 <span>Latency:</span>
-                <span className="text-zinc-200">{sodaLatency}</span>
+                <span className="text-emerald-400 tabular-nums">{sodaLatency}</span>
               </div>
               <div className="flex justify-between">
                 <span>Last Sync:</span>
-                <span className="text-zinc-500">2m ago</span>
+                <span className="text-zinc-300 tabular-nums">{sodaSync}</span>
               </div>
             </div>
           </div>
@@ -104,11 +123,11 @@ export default function SourceDetailsDrawer({
               </div>
               <div className="flex justify-between">
                 <span>Latency:</span>
-                <span className="text-zinc-200">{medicaidLatency}</span>
+                <span className="text-emerald-400 tabular-nums">{medicaidLatency}</span>
               </div>
               <div className="flex justify-between">
                 <span>Last Sync:</span>
-                <span className="text-zinc-500">12m ago</span>
+                <span className="text-zinc-300 tabular-nums">{medicaidSync}</span>
               </div>
             </div>
           </div>
@@ -128,11 +147,11 @@ export default function SourceDetailsDrawer({
               </div>
               <div className="flex justify-between">
                 <span>Latency:</span>
-                <span className="text-zinc-200">89ms</span>
+                <span className="text-emerald-400 tabular-nums">{ledgerLatency}</span>
               </div>
               <div className="flex justify-between">
                 <span>Last Sync:</span>
-                <span className="text-zinc-500">Just now</span>
+                <span className="text-zinc-300 tabular-nums">{ledgerSync}</span>
               </div>
             </div>
           </div>
@@ -155,8 +174,8 @@ export default function SourceDetailsDrawer({
                 <span className="text-zinc-200">V2 Core</span>
               </div>
               <div className="flex justify-between">
-                <span>Status:</span>
-                <span className="text-zinc-500">Nominal</span>
+                <span>Latency:</span>
+                <span className="text-emerald-400 tabular-nums">{graphLatency}</span>
               </div>
             </div>
           </div>
