@@ -47,6 +47,7 @@ from routes.data_quality import router as data_quality_router
 from routes.enrollment import router as enrollment_router
 from routes.api_keys import router as api_keys_router
 from routes.investigation_leads import router as leads_router
+from routes.intel import router as intel_router
 
 
 # API v1 routes
@@ -306,6 +307,7 @@ app.include_router(auth_router, tags=["Authentication", "v1"])
 app.include_router(agent_router, tags=["AI Agent", "v1"])
 app.include_router(api_keys_router, tags=["API Keys", "v1"])
 app.include_router(leads_router)
+app.include_router(intel_router)
 
 
 # Include health router again at root for Railway healthcheck

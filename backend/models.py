@@ -775,3 +775,307 @@ class LeadDecisionAudit(Base):
         return f"<LeadDecisionAudit(npi={self.billing_npi}, v={self.version}, outcome={self.outcome}, by={self.reviewed_by})>"
 
 
+# =============================================================================
+# ENGINE V3 - Real Data Pipeline, Outcomes Database, SOL Clocks,
+# Geospatial Cross-Signal, and Case-Selection Intelligence
+# =============================================================================
+
+
+class ProviderLocation(Base):
+    """Geocoded practice location for a provider NPI.
+
+    The NPPES full dissemination file carries no latitude/longitude; locations
+    are geocoded from the practice address (registry API, zip centroid, or a
+    geocoding service) and cached here for the 311 x SADC cross-signal.
+    """
+    __tablename__ = "provider_locations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    npi = Column(String(10), unique=True, index=True, nullable=False)
+    practice_address = Column(String(500), nullable=True)
+    city = Column(String(100), nullable=True)
+    state = Column(String(2), nullable=True)
+    zip_code = Column(String(10), nullable=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    borough = Column(String(50), nullable=True)
+    geocode_source = Column(String(50), default="NPPES_PRACTICE_ADDRESS")  # NPPES / ZIP_CENTROID / REGISTRY_API / MANUAL
+    geocode_quality = Column(String(20), default="UNVERIFIED")  # ROOFTOP / ZIP / UNVERIFIED
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<ProviderLocation(npi={self.npi}, lat={self.latitude}, lon={self.longitude})>"
+
+
+class NPPESImportRun(Base):
+    """Provenance for one NPPES full-monthly-file import."""
+    __tablename__ = "nppes_import_runs"
+
+    id = Column(Integer, primary_key=True)
+    file_label = Column(String(200), nullable=False)          # e.g. NPPES_Data_Dissemination_October_2026.zip
+    source_url = Column(Text, nullable=True)
+    source_sha256 = Column(String(64), nullable=False)
+    rows_total = Column(Integer, nullable=False)
+    rows_luhn_valid = Column(Integer, nullable=False)
+    rows_nyc = Column(Integer, nullable=False)
+    rows_deactivated = Column(Integer, default=0)
+    providers_upserted = Column(Integer, default=0)
+    locations_upserted = Column(Integer, default=0)
+    imported_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("source_sha256", name="uq_nppes_import_sha"),
+    )
+
+
+class HHSReleaseRegistry(Base):
+    """Tracks every official HHS Medicaid provider spending release we know about.
+
+    Replaces the 'check the page manually' workflow: the weekly poller discovers
+    releases, records them here, and the release-diff engine compares imports.
+    """
+    __tablename__ = "hhs_release_registry"
+
+    id = Column(Integer, primary_key=True)
+    release_id = Column(String(50), unique=True, nullable=False)  # official publication date YYYY-MM-DD
+    zip_url = Column(Text, nullable=True)
+    expected_sha256 = Column(String(64), nullable=True)
+    status = Column(String(20), default="DISCOVERED", index=True)  # DISCOVERED / IMPORTED / SUPERSEDED / FAILED
+    hcpcs_imported = Column(JSON, default=list)
+    imported_rows = Column(Integer, default=0)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    imported_at = Column(DateTime, nullable=True)
+    notes = Column(Text, nullable=True)
+
+
+class ExclusionScreenRun(Base):
+    """One nightly exclusion screening run (LEIE / NYS OMIG / SAM.gov)."""
+    __tablename__ = "exclusion_screen_runs"
+
+    id = Column(Integer, primary_key=True)
+    source = Column(String(30), nullable=False, index=True)    # LEIE / NYS_OMIG / SAM_GOV
+    source_url = Column(Text, nullable=True)
+    source_sha256 = Column(String(64), nullable=False)
+    exclusion_records = Column(Integer, nullable=False)
+    providers_screened = Column(Integer, nullable=False)
+    matches_found = Column(Integer, default=0)
+    new_matches = Column(Integer, default=0)                    # matches not present in the previous run
+    ran_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    status = Column(String(20), default="OK")                   # OK / FAILED / PARTIAL
+
+    __table_args__ = (
+        UniqueConstraint("source", "source_sha256", name="uq_exclusion_run_source_file"),
+    )
+
+
+class ExclusionMatch(Base):
+    """A provider that matched an exclusion list entry."""
+    __tablename__ = "exclusion_matches"
+
+    id = Column(Integer, primary_key=True)
+    npi = Column(String(10), index=True, nullable=False)
+    provider_name = Column(String(255), nullable=True)
+    source = Column(String(30), nullable=False, index=True)    # LEIE / NYS_OMIG / SAM_GOV
+    match_type = Column(String(20), nullable=False)            # NPI_EXACT / NAME_FUZZY / NPI_AND_NAME
+    match_score = Column(Float, nullable=False)                # 0..1
+    excluded_name = Column(String(255), nullable=True)
+    exclusion_type = Column(String(100), nullable=True)        # e.g. 1128(a)(1) program-related conviction
+    exclusion_date = Column(Date, nullable=True)
+    source_detail_url = Column(Text, nullable=True)
+    first_seen_run_id = Column(Integer, nullable=True)
+    last_seen_run_id = Column(Integer, nullable=True)
+    status = Column(String(20), default="ACTIVE_MATCH", index=True)  # ACTIVE_MATCH / RESOLVED / FALSE_POSITIVE
+    resolution_note = Column(Text, nullable=True)
+    detected_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("idx_exclusion_match_npi_source", "npi", "source"),
+    )
+
+
+class FCAOutcomeCase(Base):
+    """One resolved False Claims Act matter - the outcomes database.
+
+    Calibrates ENPV (P(intervention), relator share, recovery multiple) and
+    doubles as the sales asset for counsel conversations. Seed rows carry a
+    confidence flag and must be re-verified against the primary press release
+    before quoting to a client.
+    """
+    __tablename__ = "fca_outcome_cases"
+
+    id = Column(Integer, primary_key=True)
+    case_label = Column(String(300), nullable=False)           # 'United States ex rel. X v. Acme Health'
+    docket_or_matter = Column(String(200), nullable=True)
+    scheme_type = Column(String(60), nullable=False, index=True)  # SADC_ABUSE / NEMT_KICKBACKS / UP CODING / ...
+    state = Column(String(2), index=True)                      # primary state ('NY' where known)
+    jurisdiction = Column(String(20), default="FEDERAL")       # FEDERAL / NY_STATE / NYC
+    year = Column(Integer, index=True)
+    filed_year = Column(Integer, nullable=True)
+    single_damages = Column(Float, nullable=True)              # actual damages before multipliers
+    penalties = Column(Float, nullable=True)                   # statutory per-claim penalties
+    total_recovery = Column(Float, nullable=True)              # total paid
+    relator_share_amount = Column(Float, nullable=True)
+    relator_share_pct = Column(Float, nullable=True)           # share of total recovery
+    intervened = Column(String(20), nullable=True)             # INTERVENED / DECLINED / UNKNOWN
+    days_filing_to_resolution = Column(Integer, nullable=True)
+    outcome_type = Column(String(30), default="SETTLEMENT")    # SETTLEMENT / JUDGMENT / AGGREGATE_ANNUAL
+    source_url = Column(Text, nullable=True)
+    source_label = Column(String(120), nullable=True)          # DOJ press release / MFCU annual report / news
+    confidence = Column(String(10), default="MEDIUM")          # HIGH / MEDIUM / LOW
+    verified = Column(Boolean, default=False)                  # true only after primary-source check
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class LeadSOLClock(Base):
+    """Statute-of-limitations burn-down clock and time-decayed ENPV for a lead.
+
+    Anchors (each verified by an investigator before the clock is trusted):
+      first_violation_date / latest_violation_date - from billing months
+      government_knowledge_date - earliest public disclosure / agency action
+    Deadlines computed for 31 U.S.C. 3731(b) and the parallel NY State Finance
+    Law Art. 5-B and NYC Admin Code Sec. 5-325 claims.
+    """
+    __tablename__ = "lead_sol_clocks"
+
+    id = Column(Integer, primary_key=True)
+    npi = Column(String(10), unique=True, index=True, nullable=False)
+    hcpcs_code = Column(String(10), default="T2024")
+
+    first_violation_date = Column(Date, nullable=True)
+    latest_violation_date = Column(Date, nullable=True)
+    government_knowledge_date = Column(Date, nullable=True)
+    anchor_verified = Column(Boolean, default=False)
+
+    federal_deadline = Column(Date, nullable=True)             # earliest applicable 3731(b) date
+    federal_bar_date = Column(Date, nullable=True)             # 10-year backstop
+    ny_state_deadline = Column(Date, nullable=True)
+    nyc_deadline = Column(Date, nullable=True)
+
+    days_remaining = Column(Integer, nullable=True)
+    urgency_tier = Column(String(20), default="UNRANKED")      # FILE_NOW / HIGH / MODERATE / MONITOR / EXPIRED
+    claims_time_barred_pct = Column(Float, default=0.0)        # share of estimated damages already barred
+
+    enpv_at_discovery = Column(Float, nullable=True)
+    enpv_current = Column(Float, nullable=True)
+    decay_half_life_days = Column(Integer, default=180)
+    stale_days = Column(Integer, default=0)                    # days since lead created without counsel engagement
+
+    last_computed_at = Column(DateTime, nullable=True)
+    notes = Column(Text, nullable=True)
+
+
+class PipelineStageEvent(Base):
+    """Event-log for speed-to-seal metrics.
+
+    Stage ladder: TIP -> DOSSIER -> COUNSEL_REVIEW -> FILING_READY -> FILED_SEALED
+                  -> INTERVENTION_DECISION -> RESOLVED (or DECLINED -> SHOPPED).
+    """
+    __tablename__ = "pipeline_stage_events"
+
+    id = Column(Integer, primary_key=True)
+    npi = Column(String(10), index=True, nullable=False)
+    stage = Column(String(30), nullable=False, index=True)
+    occurred_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    actor = Column(String(100), nullable=True)                 # 'system' / reviewer id / counsel name
+    days_since_previous_stage = Column(Integer, nullable=True)
+    notes = Column(Text, nullable=True)
+
+    __table_args__ = (
+        Index("idx_pipeline_npi_stage", "npi", "stage", "occurred_at"),
+    )
+
+
+class OriginalSourceTip(Base):
+    """Hash-locked whistleblower tip - zero-knowledge until counsel engagement.
+
+    By design this table stores NO identity, NO contact information, and NO
+    free-text narrative. Only: a public reference code, the SHA-256 of the
+    narrative held by the whistleblower, an intake timestamp, and workflow
+    status. Identity lives outside the platform until counsel is engaged and
+    privilege attaches.
+    """
+    __tablename__ = "original_source_tips"
+
+    id = Column(Integer, primary_key=True)
+    tip_ref = Column(String(20), unique=True, nullable=False, index=True)   # e.g. EST-2026-000123
+    narrative_sha256 = Column(String(64), nullable=False)
+    narrative_length_chars = Column(Integer, nullable=True)
+    allegation_scheme = Column(String(60), nullable=True)      # coarse scheme tag only
+    target_state = Column(String(2), default="NY")
+    received_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    timestamp_note = Column(String(120), nullable=True)        # provenance of the intake clock
+
+    bar_check_status = Column(String(20), default="PENDING")   # PENDING / CLEAR / BAR_RISK
+    original_source_assessment = Column(String(20), default="PENDING")  # LIKELY / POSSIBLE / AT_RISK / PENDING
+
+    status = Column(String(20), default="INTAKED", index=True) # INTAKED / COUNSEL_REVIEW / WITHDRAWN
+    counsel_engaged_at = Column(DateTime, nullable=True)
+    declaration_generated_at = Column(DateTime, nullable=True)
+
+    notes = Column(Text, nullable=True)                        # operational notes, never identity
+
+
+class PublicDisclosureHit(Base):
+    """A public-disclosure source found for a target - feeds the 3730(e)(4) bar check."""
+    __tablename__ = "public_disclosure_hits"
+
+    id = Column(Integer, primary_key=True)
+    target = Column(String(255), nullable=False, index=True)   # entity name or NPI searched
+    npi = Column(String(10), nullable=True, index=True)
+    source_type = Column(String(20), nullable=False)           # DOCKET / PRESS_RELEASE / NEWS / AGENCY / ACADEMIC
+    title = Column(String(500), nullable=True)
+    url = Column(Text, nullable=True)
+    published_date = Column(Date, nullable=True)
+    similarity = Column(Float, default=0.0)                    # 0..1 relevance to our allegations
+    discloses_allegations = Column(Boolean, default=False)     # does it disclose the SAME scheme?
+    found_at = Column(DateTime, default=datetime.utcnow)
+    checked_against_tip_ref = Column(String(20), nullable=True)
+
+
+class DeclinationRecord(Base):
+    """A declined qui tam and its second-life routing (state AG / NYC DOI / other states)."""
+    __tablename__ = "declination_records"
+
+    id = Column(Integer, primary_key=True)
+    npi = Column(String(10), index=True, nullable=True)
+    case_label = Column(String(300), nullable=True)
+    scheme_type = Column(String(60), nullable=True)
+    declined_by = Column(String(30), nullable=False)           # DOJ / NY_AGMFCU / NYC_DOI
+    declined_at = Column(Date, nullable=True)
+    reason_code = Column(String(40), nullable=True)            # PRIORITY / MERITS / DUP_CASE / PUBLIC_BAR / OTHER
+    reason_note = Column(Text, nullable=True)
+    estimated_single_damages = Column(Float, nullable=True)
+
+    shopped_to = Column(JSON, default=list)                    # [{'forum': 'NYC DOI', 'submitted': '2026-09-01', 'status': 'PENDING'}]
+    outcome = Column(String(30), default="PENDING")            # PENDING / REFILED / SETTLED / DISMISSED / ABANDONED
+    resolved_amount = Column(Float, nullable=True)
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ReleaseDiffFinding(Base):
+    """A finding from comparing two HHS release imports.
+
+    The uniquely valuable one: a provider with $0 in release A that bills hard
+    in release B (new-biller ramp), or a retroactive downward restatement.
+    """
+    __tablename__ = "release_diff_findings"
+
+    id = Column(Integer, primary_key=True)
+    release_a = Column(String(50), nullable=False)
+    release_b = Column(String(50), nullable=False)
+    finding_type = Column(String(30), nullable=False, index=True)  # NEW_BILLER / VELOCITY_REGIME / RETROACTIVE_RESTATEMENT
+    npi = Column(String(10), index=True, nullable=False)
+    hcpcs_code = Column(String(10), nullable=False)
+    severity = Column(String(10), default="INFO")              # INFO / WATCH / HIGH
+    details = Column(JSON, default=dict)
+    detected_at = Column(DateTime, default=datetime.utcnow)
+    reviewed = Column(Boolean, default=False)
+
+    __table_args__ = (
+        UniqueConstraint("release_a", "release_b", "npi", "hcpcs_code", "finding_type",
+                         name="uq_release_diff_finding"),
+    )
+
+

@@ -3,6 +3,11 @@ Seed synthetic demonstration aggregates for an adult day care workflow.
 
 These rows are invented for interface development. They are not HHS records,
 not verified providers, and must not be used for provider allegations.
+
+RETIREMENT NOTICE (Engine V3): synthetic seeding is DISABLED by default.
+Set SYNTHETIC_DATA_ALLOWED=true AND ENVIRONMENT != production to use, and
+only for interface demos. The production data path is:
+    scripts/import_hhs_aggregates.py  +  data_ingestion/nppes_full.py
 """
 
 import sys
@@ -14,6 +19,22 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import SessionLocal, engine, Base
 from models import AggregateSpendingRecord, Provider, LeadVerificationRecord
+
+
+def _synthetic_guard() -> None:
+    """Refuse to seed synthetic data unless explicitly allowed in a non-production env."""
+    allowed = os.getenv("SYNTHETIC_DATA_ALLOWED", "false").lower() in ("1", "true", "yes")
+    environment = os.getenv("ENVIRONMENT", "development").lower()
+    if not allowed or environment == "production":
+        raise SystemExit(
+            "REFUSED: synthetic seeding is disabled by default (Engine V3 retirement).\n"
+            "For a UI demo only: SYNTHETIC_DATA_ALLOWED=true ENVIRONMENT=development python scripts/seed_hhs_aggregates.py\n"
+            "For real data: python scripts/import_hhs_aggregates.py --discover --npi-file <allowlist>"
+        )
+    print("WARNING: seeding SYNTHETIC demo rows. Never use for provider allegations or dossiers.")
+
+
+_synthetic_guard()
 
 NYC_ADULT_DAY_CARE_COHORT = [
     {
